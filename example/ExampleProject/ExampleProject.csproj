@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.12.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\sRPC\sRPC.csproj" />
+  </ItemGroup>
+
+  <!--<ItemGroup>
+    <Protobuf Include="**/*.proto" OutputDir="%(RelativeDir)" CompileOutputs="false" />
+  </ItemGroup>-->
+
+  <ItemGroup>
+    <None Update="empty_service.proto" GrpcServices="None" />
+    <None Update="simple_service.proto" ProtoCompile="true" GrpcServices="None" />
+  </ItemGroup>
+
+  <Target Name="BuildProto" BeforeTargets="PreBuildEvent">
+    <!--copy sRPCgen-->
+    <Exec Command="dotnet build -v q --configuration Release --nologo $(SolutionDir)sRPCgen/sRPCgen.csproj" />
+    <Exec Command="cp -f $(SolutionDir)sRPCgen/bin/Release/netcoreapp3.1/sRPCgen* $(TargetDir)/" />
+    <!--Build empty_service.proto-->
+    <Exec Command="protoc -I$(ProjectDir) -o$(ProjectDir)empty_service.proto.bin --csharp_out=$(ProjectDir) --csharp_opt=base_namespace=$(TargetName),file_extension=.g.cs $(ProjectDir)\empty_service.proto" />
+    <Exec Command="$(TargetDir)sRPCgen.exe --output-dir=$(ProjectDir) --namespace-base=ExampleProject --file-extension=.service.cs --file=$(ProjectDir)empty_service.proto.bin" />
+    <Delete Files="empty_service.proto.bin" />
+    <!--Build simple_service.proto-->
+    <Exec Command="protoc -I$(ProjectDir) -o$(ProjectDir)simple_service.proto.bin --csharp_out=$(ProjectDir) --csharp_opt=base_namespace=$(TargetName),file_extension=.g.cs $(ProjectDir)\simple_service.proto" />
+    <Exec Command="$(TargetDir)sRPCgen.exe --output-dir=$(ProjectDir) --namespace-base=ExampleProject --file-extension=.service.cs --file=$(ProjectDir)simple_service.proto.bin" />
+    <Delete Files="simple_service.proto.bin" />
+  </Target>
+
+</Project>

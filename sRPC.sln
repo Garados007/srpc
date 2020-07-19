@@ -5,7 +5,14 @@ VisualStudioVersion = 16.0.30104.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sRPC", "sRPC\sRPC.csproj", "{DEAA0681-696D-48F9-9274-622D6BD1A820}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sRPCgen", "sRPCgen\sRPCgen.csproj", "{E9EE5FF4-158D-47D5-863F-F11BBC6C7519}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sRPCgen", "sRPCgen\sRPCgen.csproj", "{E9EE5FF4-158D-47D5-863F-F11BBC6C7519}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "example", "example", "{CF73F87E-AD2C-45D7-B8BC-DA55497BA942}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleProject", "example\ExampleProject\ExampleProject.csproj", "{3D17C7A7-6A0C-4A2D-BDB6-E2A8C21867F6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E9EE5FF4-158D-47D5-863F-F11BBC6C7519} = {E9EE5FF4-158D-47D5-863F-F11BBC6C7519}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,9 +28,16 @@ Global
 		{E9EE5FF4-158D-47D5-863F-F11BBC6C7519}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9EE5FF4-158D-47D5-863F-F11BBC6C7519}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9EE5FF4-158D-47D5-863F-F11BBC6C7519}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D17C7A7-6A0C-4A2D-BDB6-E2A8C21867F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D17C7A7-6A0C-4A2D-BDB6-E2A8C21867F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D17C7A7-6A0C-4A2D-BDB6-E2A8C21867F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D17C7A7-6A0C-4A2D-BDB6-E2A8C21867F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3D17C7A7-6A0C-4A2D-BDB6-E2A8C21867F6} = {CF73F87E-AD2C-45D7-B8BC-DA55497BA942}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B10ADA87-1491-44A8-A9E8-82A108FFAC62}

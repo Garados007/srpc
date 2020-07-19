@@ -1,0 +1,9 @@
+﻿syntax = "proto3";
+
+package srpc.example;
+
+option csharp_namespace = "ExampleProject";
+
+service EmptyService {
+	// no definitions
+}

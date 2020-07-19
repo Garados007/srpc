@@ -1,0 +1,24 @@
+﻿syntax = "proto3";
+
+package srpc.example;
+
+option csharp_namespace = "ExampleProject";
+
+service SimpleService {
+	rpc GetRandomNumber(RandonNumberRequest)
+		returns (RandomNumberResponse);
+}
+
+message RandonNumberRequest {
+	// the number of random numbers to generate
+	int32 count = 1;
+	// the minimum value of the random numbers (inclusive)
+	int32 minValue = 2;
+	// the maximum value of the random numbers (exclusive)
+	int32 maxValue = 3;
+}
+
+message RandomNumberResponse {
+	// the list of random numbers
+	repeated int32 number = 1;
+}

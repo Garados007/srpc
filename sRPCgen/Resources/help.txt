@@ -16,4 +16,7 @@ the options given:
                             will shorten the path. If not set the whole
                             namespace name of the service will recreated
                             as directory structure.
+  --file-extension=EXT      The extension to use for the C# files. Default
+                            is .g.cs
+  -v, --verbose             Print more information about the build process.
   -h, --help                Print this help.
