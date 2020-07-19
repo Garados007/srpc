@@ -6,6 +6,7 @@ import "google/protobuf/any.proto";
 
 option csharp_namespace = "sRPC";
 
+// the base request information that is used be the internal Api
 message NetworkRequest {
 	// the name of the api function to request
 	string api_function = 1;
@@ -15,6 +16,7 @@ message NetworkRequest {
 	int64 token = 3;
 }
 
+// the base response information that is used be the internal Api
 message NetworkResponse {
 	// the response object with the data
 	google.protobuf.Any response = 2;

@@ -41,6 +41,9 @@ namespace sRPC {
 
   }
   #region Messages
+  /// <summary>
+  /// the base request information that is used be the internal Api
+  /// </summary>
   public sealed partial class NetworkRequest : pb::IMessage<NetworkRequest> {
     private static readonly pb::MessageParser<NetworkRequest> _parser = new pb::MessageParser<NetworkRequest>(() => new NetworkRequest());
     private pb::UnknownFieldSet _unknownFields;
@@ -241,6 +244,9 @@ namespace sRPC {
 
   }
 
+  /// <summary>
+  /// the base response information that is used be the internal Api
+  /// </summary>
   public sealed partial class NetworkResponse : pb::IMessage<NetworkResponse> {
     private static readonly pb::MessageParser<NetworkResponse> _parser = new pb::MessageParser<NetworkResponse>(() => new NetworkResponse());
     private pb::UnknownFieldSet _unknownFields;
