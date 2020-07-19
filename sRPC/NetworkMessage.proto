@@ -1,0 +1,23 @@
+﻿syntax = "proto3";
+
+package srpc;
+
+import "google/protobuf/any.proto";
+
+option csharp_namespace = "sRPC";
+
+message NetworkRequest {
+	// the name of the api function to request
+	string api_function = 1;
+	// the request object with the data
+	google.protobuf.Any request = 2;
+	// the token to identify the response with the request
+	int64 token = 3;
+}
+
+message NetworkResponse {
+	// the response object with the data
+	google.protobuf.Any response = 2;
+	// the token to identify this response
+	int64 token = 3;
+}

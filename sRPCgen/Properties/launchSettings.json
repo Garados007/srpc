@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "sRPCgen": {
+      "commandName": "Project",
+      "commandLineArgs": "--output-dir=S:\\Documents\\Projects\\Argus\\docs\\api\\bin --file=S:\\Documents\\Projects\\Argus\\docs\\api\\test"
+    }
+  }
+}
