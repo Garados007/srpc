@@ -12,30 +12,17 @@ namespace sRPC
     /// The Api Client handler to create requests
     /// </summary>
     /// <typeparam name="T">the api interface to use</typeparam>
-    public class ApiClient<T> : IDisposable
+    public class ApiClient<T> : ApiBase
         where T : IApiClientDefinition, new()
     {
-        /// <summary>
-        /// The input stream that is used to read the responses.
-        /// </summary>
-        public Stream Input { get; }
-
-        /// <summary>
-        /// The output stream that is used to write requests.
-        /// </summary>
-        public Stream Output { get; }
 
         /// <summary>
         /// The current Api interface
         /// </summary>
         public T Api { get; }
 
-        private CancellationTokenSource cancellationToken;
-
         private readonly ConcurrentDictionary<long, CancellationTokenSource> waiter;
         private readonly ConcurrentDictionary<long, NetworkResponse> response;
-        private readonly ConcurrentQueue<NetworkRequest> queue;
-        private readonly SemaphoreSlim mutex;
         private long nextId;
         private readonly object nextIdLock = new object();
 
@@ -53,15 +40,12 @@ namespace sRPC
         /// <param name="input">the input <see cref="Stream"/> to use</param>
         /// <param name="output">the output <see cref="Stream"/> to use</param>
         public ApiClient(Stream input, Stream output)
+            : base(input, output)
         {
-            Input = input ?? throw new ArgumentNullException(nameof(input));
-            Output = output ?? throw new ArgumentNullException(nameof(output));
             waiter = new ConcurrentDictionary<long, CancellationTokenSource>();
+            response = new ConcurrentDictionary<long, NetworkResponse>();
             Api = new T();
             Api.PerformMessage += Api_PerformMessage;
-            response = new ConcurrentDictionary<long, NetworkResponse>();
-            queue = new ConcurrentQueue<NetworkRequest>();
-            mutex = new SemaphoreSlim(0, 1);
         }
 
         private async Task<NetworkResponse> Api_PerformMessage(NetworkRequest request)
@@ -73,9 +57,7 @@ namespace sRPC
             request.Token = id;
             using var cancel = new CancellationTokenSource();
             waiter.AddOrUpdate(id, cancel, (_, __) => cancel);
-            queue.Enqueue(request);
-            try { mutex.Release(); }
-            catch (SemaphoreFullException) { }
+            EnqueueMessage(request);
             try { await Task.Delay(-1, cancel.Token); }
             catch (TaskCanceledException) { }
             if (!this.response.TryRemove(id, out NetworkResponse response))
@@ -85,74 +67,25 @@ namespace sRPC
 
         }
 
-        /// <summary>
-        /// Start the Api Client handler to listen responses and send requests.
-        /// </summary>
-        public void Start()
+        protected override void HandleReceived(byte[] data)
         {
-            if (cancellationToken != null)
-                return;
-            cancellationToken = new CancellationTokenSource();
-            Task.Run(async () =>
+            var nr = new NetworkResponse();
+            nr.MergeFrom(data);
+            if (waiter.TryGetValue(nr.Token, out CancellationTokenSource cancellation))
             {
-                while (!cancellationToken.IsCancellationRequested)
-                {
-                    var buffer = new byte[4];
-                    if (await Input.ReadAsync(buffer, 0, buffer.Length, cancellationToken.Token) != buffer.Length)
-                        continue;
-                    var length = BitConverter.ToInt32(buffer, 0);
-                    if (length < 0)
-                        continue;
-                    buffer = new byte[length];
-                    await Input.ReadAsync(buffer, 0, buffer.Length, cancellationToken.Token);
-                    var nr = new NetworkResponse();
-                    nr.MergeFrom(buffer);
-                    if (waiter.TryGetValue(nr.Token, out CancellationTokenSource cancellation))
-                    {
-                        response.TryAdd(nr.Token, nr);
-                        cancellation.Cancel();
-                    }
-                }
-            });
-            Task.Run(async () =>
-            {
-                while (!cancellationToken.IsCancellationRequested)
-                {
-                    if (queue.TryDequeue(out NetworkRequest request))
-                    {
-                        var buffer = request.ToByteArray();
-                        await Output.WriteAsync(BitConverter.GetBytes(buffer.Length), 0, 4, cancellationToken.Token);
-                        await Output.WriteAsync(buffer, 0, buffer.Length, cancellationToken.Token);
-                    }
-                    else
-                    {
-                        await mutex.WaitAsync(cancellationToken.Token);
-                    }
-                }
-            });
-        }
-
-
-        /// <summary>
-        /// Stop the Api Client from listening responses and sending requests
-        /// </summary>
-        public void Stop()
-        {
-            cancellationToken?.Dispose();
-            cancellationToken = null;
+                response.TryAdd(nr.Token, nr);
+                cancellation.Cancel();
+            }
         }
 
         /// <summary>
         /// Dispose the Api Client handler and release its resources.
         /// </summary>
-        public void Dispose()
+        public override void Dispose()
         {
-            cancellationToken?.Dispose();
-            mutex.Dispose();
+            base.Dispose();
             foreach (var x in waiter.Values)
                 x.Cancel();
-            Input.Dispose();
-            Output.Dispose();
         }
     }
 }
