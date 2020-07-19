@@ -47,7 +47,7 @@ namespace sRPC
                     if (await Input.ReadAsync(buffer, 0, buffer.Length, cancellationToken.Token) != buffer.Length)
                         continue;
                     var length = BitConverter.ToInt32(buffer, 0);
-                    if (length < 0)
+                    if (length <= 0)
                         continue;
                     buffer = new byte[length];
                     await Input.ReadAsync(buffer, 0, buffer.Length, cancellationToken.Token);

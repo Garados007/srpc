@@ -58,7 +58,7 @@ namespace sRPC
                 catch (SemaphoreFullException) { }
                 try { await Task.Delay(-1, cancel.Token); }
                 catch (TaskCanceledException) { }
-                if (this.response.TryRemove(id, out NetworkResponse response))
+                if (!this.response.TryRemove(id, out NetworkResponse response))
                     response = null;
                 waiter.TryRemove(id, out _);
                 return response;
