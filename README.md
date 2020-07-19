@@ -1,5 +1,7 @@
 # sRPC
 
+![.NET Core](https://github.com/Garados007/srpc/workflows/.NET%20Core/badge.svg?branch=master)
+
 The RPC implementation for ProtoBuf usings .NET Streams.
 
 sRPC sends all messages as ProtoBuf packages on any Stream. There is no extra protocol with additional overhead (like gRPC) used.

@@ -26,8 +26,6 @@
     <!--copy sRPCgen-->
     <Exec Command="dotnet build -v q --configuration Release --nologo $(SolutionDir)sRPCgen/sRPCgen.csproj" />
     <Exec Command="cp -f $(SolutionDir)sRPCgen/bin/Release/netcoreapp3.1/sRPCgen* $(TargetDir)/" />
-    <!--debug show output-->
-    <Exec Command="ls $(TargetDir)" />
     <!--Build empty_service.proto-->
     <Exec Command="protoc -I$(ProjectDir) -o$(ProjectDir)empty_service.proto.bin --csharp_out=$(ProjectDir) --csharp_opt=base_namespace=$(TargetName),file_extension=.g.cs $(ProjectDir)\empty_service.proto" />
     <Exec Command="$(TargetDir)sRPCgen --output-dir=$(ProjectDir) --namespace-base=ExampleProject --file-extension=.service.cs --file=$(ProjectDir)empty_service.proto.bin" />
