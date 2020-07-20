@@ -1,6 +1,7 @@
 ﻿using Google.Protobuf.Reflection;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -13,6 +14,10 @@ namespace sRPCgen
         static string namespaceBase;
         static string fileExtension;
         static bool verbose;
+        static bool buildProtoc;
+        static string searchDir;
+        static readonly List<string> protoImports = new List<string>();
+        static string protoExtension;
 
         static void Main(string[] args)
         {
@@ -25,6 +30,7 @@ namespace sRPCgen
             outputDir ??= Environment.CurrentDirectory;
             namespaceBase ??= "";
             fileExtension ??= ".g.cs";
+            protoExtension ??= ".cs";
 
             if (verbose)
             {
@@ -33,8 +39,69 @@ namespace sRPCgen
                 Console.WriteLine($"Namespace base:      {namespaceBase}");
             }
 
+            if (searchDir != null)
+                WorkAtDir(searchDir);
+            else WorkSingleFile(file);
+
             if (verbose)
-                Console.WriteLine("Read protobuf descriptor...");
+                Console.WriteLine("Finish.");
+        }
+
+        static void WorkAtDir(string dir)
+        {
+            foreach (var file in Directory.EnumerateFiles(dir, "*.proto"))
+                WorkSingleFile(file);
+            foreach (var sub in Directory.EnumerateDirectories(dir))
+                WorkAtDir(sub);
+        }
+
+        static void WorkSingleFile(string file)
+        {
+            if (buildProtoc)
+            {
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = "protoc",
+                    Arguments = $"{string.Join(" ", protoImports.Select(x => $"-I{x}"))} " +
+                        $"-o{file}.bin --csharp_out={outputDir} " +
+                        $"--csharp_opt=base_namespace={namespaceBase},file_extension={protoExtension} " +
+                        $"--include_imports {file}",
+                    CreateNoWindow = true,
+                    RedirectStandardError = true,
+                    RedirectStandardOutput = true,
+                    WorkingDirectory = Environment.CurrentDirectory,
+                };
+                using var process = Process.Start(startInfo);
+                process.OutputDataReceived += (_, e) =>
+                {
+                    if (e.Data != null)
+                        Console.WriteLine(e.Data);
+                };
+                process.ErrorDataReceived += (_, e) =>
+                {
+                    if (e.Data != null)
+                        Console.Error.WriteLine(e.Data);
+                };
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+                process.WaitForExit();
+                if (process.ExitCode != 0)
+                {
+                    Console.Error.WriteLine($"protoc exit with code {process.ExitCode} with {file}");
+                    return;
+                }
+                var bin = $"{file}.bin";
+                WorkSingleBinFile(bin);
+                if (File.Exists(bin))
+                    File.Delete(bin);
+            }
+            else WorkSingleBinFile(file);
+        }
+
+        static void WorkSingleBinFile(string file)
+        {
+            if (verbose)
+                Console.WriteLine($"Read protobuf descriptor of {file}...");
             FileDescriptorSet descriptor;
             using var stream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             try { descriptor = FileDescriptorSet.Parser.ParseFrom(stream); }
@@ -53,35 +120,37 @@ namespace sRPCgen
             foreach (var filedesc in descriptor.File)
                 foreach (var service in filedesc.Service)
                 {
-                    var targetName = filedesc.Options?.CsharpNamespace ?? "";
-                    if (targetName.StartsWith(namespaceBase))
-                        targetName = targetName.Substring(namespaceBase.Length);
-                    else
-                        Console.WriteLine($"the c# namespace {targetName} has not the base {namespaceBase}. The namespace will not be shortened.");
-                    if (targetName != null)
-                        targetName += '.';
-                    targetName = (targetName + service.Name).Replace('.', '/');
-                    if (targetName.StartsWith("/"))
-                        targetName = targetName.Substring(1);
-                    targetName = Path.Combine(outputDir + "/", targetName + fileExtension);
-                    if (verbose)
-                        Console.WriteLine($" Generate service for {service.Name} at {targetName}...");
-                    var fi = new FileInfo(targetName);
-                    if (!fi.Directory.Exists)
-                        try { fi.Directory.Create(); }
-                        catch (IOException e)
-                        {
-                            Console.Error.WriteLine($"Couldn't create directory for output file {targetName}: {e}");
-                            return;
-                        }
-                    using var writer = new StreamWriter(new FileStream(targetName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite));
-                    writer.BaseStream.SetLength(0);
-                    GenerateServiceFile(filedesc, service, writer, names);
-                    writer.Flush();
+                    WorkSingleEntry(filedesc, service, names);
                 }
+        }
 
+        static void WorkSingleEntry(FileDescriptorProto filedesc, ServiceDescriptorProto service, List<NameInfo> names)
+        {
+            var targetName = filedesc.Options?.CsharpNamespace ?? "";
+            if (targetName.StartsWith(namespaceBase))
+                targetName = targetName.Substring(namespaceBase.Length);
+            else
+                Console.WriteLine($"the c# namespace {targetName} has not the base {namespaceBase}. The namespace will not be shortened.");
+            if (targetName != null)
+                targetName += '.';
+            targetName = (targetName + service.Name).Replace('.', '/');
+            if (targetName.StartsWith("/"))
+                targetName = targetName.Substring(1);
+            targetName = Path.Combine(outputDir + "/", targetName + fileExtension);
             if (verbose)
-                Console.WriteLine("Finish.");
+                Console.WriteLine($" Generate service for {service.Name} at {targetName}...");
+            var fi = new FileInfo(targetName);
+            if (!fi.Directory.Exists)
+                try { fi.Directory.Create(); }
+                catch (IOException e)
+                {
+                    Console.Error.WriteLine($"Couldn't create directory for output file {targetName}: {e}");
+                    return;
+                }
+            using var writer = new StreamWriter(new FileStream(targetName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite));
+            writer.BaseStream.SetLength(0);
+            GenerateServiceFile(filedesc, service, writer, names);
+            writer.Flush();
         }
 
         static bool ParseArgs(string[] args)
@@ -98,6 +167,11 @@ namespace sRPCgen
                             if (file != null)
                             {
                                 Console.WriteLine("--file is already defined");
+                                return false;
+                            }
+                            if (searchDir != null)
+                            {
+                                Console.WriteLine("--file cannot be used in --search-dir");
                                 return false;
                             }
                             file = arg.Substring(ind + 1);
@@ -126,6 +200,56 @@ namespace sRPCgen
                             }
                             fileExtension = arg.Substring(ind + 1);
                             break;
+                        case "--build-protoc":
+                            if (buildProtoc)
+                            {
+                                Console.WriteLine("--build-protoc is already defined");
+                                return false;
+                            }
+                            buildProtoc = true;
+                            break;
+                        case "--proto-import=":
+                            {
+                                var path = arg.Substring(ind + 1);
+                                if (protoImports.Contains(path))
+                                {
+                                    Console.WriteLine($"--proto-import already defined for {path}");
+                                    return false;
+                                }
+                                if (!Directory.Exists(path))
+                                {
+                                    Console.WriteLine($"directory {path} doesn't exists as proto import");
+                                    return false;
+                                }
+                                protoImports.Add(path);
+                            }
+                            break;
+                        case "--proto-extension=":
+                            if (protoExtension != null)
+                            {
+                                Console.WriteLine("--proto-extension is already defined");
+                                return false;
+                            }
+                            protoExtension = arg.Substring(ind + 1);
+                            break;
+                        case "--search-dir=":
+                            if (searchDir != null)
+                            {
+                                Console.WriteLine("--search-dir is already defined");
+                                return false;
+                            }
+                            if (file != null)
+                            {
+                                Console.WriteLine("--search-dir cannot be used in combination with --file");
+                                return false;
+                            }
+                            searchDir = arg.Substring(ind + 1);
+                            if (!Directory.Exists(searchDir))
+                            {
+                                Console.WriteLine($"the search dir {searchDir} doesn't exists");
+                                return false;
+                            }
+                            break;
                         case "-h":
                         case "--help":
                             return false;
@@ -140,18 +264,41 @@ namespace sRPCgen
                 }
                 else
                 {
+                    if (searchDir != null)
+                    {
+                        Console.WriteLine("a file cannot be used if --search-dir is used");
+                        return false;
+                    }
+                    if (file != null)
+                    {
+                        Console.WriteLine("a file is already defined");
+                        return false;
+                    }
                     file = arg;
                 }
             }
-            if (file is null)
+            if (file is null && searchDir is null)
             {
-                Console.WriteLine("no file specified");
+                Console.WriteLine("no file or search directory are specified");
                 return false;
             }
-            if (!File.Exists(file))
+            if (!(file is null || File.Exists(file)))
             {
                 Console.WriteLine($"file not found: {file}");
                 return false;
+            }
+            if (!buildProtoc)
+            {
+                if (protoImports.Count > 0)
+                {
+                    Console.WriteLine("--proto-import can only be used if --build-protoc is defined");
+                    return false;
+                }
+                if (protoExtension != null)
+                {
+                    Console.WriteLine("--proto-extension can only be used if --build-protoc is defined");
+                    return false;
+                }
             }
             return true;
         }
@@ -168,6 +315,12 @@ the options given:
                             --descriptor_set_out option.
                             This option is automatilcy set if a file name
                             is given.
+  --search-dir=PROTO_DIR    Will search for a suitable files in the directory
+                            and parse them. This is works as if you search for
+                            each file and call this process. This cannot be
+                            combined with --file.
+                            This option expects the files to have the
+                            extension .proto.bin
   --output-dir=OUT_DIR      The path where the generated C# source files has
                             to be placed. If not set the current working
                             directory is used.
@@ -178,6 +331,20 @@ the options given:
                             as directory structure.
   --file-extension=EXT      The extension to use for the C# files. Default
                             is .g.cs
+  --build-protoc            --file and --search-dir will work directly with
+                            the .protoc files. This expects to have the
+                            protoc in the PATH environment variable.
+                            --search-dir will now search for .proto files.
+  --proto-import=IMP_DIR    Only if --build-protoc defined.
+                            This will add the --proto_path=IMP_DIR argument
+                            to the protoc call. IMP_DIR is the path of the
+                            protoc import files. This argument can be defined
+                            multiple times.
+  --proto-extension=EXT     Only if --build-protoc defined.
+                            This will add the file_extension=EXT to the
+                            --csharp_opt argument to the protoc call.
+                            EXT is the extension the C# file generated by
+                            protoc should get. Default is .cs
   -v, --verbose             Print more information about the build process.
   -h, --help                Print this help.
 ");

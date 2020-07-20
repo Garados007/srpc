@@ -7,15 +7,12 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.12.3" />
+    <PackageReference Include="Google.Protobuf.Tools" Version="3.12.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\sRPC\sRPC.csproj" />
   </ItemGroup>
-
-  <!--<ItemGroup>
-    <Protobuf Include="**/*.proto" OutputDir="%(RelativeDir)" CompileOutputs="false" />
-  </ItemGroup>-->
 
   <ItemGroup>
     <None Update="empty_service.proto" GrpcServices="None" />
@@ -26,14 +23,8 @@
     <!--copy sRPCgen-->
     <Exec Command="dotnet build -v q --configuration Release --nologo $(SolutionDir)sRPCgen/sRPCgen.csproj" />
     <Exec Command="cp -f $(SolutionDir)sRPCgen/bin/Release/netcoreapp3.1/sRPCgen* $(TargetDir)/" />
-    <!--Build empty_service.proto-->
-    <Exec Command="protoc -I$(ProjectDir) -o$(ProjectDir)empty_service.proto.bin --csharp_out=$(ProjectDir) --csharp_opt=base_namespace=$(TargetName),file_extension=.g.cs $(ProjectDir)\empty_service.proto" />
-    <Exec Command="$(TargetDir)sRPCgen --output-dir=$(ProjectDir) --namespace-base=ExampleProject --file-extension=.service.cs --file=$(ProjectDir)empty_service.proto.bin" />
-    <Delete Files="empty_service.proto.bin" />
-    <!--Build simple_service.proto-->
-    <Exec Command="protoc -I$(ProjectDir) -o$(ProjectDir)simple_service.proto.bin --csharp_out=$(ProjectDir) --csharp_opt=base_namespace=$(TargetName),file_extension=.g.cs $(ProjectDir)\simple_service.proto" />
-    <Exec Command="$(TargetDir)sRPCgen --output-dir=$(ProjectDir) --namespace-base=ExampleProject --file-extension=.service.cs --file=$(ProjectDir)simple_service.proto.bin" />
-    <Delete Files="simple_service.proto.bin" />
+    <!--build protos-->
+    <Exec Command="$(TargetDir)sRPCgen --search-dir=$(ProjectDir) --output-dir=$(ProjectDir) --namespace-base=ExampleProject --file-extension=.service.cs --build-protoc --proto-import=$(ProjectDir) --proto-extension=.g.cs" />
   </Target>
 
 </Project>
