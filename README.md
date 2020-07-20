@@ -140,4 +140,4 @@ This project is licensed under the LGPL-2.1 License  - see the [LICENSE.md](LICE
 
 - StackOverflow for the help
 - my friends for the inspiration
-- [PurpleBooth](https://github.com/PurpleBooth) for his [README.md](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2) template
+- [PurpleBooth](https://github.com/PurpleBooth) for her [README.md](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2) template
