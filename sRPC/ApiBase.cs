@@ -29,6 +29,21 @@ namespace sRPC
         private readonly ConcurrentQueue<IMessage> queue;
         private readonly SemaphoreSlim mutex;
 
+        protected virtual IMessage[] GetMessages()
+            => queue.ToArray();
+
+        protected virtual void PushMessage(IMessage[] messages)
+        {
+            _ = messages ?? throw new ArgumentNullException(nameof(messages));
+            if (messages.Length == 0)
+                return;
+            foreach (var m in messages)
+                queue.Enqueue(m);
+            try { mutex.Release(); }
+            catch (SemaphoreFullException) { }
+            catch (ObjectDisposedException) { }
+        }
+
         /// <summary>
         /// Create a new Api handler with the specified input and output <see cref="Stream"/>s
         /// </summary>
@@ -105,6 +120,7 @@ namespace sRPC
                         catch (IOException e)
                         {
                             Disconnected?.Invoke(this, e);
+                            queue.Enqueue(request);
                             continue;
                         }
                         catch (TaskCanceledException) { }
@@ -141,6 +157,7 @@ namespace sRPC
             queue.Enqueue(message);
             try { mutex.Release(); }
             catch (SemaphoreFullException) { }
+            catch (ObjectDisposedException) { }
         }
 
         /// <summary>
