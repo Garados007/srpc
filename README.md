@@ -2,41 +2,59 @@
 
 ![.NET Core](https://github.com/Garados007/srpc/workflows/.NET%20Core/badge.svg?branch=master)
 
-The RPC implementation for ProtoBuf usings .NET Streams.
+sRPC is an async ProtoBuf service interface that sends its messages directly (binary) on .NET Streams. This can be used to call rpc proto services directly with TCP Sockets or Names Pipes.
 
-sRPC sends all messages as ProtoBuf packages on any Stream. There is no extra protocol with additional overhead (like gRPC) used.
+## Getting Started
 
-## Transmission protocol
+This will add sRPC to your project so you can use this protocoll to create a RPC interface from your .proto files.
 
-Each message has a 4 byte header with an int32 (lowest byte first) encoded length of the message itself. After that a ProtoBuf message like this is sent:
+### Prerequisites
 
-```protobuf
-message NetworkRequest {
-	// the name of the api function to request
-	string api_function = 1;
-	// the request object with the data
-	google.protobuf.Any request = 2;
-	// the token to identify the response with the request
-	int64 token = 3;
-}
+You need to have `protoc` installed on your system and added to your global PATH. This step depends on your system. For more information see at [https://github.com/protocolbuffers/protobuf/releases](https://github.com/protocolbuffers/protobuf/releases).
+
+### Installing
+
+First you need to clone this project:
+
+```sh
+git clone https://github.com/Garados007/srpc.git
 ```
 
-the `api_function` defines the RPC call. All arguments are packed in a single `google.protobuf.Any` field. To reference the response with the request a single `token` is used. This implementation increment this token with each request but there is not need to do so. Tokens can be reused but the same token should never be used twice at the same time.
+Now you need to build the sRPC project. For this you need to change into the directory where `srpc.sln` is located and call this:
 
-The response has the a 4 byte header with an int32 (lowest byte first) encoded length and after that the message itself:
-
-```protobuf
-message NetworkResponse {
-	// the response object with the data
-	google.protobuf.Any response = 2;
-	// the token to identify this response
-	int64 token = 3;
-}
+```sh
+dotnet build --configuration Release
 ```
 
-## Create the sRPC Api
+After that you need to add a dependency to your project. For this you need to open your `.csproj` file and add this:
 
-First you need to specify your rpc API in protobuf:
+```xml
+<ItemGroup>
+  <ProjectReference Include="path/to/sRPC.csproj" />
+</ItemGroup>
+```
+
+Now you need to add a build step that automaticaly generates the C# files for your .proto files. For this add this snippet to your `.csproj` file:
+
+```xml
+<Target Namwe="BuildProto" BeforeTargets="PreBuildEvent">
+  <Exec Command="path/to/sRPCgen --search-dir=$(ProjectDir) --output-dir=$(ProjectDir) --namespace-base=$(TargetName) --file-extension=.service.cs --build-protoc --proto-import=$(ProjectDir) --proto-extension=.g.cs" />
+</Target>
+```
+
+For more information about the sRPCgen arguments: [sRPCgen documentation](https://github.com/Garados007/srpc/wiki/sRPCgen)
+
+Finally you need to add the NuGet Package `Google.Protobuf` to your project:
+
+```sh
+dotnet add package Google.Protobuf
+```
+
+Now your project is fully configured to use sRPC.
+
+### Create and use API
+
+First you need to specify your API in protobuf:
 
 ```protobuf
 service SimpleService {
@@ -45,35 +63,29 @@ service SimpleService {
 }
 ```
 
-After that you need to create the descriptor information of this `.proto` file:
+After that you need to build your project once:
 
 ```sh
-protoc \
-    --proto_path=path/of/your/imports \
-    --descriptor_set_out=path/of/new/descriptor/file \
-    --include_imports \
-    path/to/your/proto/file
+dotnet build
 ```
 
-It is important to include the parameter `--include_imports` if you included definitions from other files in your `.proto`. Otherwise the generator won't find the the references.
-
-The descriptor file contains all information about your `.proto` file and their definitions and imports. This file is only used for the next step.
-
-```sh
-sRPCgen path/of/descriptor/file
-```
-
-This will generate the server and client base implementation of your API with the default settings.
-
-After that you need to add the reference to `sRPC` to your project (maybe there is a NuGet Package in future) and add the generated files.
-
-Now you need to create an implementation of you the abstract base class for the server.
-
-## Use the API
-
-For the client implementation you only need to create the client handler and start it. After that you can use the API.
+Now you need to create an implementation of the server Api base class:
 
 ```csharp
+public class SimpleServiceServer : SimpleServiceServerBase
+{
+    public override Task<RandomNumberResponse> GetRandomNumber(RandonNumberRequest request)
+    {
+        // generate the random numbers and the response
+    }
+}
+```
+
+Finally you can create your server and client:
+
+```csharp
+// ### CLIENT ###
+
 NetworkStream stream;
 // create the client with the generated API implementation
 using var client = new ApiClient<SimpleServiceClient>(stream);
@@ -89,25 +101,43 @@ var request = new RandomNumberRequest
 // submit your request and await the response
 var response = await client.Api.GetRandomNumber(request);
 ```
-
-The server needs first to implement the API base class.
-
 ```csharp
-public class SimpleServiceServer : SimpleServiceServerBase
-{
-    public override Task<RandomNumberResponse> GetRandomNumber(RandonNumberRequest request)
-    {
-        // generate the random numbers and the response
-    }
-}
-```
+// ### SERVER ###
 
-And now the server can be created. For this the server handler needs to created and started. After that it can serve the requests:
-
-```csharp
 NetworkStream stream;
 // create the server with the implementation API
 using var server = new ApiServer<SimpleServiceServer>(stream);
-// start the client. This will now listen to requests and answer them
+// start the server. This will now listen to requests and answer them
 server.Start();
 ```
+
+## Example
+
+- [example/ExampleProject](example/ExampleProject)
+	- Integration of sRPC into the project
+	- examples of proto services
+	- usage of the api
+
+## Contributing
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
+## Versioning
+
+We use [SemVer](semver.org) for versioning. For the versions available, see the [tags on this repository](https://github.com/Garados007/srpc/tags).
+
+## Authors
+
+- **Max Brauer** - *Initial work* - [Garados007](https://github.com/Garados007)
+
+See also the list of [contributors](https://github.com/Garados007/srpc/contributors) who participated in this project.
+
+## Lincense
+
+This project is licensed under the LGPL-2.1 License  - see the [LICENSE.md](LICENSE.md) file for details
+
+## Acknowledgments
+
+- StackOverflow for the help
+- my friends for the inspiration
+- [PurpleBooth](https://github.com/PurpleBooth) for his [README.md](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2) template
