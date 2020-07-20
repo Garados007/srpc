@@ -49,7 +49,7 @@ namespace sRPCgen
 
         static void WorkAtDir(string dir)
         {
-            foreach (var file in Directory.EnumerateFiles(dir, "*.proto"))
+            foreach (var file in Directory.EnumerateFiles(dir, buildProtoc ? "*.proto" : "*.proto.bin"))
                 WorkSingleFile(file);
             foreach (var sub in Directory.EnumerateDirectories(dir))
                 WorkAtDir(sub);
