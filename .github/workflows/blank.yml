@@ -1,0 +1,35 @@
+# This is a basic workflow to help you get started with Actions
+
+name: NuGet Publish
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      
+    - name: Install Protoc
+      uses: arduino/setup-protoc@master
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.101
+    - name: Install dependencies
+      run: dotnet restore
+      
+    - name: Publish NuGet
+      uses: brandedoutcast/publish-nuget@v2.5.5
+      with:
+        # Filepath of the project to be packaged, relative to root of repository
+        PROJECT_FILE_PATH: sRPC/sRPC.csproj
+        # NuGet package id, used for version detection & defaults to project name
+        PACKAGE_NAME: sRPC
+        # API key to authenticate with NuGet server
+        NUGET_KEY: ${{ secrets.NUGET_PUSH_KEY }}
