@@ -11,7 +11,7 @@ namespace sRPC.Test.SimpleService.AnonymousPipe
     public class Test
     {
         [TestMethod]
-        public async Task FetchNumbersTest()
+        public async Task AnonymousPipe_FetchNumbersTest()
         {
             using var server = new AnonymouseApiServer<Server>();
             server.GetPipeHandles(out string inputPipe, out string outputPipe);

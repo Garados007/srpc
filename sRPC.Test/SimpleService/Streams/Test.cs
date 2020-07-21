@@ -10,7 +10,7 @@ namespace sRPC.Test.SimpleService.Streams
     public class Test
     {
         [TestMethod]
-        public async Task FetchNumbersTest()
+        public async Task Streams_FetchNumbersTest()
         {
             using var m1 = new BlockingStream();
             using var m2 = new BlockingStream();

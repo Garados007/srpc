@@ -11,7 +11,7 @@ namespace sRPC.Test.SimpleService.Tcp
     public class Test
     {
         [TestMethod]
-        public async Task FetchNumbersTest()
+        public async Task Tcp_FetchNumbersTest()
         {
             using var server = new TcpApiServer<Server>(new IPEndPoint(IPAddress.Loopback, 0));
 

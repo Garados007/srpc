@@ -10,7 +10,7 @@ namespace sRPC.Test.SimpleService.NamedPipe
     public class Test
     {
         [TestMethod]
-        public async Task FetchNumbersTest()
+        public async Task NamedPipe_FetchNumbersTest()
         {
             var name = Guid.NewGuid().ToString();
 
