@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace sRPC
+﻿namespace sRPC
 {
     /// <summary>
     /// The interface that can provide a <typeparamref name="T"/> API.
