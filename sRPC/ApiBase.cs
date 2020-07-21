@@ -1,9 +1,7 @@
 ﻿using Google.Protobuf;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,7 +10,7 @@ namespace sRPC
     /// <summary>
     /// The base definitions for an Api handler
     /// </summary>
-    public abstract class ApiBase : IDisposable
+    public abstract class ApiBase : IDisposable, IAsyncDisposable
     {
         /// <summary>
         /// The input stream
@@ -169,6 +167,14 @@ namespace sRPC
             mutex.Dispose();
             Input.Dispose();
             Output.Dispose();
+        }
+
+        public virtual async ValueTask DisposeAsync()
+        {
+            cancellationToken.Dispose();
+            mutex.Dispose();
+            await Input.DisposeAsync();
+            await Output.DisposeAsync();
         }
     }
 }

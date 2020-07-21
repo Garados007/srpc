@@ -1,10 +1,6 @@
 ﻿using Google.Protobuf;
-using System;
-using System.Collections.Concurrent;
 using System.IO;
 using System.Net.Sockets;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace sRPC
 {
@@ -12,7 +8,7 @@ namespace sRPC
     /// The Api Server handler to serve requests
     /// </summary>
     /// <typeparam name="T">the api interface to use</typeparam>
-    public class ApiServer<T> : ApiBase
+    public class ApiServer<T> : ApiBase, IApi<T>
         where T : IApiServerDefinition, new()
     {
         /// <summary>

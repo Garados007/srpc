@@ -13,7 +13,7 @@ namespace sRPC
     /// The Api Client handler to create requests
     /// </summary>
     /// <typeparam name="T">the api interface to use</typeparam>
-    public class ApiClient<T> : ApiBase
+    public class ApiClient<T> : ApiBase, IApi<T>
         where T : IApiClientDefinition, new()
     {
 
@@ -23,7 +23,7 @@ namespace sRPC
         public T Api { get; }
 
         private readonly ConcurrentDictionary<long, CancellationTokenSource> waiter;
-        private ConcurrentDictionary<long, NetworkResponse> response;
+        private readonly ConcurrentDictionary<long, NetworkResponse> response;
         private readonly ConcurrentDictionary<long, IMessage> outgoingMessages;
         private long nextId;
         private readonly object nextIdLock = new object();
@@ -145,6 +145,16 @@ namespace sRPC
         public override void Dispose()
         {
             base.Dispose();
+            foreach (var x in waiter.Values)
+                x.Cancel();
+        }
+
+        /// <summary>
+        /// Dispose the Api Client handler and release its resources.
+        /// </summary>
+        public async override ValueTask DisposeAsync()
+        {
+            await base.DisposeAsync();
             foreach (var x in waiter.Values)
                 x.Cancel();
         }
