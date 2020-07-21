@@ -10,7 +10,7 @@ namespace sRPC.TCP
     /// manages the connection and automatic reconnection of it.
     /// </summary>
     /// <typeparam name="T">the type of the API interface</typeparam>
-    public class TcpApiClient<T> : IDisposable
+    public class TcpApiClient<T> : IDisposable, IApi<T>
         where T : class, IApiClientDefinition, new()
     {
         private ApiClient<T> client;

@@ -10,7 +10,7 @@ namespace sRPC.Pipes
     /// There is no automatic reconnection because of the nature of anonymous pipes.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class AnonymouseApiServer<T> : IDisposable
+    public class AnonymouseApiServer<T> : IDisposable, IApi<T>
         where T : IApiServerDefinition, new()
     {
         private readonly ApiServer<T> apiServer;
