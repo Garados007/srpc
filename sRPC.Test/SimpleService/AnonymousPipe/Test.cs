@@ -2,6 +2,7 @@
 using sRPC.Pipes;
 using sRPC.Test.Proto;
 using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
@@ -13,6 +14,9 @@ namespace sRPC.Test.SimpleService.AnonymousPipe
         [TestMethod]
         public async Task AnonymousPipe_FetchNumbersTest()
         {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                Assert.Inconclusive("Cannot test anonymous pipes because this is a Windows feature");
+
             using var server = new AnonymouseApiServer<Server>();
             server.GetPipeHandles(out string inputPipe, out string outputPipe);
 

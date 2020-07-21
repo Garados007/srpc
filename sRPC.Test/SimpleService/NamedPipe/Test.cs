@@ -2,6 +2,7 @@
 using sRPC.Pipes;
 using sRPC.Test.Proto;
 using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace sRPC.Test.SimpleService.NamedPipe
@@ -12,6 +13,9 @@ namespace sRPC.Test.SimpleService.NamedPipe
         [TestMethod]
         public async Task NamedPipe_FetchNumbersTest()
         {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                Assert.Inconclusive("Cannot test anonymous pipes because this is a Windows feature");
+
             var name = Guid.NewGuid().ToString();
 
             using var server = new NamedApiServer<Server>(name);
