@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32.SafeHandles;
 using System;
 using System.IO.Pipes;
+using System.Threading.Tasks;
 
 namespace sRPC.Pipes
 {
@@ -9,7 +10,7 @@ namespace sRPC.Pipes
     /// There is no automatic reconnection because of the nature of anonymous pipes.
     /// </summary>
     /// <typeparam name="T">the type of the API interface</typeparam>
-    public class AnonymousApiClient<T> : IDisposable, IApi<T>
+    public class AnonymousApiClient<T> : IDisposable, IAsyncDisposable, IApi<T>
         where T : IApiClientDefinition, new()
     {
         private readonly ApiClient<T> client;
@@ -107,6 +108,16 @@ namespace sRPC.Pipes
             client.Dispose();
             input.Dispose();
             output.Dispose();
+        }
+
+        /// <summary>
+        /// Dispose all used resources
+        /// </summary>
+        public async ValueTask DisposeAsync()
+        {
+            await client.DisposeAsync();
+            await input.DisposeAsync();
+            await output.DisposeAsync();
         }
     }
 }

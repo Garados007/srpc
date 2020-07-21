@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.IO.Pipes;
+using System.Threading.Tasks;
 
 namespace sRPC.Pipes
 {
@@ -10,7 +11,7 @@ namespace sRPC.Pipes
     /// There is no automatic reconnection because of the nature of anonymous pipes.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class AnonymouseApiServer<T> : IDisposable, IApi<T>
+    public class AnonymouseApiServer<T> : IDisposable, IAsyncDisposable, IApi<T>
         where T : IApiServerDefinition, new()
     {
         private readonly ApiServer<T> apiServer;
@@ -99,6 +100,16 @@ namespace sRPC.Pipes
             apiServer.Dispose();
             inputPipe.Dispose();
             outputPipe.Dispose();
+        }
+
+        /// <summary>
+        /// Dispose all used resources
+        /// </summary>
+        public async ValueTask DisposeAsync()
+        {
+            await apiServer.DisposeAsync();
+            await inputPipe.DisposeAsync();
+            await outputPipe.DisposeAsync();
         }
     }
 }

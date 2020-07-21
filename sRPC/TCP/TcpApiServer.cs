@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace sRPC.TCP
 {
@@ -10,7 +11,7 @@ namespace sRPC.TCP
     /// This manages multiple connections with clients.
     /// </summary>
     /// <typeparam name="T">the type of the API interface</typeparam>
-    public class TcpApiServer<T> : IDisposable
+    public class TcpApiServer<T> : IDisposable, IAsyncDisposable
         where T : IApiServerDefinition, new()
     {
         private readonly TcpListener tcpListener;
@@ -86,6 +87,20 @@ namespace sRPC.TCP
             foreach (var (server, client) in apiServers.ToArray())
             {
                 server.Dispose();
+                client.Dispose();
+            }
+            apiServers.Clear();
+        }
+
+        /// <summary>
+        /// Dispose all connections and stop the server
+        /// </summary>
+        public async ValueTask DisposeAsync()
+        {
+            tcpListener.Stop();
+            foreach (var (server, client) in apiServers.ToArray())
+            {
+                await server.DisposeAsync();
                 client.Dispose();
             }
             apiServers.Clear();

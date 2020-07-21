@@ -148,5 +148,15 @@ namespace sRPC
             foreach (var x in waiter.Values)
                 x.Cancel();
         }
+
+        /// <summary>
+        /// Dispose the Api Client handler and release its resources.
+        /// </summary>
+        public async override ValueTask DisposeAsync()
+        {
+            await base.DisposeAsync();
+            foreach (var x in waiter.Values)
+                x.Cancel();
+        }
     }
 }

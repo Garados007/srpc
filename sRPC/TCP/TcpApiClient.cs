@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace sRPC.TCP
 {
@@ -10,7 +11,7 @@ namespace sRPC.TCP
     /// manages the connection and automatic reconnection of it.
     /// </summary>
     /// <typeparam name="T">the type of the API interface</typeparam>
-    public class TcpApiClient<T> : IDisposable, IApi<T>
+    public class TcpApiClient<T> : IDisposable, IAsyncDisposable, IApi<T>
         where T : class, IApiClientDefinition, new()
     {
         private ApiClient<T> client;
@@ -83,6 +84,15 @@ namespace sRPC.TCP
         {
             tcpClient?.Dispose();
             client?.Dispose();
+        }
+
+        /// <summary>
+        /// Dispose the <see cref="ApiClient{T}"/> and <see cref="TcpClient"/>
+        /// </summary>
+        public async ValueTask DisposeAsync()
+        {
+            tcpClient?.Dispose();
+            await client.DisposeAsync();
         }
     }
 }
