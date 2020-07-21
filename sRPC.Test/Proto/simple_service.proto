@@ -1,0 +1,20 @@
+﻿syntax = "proto3";
+
+package srpc.test;
+
+option csharp_namespace = "sRPC.Test.Proto";
+
+service SimpleService {
+	rpc Sqrt(SqrtRequest)
+		returns (SqrtResponse);
+}
+
+message SqrtRequest {
+	// the input value
+	double value = 1;
+}
+
+message SqrtResponse {
+	// the result value
+	double value = 1;
+}

@@ -20,7 +20,7 @@ namespace sRPC.TCP
         /// <summary>
         /// The local <see cref="IPEndPoint"/>
         /// </summary>
-        public IPEndPoint EndPoint { get; }
+        public IPEndPoint EndPoint => (IPEndPoint)tcpListener.LocalEndpoint;
 
         /// <summary>
         /// The initializer that whould be used to initialize
@@ -44,14 +44,14 @@ namespace sRPC.TCP
         /// <param name="setupApi">the initializer for the api interface before the client is started</param>
         public TcpApiServer(IPEndPoint endPoint, Action<T> setupApi)
         {
-            EndPoint = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
+            _ = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
             apiServers = new ConcurrentDictionary<ApiServer<T>, TcpClient>();
             tcpListener = new TcpListener(endPoint);
             SetupApi = setupApi;
-            Listen();
+            _ = Listen();
         }
 
-        private async void Listen()
+        private async Task Listen()
         {
             tcpListener.Start();
             while (true)

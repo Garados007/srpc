@@ -41,6 +41,11 @@ namespace sRPC.Pipes
         public Action<T> SetupApi { get; }
 
         /// <summary>
+        /// A task that finishes when the first <see cref="Api"/> has been created.
+        /// </summary>
+        public Task WaitConnect { get; }
+
+        /// <summary>
         /// Create a <see cref="ApiClient{T}"/> wrapper for a <see cref="NamedPipeClientStream"/>.
         /// </summary>
         /// <param name="serverName">the server name. "." for the local computer</param>
@@ -62,10 +67,10 @@ namespace sRPC.Pipes
             PipeName = pipeName ?? throw new ArgumentNullException(nameof(pipeName));
             SetupApi = setupApi;
             cancellationToken = new CancellationTokenSource();
-            Connect();
+            WaitConnect = Connect();
         }
 
-        private async void Connect(ApiClient<T> oldApi = null)
+        private async Task Connect(ApiClient<T> oldApi = null)
         {
             pipe = new NamedPipeClientStream(ServerName, PipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
             await pipe.ConnectAsync(cancellationToken.Token);
@@ -83,7 +88,7 @@ namespace sRPC.Pipes
             if (api != client)
                 return;
             pipe.Dispose();
-            Connect((ApiClient<T>)api);
+            _ = Connect((ApiClient<T>)api);
         }
 
         /// <summary>

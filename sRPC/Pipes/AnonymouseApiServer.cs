@@ -26,12 +26,12 @@ namespace sRPC.Pipes
         /// <summary>
         /// The current <see cref="SafePipeHandle"/> of the input pipe.
         /// </summary>
-        public SafePipeHandle InputPipe => inputPipe.SafePipeHandle;
+        public SafePipeHandle InputPipe => inputPipe.ClientSafePipeHandle;
 
         /// <summary>
         /// The current <see cref="SafePipeHandle"/> of the output pipe.
         /// </summary>
-        public SafePipeHandle OutputPipe => outputPipe.SafePipeHandle;
+        public SafePipeHandle OutputPipe => outputPipe.ClientSafePipeHandle;
 
         /// <summary>
         /// Get the string representation of the input and output pipe handles.
@@ -53,8 +53,25 @@ namespace sRPC.Pipes
         /// </summary>
         public void DisposeLocalCopysOfPipeHandle()
         {
-            inputPipe.DisposeLocalCopyOfClientHandle();
-            outputPipe.DisposeLocalCopyOfClientHandle();
+            /* The code is commented because of two bugs.
+             *   inputPipe.DisposeLocalCopyOfClientHandle();
+             *     This will close the pipes itself and make them
+             *     unusable.
+             *   outputPipe.DisposeLocalCopyOfClientHandle();
+             *     This blocks the execution and never completes.
+             *     
+             * As of the official documentation this step is required
+             * to ensure there a no dupplicate pipe client handles and the
+             * server can notice the pipe closing.
+             * 
+             * https://docs.microsoft.com/en-us/dotnet/api/system.io.pipes.anonymouspipeserverstream?view=netcore-3.1
+             * 
+             * I will leave this commented - maybe there is
+             * a better solution
+             */
+
+            //inputPipe.DisposeLocalCopyOfClientHandle();
+            //outputPipe.DisposeLocalCopyOfClientHandle();
         }
 
         /// <summary>

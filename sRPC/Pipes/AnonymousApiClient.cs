@@ -53,7 +53,7 @@ namespace sRPC.Pipes
         /// </summary>
         /// <param name="inputPipeHandle">the input pipe handle</param>
         /// <param name="outputPipeHandle">the output pipe handle</param>
-        public AnonymousApiClient(SafePipeHandle inputPipeHandle, string outputPipeHandle)
+        public AnonymousApiClient(SafePipeHandle inputPipeHandle, SafePipeHandle outputPipeHandle)
             : this(inputPipeHandle, outputPipeHandle, null)
         {
         }
@@ -82,7 +82,7 @@ namespace sRPC.Pipes
         /// <param name="inputPipeHandle">the input pipe handle</param>
         /// <param name="outputPipeHandle">the output pipe handle</param>
         /// <param name="setupApi">the initializer for the api interface before the client is started</param>
-        public AnonymousApiClient(SafePipeHandle inputPipeHandle, string outputPipeHandle, Action<T> setupApi)
+        public AnonymousApiClient(SafePipeHandle inputPipeHandle, SafePipeHandle outputPipeHandle, Action<T> setupApi)
         {
             _ = inputPipeHandle ?? throw new ArgumentNullException(nameof(inputPipeHandle));
             _ = outputPipeHandle ?? throw new ArgumentNullException(nameof(outputPipeHandle));
@@ -90,6 +90,7 @@ namespace sRPC.Pipes
             SetupApi = setupApi;
             output = new AnonymousPipeClientStream(PipeDirection.Out, outputPipeHandle);
             client = new ApiClient<T>(input, output);
+            client.Disconnected += (_, __) => Disconnected?.Invoke();
             setupApi?.Invoke(client.Api);
             client.Start();
         }

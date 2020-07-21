@@ -4,7 +4,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ExampleProject
+namespace sRPC.Utils
 {
     /// <summary>
     /// this streams blocks the read call until some data was written to.

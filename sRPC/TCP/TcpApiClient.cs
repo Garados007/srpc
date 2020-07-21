@@ -35,6 +35,11 @@ namespace sRPC.TCP
         public Action<T> SetupApi { get; }
 
         /// <summary>
+        /// A task that finishes when the first <see cref="Api"/> has been created.
+        /// </summary>
+        public Task WaitConnect { get; }
+
+        /// <summary>
         /// Create a <see cref="ApiClient{T}"/> wrapper for a <see cref="TcpClient"/>.
         /// </summary>
         /// <param name="endPoint">the <see cref="IPEndPoint"/> of the server</param>
@@ -54,10 +59,10 @@ namespace sRPC.TCP
         {
             EndPoint = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
             SetupApi = setupApi;
-            Connect();
+            WaitConnect = Connect();
         }
 
-        private async void Connect(ApiClient<T> oldApi = null)
+        private async Task Connect(ApiClient<T> oldApi = null)
         {
             tcpClient = new TcpClient();
             await tcpClient.ConnectAsync(EndPoint.Address, EndPoint.Port);
@@ -74,7 +79,7 @@ namespace sRPC.TCP
             if (api != client)
                 return;
             tcpClient.Dispose();
-            Connect((ApiClient<T>)api);
+            _ = Connect((ApiClient<T>)api);
         }
 
         /// <summary>

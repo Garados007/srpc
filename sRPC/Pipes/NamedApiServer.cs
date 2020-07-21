@@ -56,10 +56,10 @@ namespace sRPC.Pipes
             PipeName = pipeName ?? throw new ArgumentNullException(nameof(pipeName));
             SetupApi = setupApi;
             cancellationToken = new CancellationTokenSource();
-            Connect();
+            _ = Connect();
         }
 
-        private async void Connect()
+        private async Task Connect()
         {
             pipe = new NamedPipeServerStream(
                 PipeName, 
@@ -82,7 +82,7 @@ namespace sRPC.Pipes
                 return;
             server.Dispose(); // the messages will be discarded, the client has to send the requests again
             pipe.Dispose();
-            Connect();
+            _ = Connect();
         }
 
         /// <summary>
