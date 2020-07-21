@@ -28,13 +28,31 @@ namespace sRPC.TCP
         public IPEndPoint EndPoint { get; }
 
         /// <summary>
+        /// The initializer that whould be used to initialize
+        /// the <typeparamref name="T"/> Api.
+        /// </summary>
+        public Action<T> SetupApi { get; }
+
+        /// <summary>
         /// Create a <see cref="ApiClient{T}"/> wrapper for a <see cref="TcpClient"/>.
         /// </summary>
         /// <param name="endPoint">the <see cref="IPEndPoint"/> of the server</param>
         /// <exception cref="ArgumentNullException" />
         public TcpApiClient(IPEndPoint endPoint)
+            : this(endPoint, null)
+        {
+        }
+
+        /// <summary>
+        /// Create a <see cref="ApiClient{T}"/> wrapper for a <see cref="TcpClient"/>.
+        /// </summary>
+        /// <param name="endPoint">the <see cref="IPEndPoint"/> of the server</param>
+        /// <param name="setupApi">the initializer for the api interface before the client is started</param>
+        /// <exception cref="ArgumentNullException" />
+        public TcpApiClient(IPEndPoint endPoint, Action<T> setupApi)
         {
             EndPoint = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
+            SetupApi = setupApi;
             Connect();
         }
 
@@ -45,6 +63,8 @@ namespace sRPC.TCP
             var stream = tcpClient.GetStream();
             client = new ApiClient<T>(stream, stream, oldApi);
             client.Disconnected += Client_Disconnected;
+            if (oldApi == null)
+                SetupApi?.Invoke(client.Api);
             client.Start();
         }
 

@@ -32,18 +32,19 @@ namespace sRPC.Pipes
         public SafePipeHandle OutputPipe => output.SafePipeHandle;
 
         /// <summary>
+        /// The initializer that whould be used to initialize
+        /// the <typeparamref name="T"/> Api.
+        /// </summary>
+        public Action<T> SetupApi { get; }
+
+        /// <summary>
         /// Create a <see cref="ApiClient{T}"/> wrapper for <see cref="AnonymousPipeClientStream"/>.
         /// </summary>
         /// <param name="inputPipeHandle">the input pipe handle</param>
         /// <param name="outputPipeHandle">the output pipe handle</param>
         public AnonymousApiClient(string inputPipeHandle, string outputPipeHandle)
+            : this(inputPipeHandle, outputPipeHandle, null)
         {
-            _ = inputPipeHandle ?? throw new ArgumentNullException(nameof(inputPipeHandle));
-            _ = outputPipeHandle ?? throw new ArgumentNullException(nameof(outputPipeHandle));
-            input = new AnonymousPipeClientStream(PipeDirection.In, inputPipeHandle);
-            output = new AnonymousPipeClientStream(PipeDirection.Out, outputPipeHandle);
-            client = new ApiClient<T>(input, output);
-            client.Start();
         }
 
         /// <summary>
@@ -52,12 +53,43 @@ namespace sRPC.Pipes
         /// <param name="inputPipeHandle">the input pipe handle</param>
         /// <param name="outputPipeHandle">the output pipe handle</param>
         public AnonymousApiClient(SafePipeHandle inputPipeHandle, string outputPipeHandle)
+            : this(inputPipeHandle, outputPipeHandle, null)
+        {
+        }
+
+        /// <summary>
+        /// Create a <see cref="ApiClient{T}"/> wrapper for <see cref="AnonymousPipeClientStream"/>.
+        /// </summary>
+        /// <param name="inputPipeHandle">the input pipe handle</param>
+        /// <param name="outputPipeHandle">the output pipe handle</param>
+        /// <param name="setupApi">the initializer for the api interface before the client is started</param>
+        public AnonymousApiClient(string inputPipeHandle, string outputPipeHandle, Action<T> setupApi)
         {
             _ = inputPipeHandle ?? throw new ArgumentNullException(nameof(inputPipeHandle));
             _ = outputPipeHandle ?? throw new ArgumentNullException(nameof(outputPipeHandle));
             input = new AnonymousPipeClientStream(PipeDirection.In, inputPipeHandle);
             output = new AnonymousPipeClientStream(PipeDirection.Out, outputPipeHandle);
+            SetupApi = setupApi;
             client = new ApiClient<T>(input, output);
+            setupApi?.Invoke(client.Api);
+            client.Start();
+        }
+
+        /// <summary>
+        /// Create a <see cref="ApiClient{T}"/> wrapper for <see cref="AnonymousPipeClientStream"/>.
+        /// </summary>
+        /// <param name="inputPipeHandle">the input pipe handle</param>
+        /// <param name="outputPipeHandle">the output pipe handle</param>
+        /// <param name="setupApi">the initializer for the api interface before the client is started</param>
+        public AnonymousApiClient(SafePipeHandle inputPipeHandle, string outputPipeHandle, Action<T> setupApi)
+        {
+            _ = inputPipeHandle ?? throw new ArgumentNullException(nameof(inputPipeHandle));
+            _ = outputPipeHandle ?? throw new ArgumentNullException(nameof(outputPipeHandle));
+            input = new AnonymousPipeClientStream(PipeDirection.In, inputPipeHandle);
+            SetupApi = setupApi;
+            output = new AnonymousPipeClientStream(PipeDirection.Out, outputPipeHandle);
+            client = new ApiClient<T>(input, output);
+            setupApi?.Invoke(client.Api);
             client.Start();
         }
 

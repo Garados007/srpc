@@ -22,14 +22,31 @@ namespace sRPC.TCP
         public IPEndPoint EndPoint { get; }
 
         /// <summary>
+        /// The initializer that whould be used to initialize
+        /// the <typeparamref name="T"/> Api.
+        /// </summary>
+        public Action<T> SetupApi { get; }
+
+        /// <summary>
         /// Create a <see cref="ApiServer{T}"/> wrapper for a <see cref="TcpListener"/>.
         /// </summary>
         /// <param name="endPoint">the local <see cref="IPEndPoint"/></param>
         public TcpApiServer(IPEndPoint endPoint)
+            : this(endPoint, null)
+        {
+        }
+
+        /// <summary>
+        /// Create a <see cref="ApiServer{T}"/> wrapper for a <see cref="TcpListener"/>.
+        /// </summary>
+        /// <param name="endPoint">the local <see cref="IPEndPoint"/></param>
+        /// <param name="setupApi">the initializer for the api interface before the client is started</param>
+        public TcpApiServer(IPEndPoint endPoint, Action<T> setupApi)
         {
             EndPoint = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
             apiServers = new ConcurrentDictionary<ApiServer<T>, TcpClient>();
             tcpListener = new TcpListener(endPoint);
+            SetupApi = setupApi;
             Listen();
         }
 
@@ -55,6 +72,8 @@ namespace sRPC.TCP
                         client.Dispose();
                     api.Dispose();
                 };
+                SetupApi?.Invoke(server.Api);
+                server.Start();
             }
         }
 

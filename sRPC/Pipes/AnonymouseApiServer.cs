@@ -57,14 +57,31 @@ namespace sRPC.Pipes
         }
 
         /// <summary>
+        /// The initializer that whould be used to initialize
+        /// the <typeparamref name="T"/> Api.
+        /// </summary>
+        public Action<T> SetupApi { get; }
+
+        /// <summary>
         /// Create a new <see cref="ApiServer{T}"/> wrapper for <see cref="AnonymousPipeServerStream"/>.
         /// </summary>
         public AnonymouseApiServer()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Create a new <see cref="ApiServer{T}"/> wrapper for <see cref="AnonymousPipeServerStream"/>.
+        /// </summary>
+        /// <param name="setupApi">the initializer for the api interface before the client is started</param>
+        public AnonymouseApiServer(Action<T> setupApi)
         {
             inputPipe = new AnonymousPipeServerStream(PipeDirection.In, HandleInheritability.Inheritable);
             outputPipe = new AnonymousPipeServerStream(PipeDirection.Out, HandleInheritability.Inheritable);
+            SetupApi = setupApi;
             apiServer = new ApiServer<T>(inputPipe, outputPipe);
             apiServer.Disconnected += (_, __) => Disconnected?.Invoke();
+            setupApi?.Invoke(apiServer.Api);
             apiServer.Start();
         }
 
