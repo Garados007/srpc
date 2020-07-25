@@ -77,16 +77,24 @@
       
     </PropertyGroup>
 
-    <Error Condition=" '$(DisableProtobufDesignTimeBuild)' != 'true' and '$(Protobuf_ProtocFullPath)' == ''
-                        and '$(Protobuf_SrpcFullPath)' == ''
-                        and ( '$(Protobuf_ToolsOs)' == '' or '$(Protobuf_ToolsCpu)' == '' ) "
-      Text="sRPC.Tools cannot determine host OS and CPU.&#10;Use environment variables PROTOBUF_TOOLS_OS={linux|macosx|windows} and PROTOBUF_TOOLS_CPU={x86|x64} to try the closest match to your system.&#10;You may also set PROTOBUF_PROTOC to specify full path to the host-provided compiler (v3.5+ is required)." />
+    <Error Condition=" '$(DisableProtobufDesignTimeBuild)' != 'true' and '$(Protobuf_ToolsOs)' == '' "
+      Text="sRPC.Tools cannot determine host os.&#10;Use environment variable PROTOBUF_TOOLS_OS={linux|macosx|windows} to try the closest match to your system." />
+    <Error Condition=" '$(DisableProtobufDesignTimeBuild)' != 'true' and '$(Protobuf_ToolsCpu)' == '' "
+      Text="sRPC.Tools cannot determine host CPU.&#10;Use environment variable PROTOBUF_TOOLS_CPU={x86|x64} to try the closest match to your system." />
+    <Error Condition=" '$(DisableProtobufDesignTimeBuild)' != 'true' and '$(Protobuf_ProtocFullPath)' == '' "
+      Text="sRPC.Tools cannot determine Protoc path.&#10;Use environment variable PROTOBUF_PROTOC to specify full path to the host-provided compiler (v3.5+ is required)." />
+    <Error Condition=" '$(DisableProtobufDesignTimeBuild)' != 'true' and '$(Protobuf_SrpcFullPath)' == '' "
+      Text="sRPC.Tools cannot determine sRPGgen path.&#10;Use environment variable PROTOBUF_SRPC to specify full path to the host-provided compiler." />
   </Target>
 
   <Target Name="srpc_Generate"
           Condition=" '@(Protobuf)' != '' "
           DependsOnTargets=" Protobuf_ResolvePlatform ">
     <Message Text="Generate SRPC" />
+    <Error Condition=" '$(Protobuf_SrpcFullPath)' == '' "
+           Text="Required Protobuf_SrpcFullPath is not set. Cannot call ProtoGenerate" />
+    <Error Condition=" '$(Protobuf_ProtocFullPath)' == '' "
+           Text="Required Protobuf_ProtocFullPath is not set. Cannot call ProtoGenerate" />
     <ProtoGenerate
       Protobuf="@(Protobuf)"
       SrpcGenPath="$(Protobuf_SrpcFullPath)"

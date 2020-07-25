@@ -15,7 +15,7 @@
          packages at all. The test projects link these directly.
     -->
     <Use_Srpc_Version>1.3.2</Use_Srpc_Version>
-    <Use_Srpc_Tools_Version>1.3.16</Use_Srpc_Tools_Version>
+    <Use_Srpc_Tools_Version>1.3.17</Use_Srpc_Tools_Version>
   </PropertyGroup>
   
 </Project>
