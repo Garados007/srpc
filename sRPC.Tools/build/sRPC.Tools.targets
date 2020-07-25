@@ -72,7 +72,7 @@
            >$(Protobuf_PackagedToolsPath)/$(Protobuf_ToolsOs)_$(Protobuf_ToolsCpu)/protoc</Protobuf_ProtocFullPath>
       <Protobuf_SrpcFullPath Condition=" '$(Protobuf_SrpcFullPath)' == '' and '$(Protobuf_ToolsOs)' == 'windows' "
            >$(Protobuf_PackagedToolsPath)/sRPCgen.exe</Protobuf_SrpcFullPath>
-      <Protobuf_SrpcFullPath Condition=" '(Protobuf_SrpcFullPath)' == '' "
+      <Protobuf_SrpcFullPath Condition=" '$(Protobuf_SrpcFullPath)' == '' "
            >$(Protobuf_PackagedToolsPath)/sRPCgen</Protobuf_SrpcFullPath>
       
     </PropertyGroup>
