@@ -16,6 +16,9 @@ jobs:
     - name: Init git submodules
       run: git submodule init && git submodule update
       
+    - name: Download protoc Binaries
+      run: chmod +x sRPC.Tools/fetch-protoc.sh; sRPC.Tools/fetch-protoc.sh
+      
     - name: Install Protoc
       uses: arduino/setup-protoc@master
     - name: Setup .NET Core
