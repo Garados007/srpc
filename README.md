@@ -10,47 +10,31 @@ This will add sRPC to your project so you can use this protocoll to create a RPC
 
 ### Prerequisites
 
-You need to have `protoc` installed on your system and added to your global PATH. This step depends on your system. For more information see at [https://github.com/protocolbuffers/protobuf/releases](https://github.com/protocolbuffers/protobuf/releases).
+This package includes the latest Windows, Linux and MacOSX builds for [protoc](https://github.com/protocolbuffers/protobuf/releases).
+
+In some cases it is recommended to install [protoc](https://github.com/protocolbuffers/protobuf/releases) on your own and add this to your global PATH.
 
 ### Installing
 
-First you need to clone this project:
-
-```sh
-git clone https://github.com/Garados007/srpc.git
-```
-
-Now you need to build the sRPC project. For this you need to change into the directory where `srpc.sln` is located and call this:
-
-```sh
-dotnet build --configuration Release
-```
-
-After that you need to add a dependency to your project. For this you need to open your `.csproj` file and add this:
-
-```xml
-<ItemGroup>
-  <ProjectReference Include="path/to/sRPC.csproj" />
-</ItemGroup>
-```
-
-Now you need to add a build step that automaticaly generates the C# files for your .proto files. For this add this snippet to your `.csproj` file:
-
-```xml
-<Target Namwe="BuildProto" BeforeTargets="PreBuildEvent">
-  <Exec Command="path/to/sRPCgen --search-dir=$(ProjectDir) --output-dir=$(ProjectDir) --namespace-base=$(TargetName) --file-extension=.service.cs --build-protoc --proto-import=$(ProjectDir) --proto-extension=.g.cs" />
-</Target>
-```
-
-For more information about the sRPCgen arguments: [sRPCgen documentation](https://github.com/Garados007/srpc/wiki/sRPCgen)
-
-Finally you need to add the NuGet Package `Google.Protobuf` to your project:
+Add the `Google.Protobuf` package. This adds the managed support for Protocol Buffer itself:
 
 ```sh
 dotnet add package Google.Protobuf
 ```
 
-Now your project is fully configured to use sRPC.
+Then add the `sRPC` package. This adds the managed support for sRPC (sRPC remote procedure call):
+
+```sh
+dotnet add package sRPC
+```
+
+Now you need to add the `sRPC.Tools` package. This is a Protobuf and sRPC compiler. It also includes the system integration for your project:
+
+```sh
+dotnet add package sRPC.Tools
+```
+
+After that your project is fully configured to use sRPC.
 
 ### Create and use API
 
@@ -61,6 +45,15 @@ service SimpleService {
 	rpc GetRandomNumber(RandonNumberRequest)
 		returns (RandomNumberResponse);
 }
+```
+
+Now you need to set the `Build Action` in your File Properties to `Protobuf`. If you don't use Visual Studio you can edit your `.csproj` file and add this:
+
+```xml
+<ItemGroup>
+  <None Remove="your\file.proto" />
+  <Protobuf Include="your\file.proto" />
+</ItemGroup>
 ```
 
 After that you need to build your project once:
@@ -141,3 +134,4 @@ This project is licensed under the LGPL-2.1 License  - see the [LICENSE.md](LICE
 - StackOverflow for the help
 - my friends for the inspiration
 - [PurpleBooth](https://github.com/PurpleBooth) for her [README.md](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2) template
+- [gRPC](https://github.com/grpc/grpc/tree/master/src/csharp/Grpc.Tools) for their code for `gRPC.Tools`. This helped me a lot to create my own implementation of `sRPC.Tools`.
