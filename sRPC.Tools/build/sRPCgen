@@ -1,0 +1,4 @@
+﻿#!/bin/sh
+script=$(readlink -f "$0")
+basedir=$(dirname "${script}")
+dotnet "${basedir}/sRPCgen.dll" "$@"

@@ -18,6 +18,7 @@ namespace sRPCgen
         static string searchDir;
         static readonly List<string> protoImports = new List<string>();
         static string protoExtension;
+        static string errorFormat;
 
         static void Main(string[] args)
         {
@@ -31,6 +32,7 @@ namespace sRPCgen
             namespaceBase ??= "";
             fileExtension ??= ".g.cs";
             protoExtension ??= ".cs";
+            errorFormat ??= "default";
 
             if (verbose)
             {
@@ -45,6 +47,34 @@ namespace sRPCgen
 
             if (verbose)
                 Console.WriteLine("Finish.");
+        }
+
+        static void WriteWarning(string text, string errorKind = null, string code = null, string file = null)
+        {
+            file ??= Program.file ?? "sRPC";
+            switch (errorFormat)
+            {
+                case "default":
+                    Console.WriteLine(text);
+                    break;
+                case "msvs":
+                    Console.Error.WriteLine($"{file} : {errorKind ?? ""} warning {code ?? ""}: {text}");
+                    break;
+            }
+        }
+
+        static void WriteError(string text, string errorKind = null, string code = null, string file = null)
+        {
+            file ??= Program.file ?? "sRPC";
+            switch (errorFormat)
+            {
+                case "default":
+                    Console.Error.WriteLine(text);
+                    break;
+                case "msvs":
+                    Console.Error.WriteLine($"{file} : {errorKind ?? ""} error {code ?? ""}: {text}");
+                    break;
+            }
         }
 
         static void WorkAtDir(string dir)
@@ -65,6 +95,7 @@ namespace sRPCgen
                     Arguments = $"{string.Join(" ", protoImports.Select(x => $"-I{x}"))} " +
                         $"-o{file}.bin --csharp_out={outputDir} " +
                         $"--csharp_opt=base_namespace={namespaceBase},file_extension={protoExtension} " +
+                        (errorFormat != "default" ? $"--error_format={errorFormat} " : "") +
                         $"--include_imports {file}",
                     CreateNoWindow = true,
                     RedirectStandardError = true,
@@ -87,7 +118,7 @@ namespace sRPCgen
                 process.WaitForExit();
                 if (process.ExitCode != 0)
                 {
-                    Console.Error.WriteLine($"protoc exit with code {process.ExitCode} with {file}");
+                    WriteError(text: $"protoc exit with code {process.ExitCode} with {file}");
                     return;
                 }
                 var bin = $"{file}.bin";
@@ -130,7 +161,8 @@ namespace sRPCgen
             if (targetName.StartsWith(namespaceBase))
                 targetName = targetName.Substring(namespaceBase.Length);
             else
-                Console.WriteLine($"the c# namespace {targetName} has not the base {namespaceBase}. The namespace will not be shortened.");
+                WriteWarning(text: $"the c# namespace {targetName} has not the base {namespaceBase}. The namespace will not be shortened.",
+                    file: filedesc.Name);
             if (targetName != null)
                 targetName += '.';
             targetName = (targetName + service.Name).Replace('.', '/');
@@ -144,7 +176,8 @@ namespace sRPCgen
                 try { fi.Directory.Create(); }
                 catch (IOException e)
                 {
-                    Console.Error.WriteLine($"Couldn't create directory for output file {targetName}: {e}");
+                    WriteError(text: $"Couldn't create directory for output file {targetName}: {e}",
+                        file: filedesc.Name);
                     return;
                 }
             using var writer = new StreamWriter(new FileStream(targetName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite));
@@ -250,6 +283,21 @@ namespace sRPCgen
                                 return false;
                             }
                             break;
+                        case "--error-format=":
+                            if (errorFormat != null)
+                            {
+                                Console.WriteLine("--error-format is already defined");
+                                return false;
+                            }
+                            switch (arg.Substring(ind + 1))
+                            {
+                                case "msvs": errorFormat = "msvs"; break;
+                                case "default": errorFormat = "default"; break;
+                                default: 
+                                    Console.WriteLine($"unknown error format {arg.Substring(ind + 1)}"); 
+                                    return false;
+                            }
+                            break;
                         case "-h":
                         case "--help":
                             return false;
@@ -345,6 +393,10 @@ the options given:
                             --csharp_opt argument to the protoc call.
                             EXT is the extension the C# file generated by
                             protoc should get. Default is .cs
+  --error-format=FORMAT     The format to print the errors. FORMAT may be
+                            'default' or 'msvs' (Microsoft Visual Studio 
+                            format). The format parameter is also set for
+                            protoc.
   -v, --verbose             Print more information about the build process.
   -h, --help                Print this help.
 ");
@@ -422,12 +474,14 @@ the options given:
                     .FirstOrDefault();
                 if (requestType is null)
                 {
-                    Console.Error.WriteLine($"c# type for protobuf message {method.InputType} not found");
+                    WriteError(text: $"c# type for protobuf message {method.InputType} not found",
+                        file: file.Name);
                     return;
                 }
                 if (responseType is null)
                 {
-                    Console.Error.WriteLine($"c# type for protobuf message {method.OutputType} not found");
+                    WriteError(text: $"c# type for protobuf message {method.OutputType} not found",
+                        file: file.Name);
                     return;
                 }
                 writer.WriteLines(
@@ -467,7 +521,8 @@ the options given:
                     .FirstOrDefault();
                 if (requestType is null)
                 {
-                    Console.Error.WriteLine($"c# type for protobuf message {method.InputType} not found");
+                    WriteError(text: $"c# type for protobuf message {method.InputType} not found",
+                        file: file.Name);
                     return;
                 }
                 writer.WriteLines(
@@ -496,12 +551,14 @@ the options given:
                     .FirstOrDefault();
                 if (requestType is null)
                 {
-                    Console.Error.WriteLine($"c# type for protobuf message {method.InputType} not found");
+                    WriteError(text: $"c# type for protobuf message {method.InputType} not found",
+                        file: file.Name);
                     return;
                 }
                 if (responseType is null)
                 {
-                    Console.Error.WriteLine($"c# type for protobuf message {method.OutputType} not found");
+                    WriteError(text: $"c# type for protobuf message {method.OutputType} not found",
+                        file: file.Name);
                     return;
                 }
                 writer.WriteLines(

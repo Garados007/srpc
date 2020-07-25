@@ -1,25 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="..\..\sRPC\sRPC.csproj.include" />
+
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <AssemblyVersion>1.3.2.0</AssemblyVersion>
-    <FileVersion>1.3.2.0</FileVersion>
-    <Version>1.3.2</Version>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="empty_service.proto" />
+    <None Remove="simple_service.proto" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.12.3" />
     <PackageReference Include="Google.Protobuf.Tools" Version="3.12.3" />
-    <PackageReference Include="sRPC" Version="1.3.2" />
+    <PackageReference Include="sRPC" Version="$(Use_Srpc_Version)" />
+    <PackageReference Include="sRPC.Tools" Version="$(Use_Srpc_Tools_Version)">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
-  <Target Name="BuildProto" BeforeTargets="PreBuildEvent">
-    <!--copy sRPCgen-->
-    <Exec Command="dotnet build -v q --configuration Release --nologo $(SolutionDir)sRPCgen/sRPCgen.csproj" />
-    <Exec Command="cp -f $(SolutionDir)sRPCgen/bin/Release/netcoreapp3.1/sRPCgen* $(TargetDir)/" />
-    <!--build protos-->
-    <Exec Command="$(TargetDir)sRPCgen --search-dir=$(ProjectDir) --output-dir=$(ProjectDir) --namespace-base=ExampleProject --file-extension=.service.cs --build-protoc --proto-import=$(ProjectDir) --proto-extension=.g.cs" />
-  </Target>
+  <ItemGroup>
+    <Protobuf Include="empty_service.proto" />
+    <Protobuf Include="simple_service.proto" />
+  </ItemGroup>
 
 </Project>

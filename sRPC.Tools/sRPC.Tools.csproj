@@ -1,0 +1,107 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\sRPC\sRPC.csproj.include"/>
+
+  <PropertyGroup>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+  </PropertyGroup>
+  
+  <!--specific definition-->
+  
+  <PropertyGroup>
+    <AssemblyName>sRPC.Tools</AssemblyName>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Asset root folders.">
+    <Assets_ProtoInclude>../lib/protobuf/src/google/protobuf</Assets_ProtoInclude>
+    <Assets_ProtoCompiler>$(ProjectDir)</Assets_ProtoCompiler>
+    <Assets_SrpcCompiler>../sRPCgen/bin/Release/netcoreapp3.1/</Assets_SrpcCompiler>
+  </PropertyGroup>
+
+  <PropertyGroup Label="NuGet package definition">
+    <BuildOutputTargetFolder>build</BuildOutputTargetFolder>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <Authors>garados007</Authors>
+    <Company>Max Brauer</Company>
+    <PackageDescription>sRPC and Protocol Buffer compiler for managed C# projects.
+    
+Add this package to a project that contains .proto files to be compiled to code.
+This contains the compilers, include files and project system integration that
+is necessary to build on Windows, Linux and MacOS.
+It is recommended to install the NuGet packages sRPC and Google.Protobuf.
+    </PackageDescription>
+    <PackageLicenseExpression>LGPL-2.1-or-later</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/garados007/srpc</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup Label="NuGet package assets">
+    <None Pack="true" PackagePath="build\" Include="build\**\*.xml; build\**\*.props; build\**\*.targets;" />
+
+    <_ProtoAssetName Include="any;api;descriptor;duration;empty;field_mask;source_context;struct;timestamp;type;wrappers" />
+    <_Asset PackagePath="build/native/include/google/protobuf/" 
+            Include="@(_ProtoAssetName->'$(Assets_ProtoInclude)\%(Identity).proto')" />
+
+    <!--protoc Assets-->
+    <_Asset PackagePath="tools/windows_x86/" Include="$(Assets_ProtoCompiler)protoc-win32/bin/protoc.exe" />
+    <_Asset PackagePath="tools/windows_x64/" Include="$(Assets_ProtoCompiler)protoc-win64/bin/protoc.exe" />
+    <_Asset PackagePath="tools/linux_x86/" Include="$(Assets_ProtoCompiler)protoc-linux-x86_32/bin/protoc" />
+    <_Asset PackagePath="tools/linux_x64/" Include="$(Assets_ProtoCompiler)protoc-linux-x86_64/bin/protoc" />
+    <_Asset PackagePath="tools/macosx_x86/" Include="$(Assets_ProtoCompiler)protoc-osx-x86_64/bin/protoc" />
+    <_Asset PackagePath="tools/macosx_x64/" Include="$(Assets_ProtoCompiler)protoc-osx-x86_64/bin/protoc" />
+
+    <!--sRPCgen Assets-->
+    <_GlobalBuildAssetName Include="Google.Protobuf.dll;sRPCgen.deps.json;sRPCgen.dll;sRPCgen.pdb;sRPCgen.runtimeconfig.json" />
+    <!-- win-x86 -->
+    <_Asset PackagePath="tools/windows_x86"
+            Include="@(_GlobalBuildAssetName->'$(Assets_SrpcCompiler)\win-x86\publish\%(Identity)')" />
+    <_Asset PackagePath="tools/windows_x86" Include="$(Assets_SrpcCompiler)\win-x86\publish\sRPCgen.exe" />
+    <!-- win-x64 -->
+    <_Asset PackagePath="tools/windows_x64"
+            Include="@(_GlobalBuildAssetName->'$(Assets_SrpcCompiler)\win-x64\publish\%(Identity)')" />
+    <_Asset PackagePath="tools/windows_x64" Include="$(Assets_SrpcCompiler)\win-x64\publish\sRPCgen.exe" />
+    <!-- no builder for linux-x86 -->
+    <_Asset PackagePath="tools/linux_x86"
+            Include="@(_GlobalBuildAssetName->'$(Assets_SrpcCompiler)\linux-x64\publish\%(Identity)')" />
+    <_Asset PackagePath="tools/linux_x86" Include="build\sRPCgen" />
+    <!-- linux-x64 -->
+    <_Asset PackagePath="tools/linux_x64"
+            Include="@(_GlobalBuildAssetName->'$(Assets_SrpcCompiler)\linux-x64\publish\%(Identity)')" />
+    <_Asset PackagePath="tools/linux_x64" Include="$(Assets_SrpcCompiler)\linux-x64\publish\sRPCgen" />
+    <!-- no builder for osx-x86 -->
+    <_Asset PackagePath="tools/osx_x86"
+            Include="@(_GlobalBuildAssetName->'$(Assets_SrpcCompiler)\osx-x64\publish\%(Identity)')" />
+    <_Asset PackagePath="tools/osx_x86" Include="build\sRPCgen" />
+    <!-- osx-x64 -->
+    <_Asset PackagePath="tools/osx_x64"
+            Include="@(_GlobalBuildAssetName->'$(Assets_SrpcCompiler)\osx-x64\publish\%(Identity)')" />
+    <_Asset PackagePath="tools/osx_x64" Include="$(Assets_SrpcCompiler)\osx-x64\publish\sRPCgen" />
+
+    <None Include="@(_Asset)" Pack="true" Visible="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build.Framework; Microsoft.Build.Utilities.Core" Version="15.6.*" />
+    <PackageReference Update="@(PackageReference)" PrivateAssets="All" />
+  </ItemGroup>
+
+  <Target Name="BuildDeps" BeforeTargets="PreBuildEvent">
+    <!--build sRPCgen-->
+    <Exec Command="dotnet publish -v q -c Release --nologo --self-contained false -r linux-x64 ../sRPCgen/sRPCgen.csproj" />
+    <Exec Command="dotnet publish -v q -c Release --nologo --self-contained false -r osx-x64 ../sRPCgen/sRPCgen.csproj" />
+    <Exec Command="dotnet publish -v q -c Release --nologo --self-contained false -r win-x86 ../sRPCgen/sRPCgen.csproj" />
+    <Exec Command="dotnet publish -v q -c Release --nologo --self-contained false -r win-x64 ../sRPCgen/sRPCgen.csproj" />
+    
+  </Target>
+  
+</Project>
