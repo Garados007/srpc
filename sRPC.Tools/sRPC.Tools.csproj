@@ -32,8 +32,16 @@
     <BuildOutputTargetFolder>build</BuildOutputTargetFolder>
     <DevelopmentDependency>true</DevelopmentDependency>
     <NoPackageAnalysis>true</NoPackageAnalysis>
-    <PackageId>sRPC.Tools</PackageId>
-    <Authors>Max Brauer</Authors>
+    <Authors>garados007</Authors>
+    <Company>Max Brauer</Company>
+    <PackageDescription>sRPC and Protocol Buffer compiler for managed C# projects.
+    
+Add this package to a project that contains .proto files to be compiled to code.
+This contains the compilers, include files and project system integration that
+is necessary to build on Windows, Linux and MacOS.
+It is recommended to install the NuGet packages sRPC and Google.Protobuf.
+    </PackageDescription>
+    <PackageLicenseExpression>LGPL-2.1-or-later</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/garados007/srpc</PackageProjectUrl>
   </PropertyGroup>
 
