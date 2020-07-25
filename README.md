@@ -1,6 +1,6 @@
 # sRPC
 
-![.NET Core](https://github.com/Garados007/srpc/workflows/.NET%20Core/badge.svg?branch=master) ![NuGet Publish](https://github.com/Garados007/srpc/workflows/NuGet%20Publish/badge.svg)
+[![.NET Core](https://github.com/Garados007/srpc/workflows/.NET%20Core/badge.svg?branch=master)](https://github.com/Garados007/srpc/actions?query=workflow%3A%22.NET+Core%22) [![NuGet Publish](https://github.com/Garados007/srpc/workflows/NuGet%20Publish/badge.svg)](https://www.nuget.org/packages?q=Garados007+sRPC) [![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL%20v2.1-blue.svg)](https://github.com/Garados007/srpc/blob/master/LICENSE) [![Current Version](https://img.shields.io/github/tag/garados007/srpc.svg?label=release)](https://github.com/Garados007/srpc/releases) ![Top Language](https://img.shields.io/github/languages/top/garados007/srpc.svg)
 
 sRPC is an async ProtoBuf service interface that sends its messages directly (binary) on .NET Streams. This can be used to call rpc proto services directly with TCP Sockets or Names Pipes.
 
