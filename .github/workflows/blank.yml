@@ -22,7 +22,7 @@ jobs:
     - name: Install dependencies
       run: dotnet restore
       
-    - name: Publish NuGet
+    - name: Publish sRPC NuGet
       uses: brandedoutcast/publish-nuget@v2.5.5
       with:
         # Filepath of the project to be packaged, relative to root of repository
@@ -31,3 +31,18 @@ jobs:
         PACKAGE_NAME: sRPC
         # API key to authenticate with NuGet server
         NUGET_KEY: ${{ secrets.NUGET_PUSH_KEY }}
+        # Filepath with version info, relative to root of repository & defaults to PROJECT_FILE_PATH:
+        VERSION_FILE_PATH: sRPC/sRPC.csproj.include
+
+    - name: Publish sRPC.Tools NuGet
+      uses: brandedoutcast/publish-nuget@v2.5.5
+      with:
+        # Filepath of the project to be packaged, relative to root of repository
+        PROJECT_FILE_PATH: sRPC.Tools/sRPC.Tools.csproj
+        # NuGet package id, used for version detection & defaults to project name
+        PACKAGE_NAME: sRPC.Tools
+        # API key to authenticate with NuGet server
+        NUGET_KEY: ${{ secrets.NUGET_PUSH_KEY }}
+        # Filepath with version info, relative to root of repository & defaults to PROJECT_FILE_PATH:
+        VERSION_FILE_PATH: sRPC/sRPC.csproj.include
+        
