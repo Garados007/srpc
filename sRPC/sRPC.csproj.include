@@ -1,0 +1,10 @@
+﻿<!-- Common shared definitions by all .csproj files -->
+<Project>
+  
+  <PropertyGroup>
+    <Version>1.3.12</Version>
+    <AssemblyVersion>$(Version).0</AssemblyVersion>
+    <FileVersion>$(Version).0</FileVersion>
+  </PropertyGroup>
+  
+</Project>

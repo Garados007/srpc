@@ -14,7 +14,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleProject", "example\E
 		{E9EE5FF4-158D-47D5-863F-F11BBC6C7519} = {E9EE5FF4-158D-47D5-863F-F11BBC6C7519}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sRPC.Test", "sRPC.Test\sRPC.Test.csproj", "{4956CEF2-08D5-4769-AFA9-4D0341228AB8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sRPC.Test", "sRPC.Test\sRPC.Test.csproj", "{4956CEF2-08D5-4769-AFA9-4D0341228AB8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sRPC.Tools", "sRPC.Tools\sRPC.Tools.csproj", "{ED59426F-8EBF-4F61-B0CC-8136694FE644}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +40,10 @@ Global
 		{4956CEF2-08D5-4769-AFA9-4D0341228AB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4956CEF2-08D5-4769-AFA9-4D0341228AB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4956CEF2-08D5-4769-AFA9-4D0341228AB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED59426F-8EBF-4F61-B0CC-8136694FE644}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED59426F-8EBF-4F61-B0CC-8136694FE644}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED59426F-8EBF-4F61-B0CC-8136694FE644}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED59426F-8EBF-4F61-B0CC-8136694FE644}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

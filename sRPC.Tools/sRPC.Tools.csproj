@@ -1,0 +1,75 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\sRPC\sRPC.csproj.include"/>
+
+  <PropertyGroup>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+  </PropertyGroup>
+  
+  <!--specific definition-->
+  
+  <PropertyGroup>
+    <AssemblyName>sRPC.Tools</AssemblyName>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Asset root folders.">
+    <Assets_ProtoInclude>../lib/protobuf/src/google/protobuf</Assets_ProtoInclude>
+    <Assets_ProtoCompiler>$(ProjectDir)</Assets_ProtoCompiler>
+    <Assets_SrpcCompiler>../sRPCgen/bin/Release/netcoreapp3.1/</Assets_SrpcCompiler>
+  </PropertyGroup>
+
+  <PropertyGroup Label="NuGet package definition">
+    <BuildOutputTargetFolder>build</BuildOutputTargetFolder>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <PackageId>sRPC.Tools</PackageId>
+    <Authors>Max Brauer</Authors>
+    <PackageProjectUrl>https://github.com/garados007/srpc</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup Label="NuGet package assets">
+    <None Pack="true" PackagePath="build\" Include="build\**\*.xml; build\**\*.props; build\**\*.targets;" />
+
+    <_ProtoAssetName Include="any;api;descriptor;duration;empty;field_mask;source_context;struct;timestamp;type;wrappers" />
+    <_Asset PackagePath="build/native/include/google/protobuf/" Include="@(_ProtoAssetName->'$(Assets_ProtoInclude)\%(Identity).proto')" />
+
+    <!--protoc Assets-->
+    <_Asset PackagePath="tools/windows_x86/" Include="$(Assets_ProtoCompiler)protoc-win32/bin/protoc.exe" />
+    <_Asset PackagePath="tools/windows_x64/" Include="$(Assets_ProtoCompiler)protoc-win64/bin/protoc.exe" />
+    <_Asset PackagePath="tools/linux_x86/" Include="$(Assets_ProtoCompiler)protoc-linux-x86_32/bin/protoc" />
+    <_Asset PackagePath="tools/linux_x64/" Include="$(Assets_ProtoCompiler)protoc-linux-x86_64/bin/protoc" />
+    <_Asset PackagePath="tools/macosx_x86/" Include="$(Assets_ProtoCompiler)protoc-osx-x86_64/bin/protoc" />
+    <_Asset PackagePath="tools/macosx_x64/" Include="$(Assets_ProtoCompiler)protoc-osx-x86_64/bin/protoc" />
+
+    <!--sRPCgen Assets-->
+    <_Asset PackagePath="tools/" Include="$(Assets_SrpcCompiler)Google.Protobuf.dll" />
+    <_Asset PackagePath="tools/" Include="$(Assets_SrpcCompiler)sRPCgen.deps.json" />
+    <_Asset PackagePath="tools/" Include="$(Assets_SrpcCompiler)sRPCgen.dll" />
+    <_Asset PackagePath="tools/" Include="$(Assets_SrpcCompiler)sRPCgen.exe" />
+    <_Asset PackagePath="tools/" Include="$(Assets_SrpcCompiler)sRPCgen.runtimeconfig.json" />
+
+    <None Include="@(_Asset)" Pack="true" Visible="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build.Framework; Microsoft.Build.Utilities.Core" Version="15.6.*" />
+    <PackageReference Update="@(PackageReference)" PrivateAssets="All" />
+  </ItemGroup>
+
+  <Target Name="BuildDeps" BeforeTargets="PreBuildEvent">
+    <!--build sRPCgen-->
+    <Exec Command="dotnet build -v q --configuration Release --nologo ../sRPCgen/sRPCgen.csproj" />
+    
+  </Target>
+  
+</Project>
