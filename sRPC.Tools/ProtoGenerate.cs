@@ -31,6 +31,8 @@ namespace sRPC.Tools
 
         public string ProjectPath { get; set; }
 
+        public string StandardImportsPath { get; set; }
+
 
         static readonly List<ErrorListFilter> s_errorListFilters = new List<ErrorListFilter>()
         {
@@ -167,6 +169,7 @@ namespace sRPC.Tools
             AddArg(sb, "output-dir", ProjectPath);
             AddArg(sb, "build-protoc");
             AddArg(sb, "proto-import", ProjectPath);
+            AddArg(sb, "proto-import", StandardImportsPath);
             if (currentProtobuf != null)
             {
                 AddArg(sb, "namespace-base", currentProtobuf.GetMetadata(Metadata.NamespaceBase));
