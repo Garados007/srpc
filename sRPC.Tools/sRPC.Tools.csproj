@@ -49,7 +49,8 @@ It is recommended to install the NuGet packages sRPC and Google.Protobuf.
     <None Pack="true" PackagePath="build\" Include="build\**\*.xml; build\**\*.props; build\**\*.targets;" />
 
     <_ProtoAssetName Include="any;api;descriptor;duration;empty;field_mask;source_context;struct;timestamp;type;wrappers" />
-    <_Asset PackagePath="build/native/include/google/protobuf/" Include="@(_ProtoAssetName->'$(Assets_ProtoInclude)\%(Identity).proto')" />
+    <_Asset PackagePath="build/native/include/google/protobuf/" 
+            Include="@(_ProtoAssetName->'$(Assets_ProtoInclude)\%(Identity).proto')" />
 
     <!--protoc Assets-->
     <_Asset PackagePath="tools/windows_x86/" Include="$(Assets_ProtoCompiler)protoc-win32/bin/protoc.exe" />
@@ -60,11 +61,31 @@ It is recommended to install the NuGet packages sRPC and Google.Protobuf.
     <_Asset PackagePath="tools/macosx_x64/" Include="$(Assets_ProtoCompiler)protoc-osx-x86_64/bin/protoc" />
 
     <!--sRPCgen Assets-->
-    <_Asset PackagePath="tools/" Include="$(Assets_SrpcCompiler)Google.Protobuf.dll" />
-    <_Asset PackagePath="tools/" Include="$(Assets_SrpcCompiler)sRPCgen.deps.json" />
-    <_Asset PackagePath="tools/" Include="$(Assets_SrpcCompiler)sRPCgen.dll" />
-    <_Asset PackagePath="tools/" Include="$(Assets_SrpcCompiler)sRPCgen.exe" />
-    <_Asset PackagePath="tools/" Include="$(Assets_SrpcCompiler)sRPCgen.runtimeconfig.json" />
+    <_GlobalBuildAssetName Include="Google.Protobuf.dll;sRPCgen.deps.json;sRPCgen.dll;sRPCgen.pdb;sRPCgen.runtimeconfig.json" />
+    <!-- win-x86 -->
+    <_Asset PackagePath="tools/windows_x86"
+            Include="@(_GlobalBuildAssetName->'$(Assets_SrpcCompiler)\win-x86\publish\%(Identity)')" />
+    <_Asset PackagePath="tools/windows_x86" Include="$(Assets_SrpcCompiler)\win-x86\publish\sRPCgen.exe" />
+    <!-- win-x64 -->
+    <_Asset PackagePath="tools/windows_x64"
+            Include="@(_GlobalBuildAssetName->'$(Assets_SrpcCompiler)\win-x64\publish\%(Identity)')" />
+    <_Asset PackagePath="tools/windows_x64" Include="$(Assets_SrpcCompiler)\win-x64\publish\sRPCgen.exe" />
+    <!-- no builder for linux-x86 -->
+    <_Asset PackagePath="tools/linux_x86"
+            Include="@(_GlobalBuildAssetName->'$(Assets_SrpcCompiler)\linux-x64\publish\%(Identity)')" />
+    <_Asset PackagePath="tools/linux_x86" Include="build\sRPCgen" />
+    <!-- linux-x64 -->
+    <_Asset PackagePath="tools/linux_x64"
+            Include="@(_GlobalBuildAssetName->'$(Assets_SrpcCompiler)\linux-x64\publish\%(Identity)')" />
+    <_Asset PackagePath="tools/linux_x64" Include="$(Assets_SrpcCompiler)\linux-x64\publish\sRPCgen" />
+    <!-- no builder for osx-x86 -->
+    <_Asset PackagePath="tools/osx_x86"
+            Include="@(_GlobalBuildAssetName->'$(Assets_SrpcCompiler)\osx-x64\publish\%(Identity)')" />
+    <_Asset PackagePath="tools/osx_x86" Include="build\sRPCgen" />
+    <!-- osx-x64 -->
+    <_Asset PackagePath="tools/osx_x64"
+            Include="@(_GlobalBuildAssetName->'$(Assets_SrpcCompiler)\osx-x64\publish\%(Identity)')" />
+    <_Asset PackagePath="tools/osx_x64" Include="$(Assets_SrpcCompiler)\osx-x64\publish\sRPCgen" />
 
     <None Include="@(_Asset)" Pack="true" Visible="false" />
   </ItemGroup>
@@ -76,7 +97,10 @@ It is recommended to install the NuGet packages sRPC and Google.Protobuf.
 
   <Target Name="BuildDeps" BeforeTargets="PreBuildEvent">
     <!--build sRPCgen-->
-    <Exec Command="dotnet build -v q --configuration Release --nologo ../sRPCgen/sRPCgen.csproj" />
+    <Exec Command="dotnet publish -v q -c Release --nologo --self-contained false -r linux-x64 ../sRPCgen/sRPCgen.csproj" />
+    <Exec Command="dotnet publish -v q -c Release --nologo --self-contained false -r osx-x64 ../sRPCgen/sRPCgen.csproj" />
+    <Exec Command="dotnet publish -v q -c Release --nologo --self-contained false -r win-x86 ../sRPCgen/sRPCgen.csproj" />
+    <Exec Command="dotnet publish -v q -c Release --nologo --self-contained false -r win-x64 ../sRPCgen/sRPCgen.csproj" />
     
   </Target>
   
