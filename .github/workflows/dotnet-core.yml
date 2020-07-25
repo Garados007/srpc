@@ -24,7 +24,7 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
     - name: Upload Build Fail Artifacts
-      uses: actions/upload-artifcats@2
+      uses: actions/upload-artifcats@v2
       if: failure()
       with:
         name: build-fail-artifact
@@ -32,7 +32,7 @@ jobs:
     - name: Test
       run: dotnet test --no-restore --verbosity normal
     - name: Upload Test Fail Artifacts
-      uses: actions/upload-artifcats@2
+      uses: actions/upload-artifcats@v2
       if: failure()
       with:
         name: test-fail-artifact
