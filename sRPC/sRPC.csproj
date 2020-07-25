@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="NetworkMessage.proto" />
+    <Protobuf Include="NetworkMessage.proto" ProtoExt=".cs" />
   </ItemGroup>
 
 </Project>
