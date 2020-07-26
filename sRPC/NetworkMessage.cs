@@ -25,15 +25,15 @@ namespace sRPC {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChROZXR3b3JrTWVzc2FnZS5wcm90bxIEc3JwYxoZZ29vZ2xlL3Byb3RvYnVm",
-            "L2FueS5wcm90byJcCg5OZXR3b3JrUmVxdWVzdBIUCgxhcGlfZnVuY3Rpb24Y",
+            "L2FueS5wcm90byJ0Cg5OZXR3b3JrUmVxdWVzdBIUCgxhcGlfZnVuY3Rpb24Y",
             "ASABKAkSJQoHcmVxdWVzdBgCIAEoCzIULmdvb2dsZS5wcm90b2J1Zi5BbnkS",
-            "DQoFdG9rZW4YAyABKAMiSAoPTmV0d29ya1Jlc3BvbnNlEiYKCHJlc3BvbnNl",
-            "GAIgASgLMhQuZ29vZ2xlLnByb3RvYnVmLkFueRINCgV0b2tlbhgDIAEoA0IH",
-            "qgIEc1JQQ2IGcHJvdG8z"));
+            "DQoFdG9rZW4YAyABKAMSFgoOY2FuY2VsUmVxdWVzdHMYBCADKAMiSAoPTmV0",
+            "d29ya1Jlc3BvbnNlEiYKCHJlc3BvbnNlGAIgASgLMhQuZ29vZ2xlLnByb3Rv",
+            "YnVmLkFueRINCgV0b2tlbhgDIAEoA0IHqgIEc1JQQ2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.AnyReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::sRPC.NetworkRequest), global::sRPC.NetworkRequest.Parser, new[]{ "ApiFunction", "Request", "Token" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::sRPC.NetworkRequest), global::sRPC.NetworkRequest.Parser, new[]{ "ApiFunction", "Request", "Token", "CancelRequests" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::sRPC.NetworkResponse), global::sRPC.NetworkResponse.Parser, new[]{ "Response", "Token" }, null, null, null, null)
           }));
     }
@@ -72,6 +72,7 @@ namespace sRPC {
       apiFunction_ = other.apiFunction_;
       request_ = other.request_ != null ? other.request_.Clone() : null;
       token_ = other.token_;
+      cancelRequests_ = other.cancelRequests_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -122,6 +123,21 @@ namespace sRPC {
       }
     }
 
+    /// <summary>Field number for the "cancelRequests" field.</summary>
+    public const int CancelRequestsFieldNumber = 4;
+    private static readonly pb::FieldCodec<long> _repeated_cancelRequests_codec
+        = pb::FieldCodec.ForInt64(34);
+    private readonly pbc::RepeatedField<long> cancelRequests_ = new pbc::RepeatedField<long>();
+    /// <summary>
+    /// a list of token ids which has the request canceld.
+    /// The server should now stop the computation of the response.
+    /// There is no response message needed.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<long> CancelRequests {
+      get { return cancelRequests_; }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as NetworkRequest);
@@ -138,6 +154,7 @@ namespace sRPC {
       if (ApiFunction != other.ApiFunction) return false;
       if (!object.Equals(Request, other.Request)) return false;
       if (Token != other.Token) return false;
+      if(!cancelRequests_.Equals(other.cancelRequests_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -147,6 +164,7 @@ namespace sRPC {
       if (ApiFunction.Length != 0) hash ^= ApiFunction.GetHashCode();
       if (request_ != null) hash ^= Request.GetHashCode();
       if (Token != 0L) hash ^= Token.GetHashCode();
+      hash ^= cancelRequests_.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -172,6 +190,7 @@ namespace sRPC {
         output.WriteRawTag(24);
         output.WriteInt64(Token);
       }
+      cancelRequests_.WriteTo(output, _repeated_cancelRequests_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -189,6 +208,7 @@ namespace sRPC {
       if (Token != 0L) {
         size += 1 + pb::CodedOutputStream.ComputeInt64Size(Token);
       }
+      size += cancelRequests_.CalculateSize(_repeated_cancelRequests_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -212,6 +232,7 @@ namespace sRPC {
       if (other.Token != 0L) {
         Token = other.Token;
       }
+      cancelRequests_.Add(other.cancelRequests_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -236,6 +257,11 @@ namespace sRPC {
           }
           case 24: {
             Token = input.ReadInt64();
+            break;
+          }
+          case 34:
+          case 32: {
+            cancelRequests_.AddEntriesFrom(input, _repeated_cancelRequests_codec);
             break;
           }
         }
@@ -286,7 +312,9 @@ namespace sRPC {
     public const int ResponseFieldNumber = 2;
     private global::Google.Protobuf.WellKnownTypes.Any response_;
     /// <summary>
-    /// the response object with the data
+    /// the response object with the data.
+    /// if the response is empty that means the server has cancelled it by itself
+    /// (this behaviour is not recommended - include the error information in your response!).
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Google.Protobuf.WellKnownTypes.Any Response {

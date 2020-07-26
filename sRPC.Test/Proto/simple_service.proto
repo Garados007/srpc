@@ -2,11 +2,15 @@
 
 package srpc.test;
 
+import "google/protobuf/empty.proto";
+
 option csharp_namespace = "sRPC.Test.Proto";
 
 service SimpleService {
 	rpc Sqrt(SqrtRequest)
 		returns (SqrtResponse);
+	rpc Indefinite(google.protobuf.Empty)
+		returns (google.protobuf.Empty);
 }
 
 message SqrtRequest {
