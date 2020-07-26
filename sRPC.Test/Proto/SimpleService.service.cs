@@ -62,6 +62,35 @@ namespace sRPC.Test.Proto
             using var cancellationToken = new st::CancellationTokenSource(timeout);
             return await Sqrt(message, cancellationToken.Token);
         }
+
+        public virtual stt::Task<Google.Protobuf.WellKnownTypes.Empty> Indefinite(Google.Protobuf.WellKnownTypes.Empty message)
+        {
+            _ = message ?? throw new s::ArgumentNullException(nameof(message));
+            return Indefinite(message, st::CancellationToken.None);
+        }
+
+        public virtual async stt::Task<Google.Protobuf.WellKnownTypes.Empty> Indefinite(Google.Protobuf.WellKnownTypes.Empty message, st::CancellationToken cancellationToken)
+        {
+            _ = message ?? throw new s::ArgumentNullException(nameof(message));
+            var networkMessage = new srpc::NetworkRequest()
+            {
+                ApiFunction = "Indefinite",
+                Request = gpw::Any.Pack(message),
+            };
+            var response = PerformMessage2Private != null
+                ? await PerformMessage2Private.Invoke(networkMessage, cancellationToken)
+                : await PerformMessagePrivate?.Invoke(networkMessage);
+            return response.Response?.Unpack<Google.Protobuf.WellKnownTypes.Empty>();
+        }
+
+        public virtual async stt::Task<Google.Protobuf.WellKnownTypes.Empty> Indefinite(Google.Protobuf.WellKnownTypes.Empty message, s::TimeSpan timeout)
+        {
+            _ = message ?? throw new s::ArgumentNullException(nameof(message));
+            if (timeout.Ticks < 0)
+                throw new s::ArgumentOutOfRangeException(nameof(timeout));
+            using var cancellationToken = new st::CancellationTokenSource(timeout);
+            return await Indefinite(message, cancellationToken.Token);
+        }
     }
 
     /// <summary>
@@ -83,6 +112,12 @@ namespace sRPC.Test.Proto
                         Response = gpw::Any.Pack(await Sqrt(request.Request?.Unpack<sRPC.Test.Proto.SqrtRequest>(), cancellationToken)),
                         Token = request.Token,
                     };
+                case "Indefinite":
+                    return new srpc::NetworkResponse()
+                    {
+                        Response = gpw::Any.Pack(await Indefinite(request.Request?.Unpack<Google.Protobuf.WellKnownTypes.Empty>(), cancellationToken)),
+                        Token = request.Token,
+                    };
                 default: throw new s::NotSupportedException($"{request.ApiFunction} is not defined");
             }
         }
@@ -91,6 +126,11 @@ namespace sRPC.Test.Proto
 
         public virtual stt::Task<sRPC.Test.Proto.SqrtResponse> Sqrt(sRPC.Test.Proto.SqrtRequest request, st::CancellationToken cancellationToken)
             => Sqrt(request);
+
+        public abstract stt::Task<Google.Protobuf.WellKnownTypes.Empty> Indefinite(Google.Protobuf.WellKnownTypes.Empty request);
+
+        public virtual stt::Task<Google.Protobuf.WellKnownTypes.Empty> Indefinite(Google.Protobuf.WellKnownTypes.Empty request, st::CancellationToken cancellationToken)
+            => Indefinite(request);
     }
 }
 

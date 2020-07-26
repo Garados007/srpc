@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Google.Protobuf.WellKnownTypes;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using sRPC.Test.Proto;
 using sRPC.Utils;
 using System;
@@ -38,6 +39,24 @@ namespace sRPC.Test.SimpleService.Streams
                 });
                 Assert.AreEqual(check, response.Value);
             }
+        }
+
+        [TestMethod]
+        public async Task Streams_CancelRequest()
+        {
+            using var m1 = new BlockingStream();
+            using var m2 = new BlockingStream();
+
+            using var server = new ApiServer<Server>(m1, m2);
+            server.Start();
+
+            using var client = new ApiClient<SimpleServiceClient>(m2, m1);
+            client.Start();
+
+            await Assert.ThrowsExceptionAsync<TaskCanceledException>(async () =>
+            {
+                await client.Api.Indefinite(new Empty(), TimeSpan.FromMilliseconds(100));
+            });
         }
     }
 }
