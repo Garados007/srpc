@@ -54,9 +54,9 @@ namespace sRPC
         {
             calls = new ConcurrentDictionary<long, Call>();
             Api = new T();
-            Api.PerformMessage += Api_PerformMessage;
             if (Api is IApiClientDefinition2 definition2)
                 definition2.PerformMessage2 += Api_PerformMessage2;
+            else Api.PerformMessage += Api_PerformMessage;
         }
 
         private async Task<NetworkResponse> Api_PerformMessage2(NetworkRequest request, CancellationToken cancellationToken)

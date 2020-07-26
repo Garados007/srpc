@@ -445,6 +445,7 @@ the options given:
                 $"using gpw = global::Google.Protobuf.WellKnownTypes;",
                 $"using s = global::System;",
                 $"using srpc = global::sRPC;",
+                $"using st = global::System.Threading;",
                 $"using stt = global::System.Threading.Tasks;",
                 $"",
                 $"namespace {file.Options?.CsharpNamespace ?? "Api"}",
@@ -452,7 +453,7 @@ the options given:
                 $"\t/// <summary>",
                 $"\t/// The base class for the client implementation of the {service.Name} api",
                 $"\t/// </summary>",
-                $"\tpublic class {service.Name}Client : srpc::IApiClientDefinition",
+                $"\tpublic class {service.Name}Client : srpc::IApiClientDefinition2",
                 $"\t{{",
                 $"\t\tevent s::Func<srpc::NetworkRequest, stt::Task<srpc::NetworkResponse>> srpc::IApiClientDefinition.PerformMessage",
                 $"\t\t{{",
@@ -460,7 +461,15 @@ the options given:
                 $"\t\t\tremove => PerformMessagePrivate -= value;",
                 $"\t\t}}",
                 $"",
-                $"\t\tprivate event s::Func<srpc::NetworkRequest, stt::Task<srpc::NetworkResponse>> PerformMessagePrivate;"
+                $"\t\tevent s::Func<srpc::NetworkRequest, st::CancellationToken, stt::Task<srpc::NetworkResponse>> srpc::IApiClientDefinition2.PerformMessage2",
+                $"\t\t{{",
+                $"\t\t\tadd => PerformMessage2Private += value;",
+                $"\t\t\tremove => PerformMessage2Private -= value;",
+                $"\t\t}}",
+                $"",
+                $"\t\tprivate event s::Func<srpc::NetworkRequest, stt::Task<srpc::NetworkResponse>> PerformMessagePrivate;",
+                $"",
+                $"\t\tprivate event s::Func<srpc::NetworkRequest, st::CancellationToken, stt::Task<srpc::NetworkResponse>> PerformMessage2Private;"
             );
             foreach (var method in service.Method)
             {
@@ -486,7 +495,13 @@ the options given:
                 }
                 writer.WriteLines(
                     $"",
-                    $"\t\tpublic virtual async stt::Task<{responseType}> {method.Name}({requestType} message)",
+                    $"\t\tpublic virtual stt::Task<{responseType}> {method.Name}({requestType} message)",
+                    $"\t\t{{",
+                    $"\t\t\t_ = message ?? throw new s::ArgumentNullException(nameof(message));",
+                    $"\t\t\treturn {method.Name}(message, st::CancellationToken.None);",
+                    $"\t\t}}",
+                    $"",
+                    $"\t\tpublic virtual async stt::Task<{responseType}> {method.Name}({requestType} message, st::CancellationToken cancellationToken)",
                     $"\t\t{{",
                     $"\t\t\t_ = message ?? throw new s::ArgumentNullException(nameof(message));",
                     $"\t\t\tvar networkMessage = new srpc::NetworkRequest()",
@@ -494,8 +509,19 @@ the options given:
                     $"\t\t\t\tApiFunction = \"{method.Name}\",",
                     $"\t\t\t\tRequest = gpw::Any.Pack(message),",
                     $"\t\t\t}};",
-                    $"\t\t\tvar response = await PerformMessagePrivate?.Invoke(networkMessage);",
+                    $"\t\t\tvar response = PerformMessage2Private != null",
+                    $"\t\t\t\t? await PerformMessage2Private.Invoke(networkMessage, cancellationToken)",
+                    $"\t\t\t\t: await PerformMessagePrivate?.Invoke(networkMessage);",
                     $"\t\t\treturn response.Response?.Unpack<{responseType}>();",
+                    $"\t\t}}",
+                    $"",
+                    $"\t\tpublic virtual async stt::Task<{responseType}> {method.Name}({requestType} message, s::TimeSpan timeout)",
+                    $"\t\t{{",
+                    $"\t\t\t_ = message ?? throw new s::ArgumentNullException(nameof(message));",
+                    $"\t\t\tif (timeout.Ticks < 0)",
+                    $"\t\t\t\tthrow new s::ArgumentOutOfRangeException(nameof(timeout));",
+                    $"\t\t\tusing var cancellationToken = new st::CancellationTokenSource(timeout);",
+                    $"\t\t\treturn await {method.Name}(message, cancellationToken.Token);",
                     $"\t\t}}"
                 );
             }
@@ -505,9 +531,12 @@ the options given:
                 $"\t/// <summary>",
                 $"\t/// The base class for the server implementation of the {service.Name} api",
                 $"\t/// </summary>",
-                $"\tpublic abstract class {service.Name}ServerBase : srpc::IApiServerDefinition",
+                $"\tpublic abstract class {service.Name}ServerBase : srpc::IApiServerDefinition2",
                 $"\t{{",
-                $"\t\tasync stt::Task<srpc::NetworkResponse> srpc::IApiServerDefinition.HandleMessage(srpc::NetworkRequest request)",
+                $"\t\tstt::Task<srpc::NetworkResponse> srpc::IApiServerDefinition.HandleMessage(srpc::NetworkRequest request)",
+                $"\t\t\t=> ((srpc::IApiServerDefinition2)this).HandleMessage2(request, st::CancellationToken.None);",
+                $"",
+                $"\t\tasync stt::Task<srpc::NetworkResponse> srpc::IApiServerDefinition2.HandleMessage2(srpc::NetworkRequest request, st::CancellationToken cancellationToken)",
                 $"\t\t{{",
                 $"\t\t\t_ = request ?? throw new s::ArgumentNullException(nameof(request));",
                 $"\t\t\tswitch (request.ApiFunction)",
@@ -529,7 +558,7 @@ the options given:
                     $"\t\t\t\tcase \"{method.Name}\":",
                     $"\t\t\t\t\treturn new srpc::NetworkResponse()",
                     $"\t\t\t\t\t{{",
-                    $"\t\t\t\t\t\tResponse = gpw::Any.Pack(await {method.Name}(request.Request?.Unpack<{requestType}>())),",
+                    $"\t\t\t\t\t\tResponse = gpw::Any.Pack(await {method.Name}(request.Request?.Unpack<{requestType}>(), cancellationToken)),",
                     $"\t\t\t\t\t\tToken = request.Token,",
                     $"\t\t\t\t\t}};"
                 );
@@ -563,7 +592,10 @@ the options given:
                 }
                 writer.WriteLines(
                     $"",
-                    $"\t\tpublic abstract stt::Task<{responseType}> {method.Name}({requestType} request);"
+                    $"\t\tpublic abstract stt::Task<{responseType}> {method.Name}({requestType} request);",
+                    $"",
+                    $"\t\tpublic virtual stt::Task<{responseType}> {method.Name}({requestType} request, st::CancellationToken cancellationToken)",
+                    $"\t\t\t=> {method.Name}(request);"
                 );
             }
             writer.WriteLines(
