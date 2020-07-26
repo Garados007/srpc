@@ -14,11 +14,17 @@ message NetworkRequest {
 	google.protobuf.Any request = 2;
 	// the token to identify the response with the request
 	int64 token = 3;
+	// a list of token ids which has the request canceld.
+	// The server should now stop the computation of the response.
+	// There is no response message needed.
+	repeated int64 cancelRequests = 4;
 }
 
 // the base response information that is used be the internal Api
 message NetworkResponse {
-	// the response object with the data
+	// the response object with the data.
+	// if the response is empty that means the server has cancelled it by itself
+	// (this behaviour is not recommended - include the error information in your response!).
 	google.protobuf.Any response = 2;
 	// the token to identify this response
 	int64 token = 3;

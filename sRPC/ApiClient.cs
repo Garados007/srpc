@@ -1,6 +1,7 @@
 ﻿using Google.Protobuf;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
@@ -16,39 +17,20 @@ namespace sRPC
     public class ApiClient<T> : ApiBase, IApi<T>
         where T : IApiClientDefinition, new()
     {
+        private ClientMessageManager<T> manager;
 
         /// <summary>
         /// The current Api interface
         /// </summary>
-        public T Api { get; }
-
-        private readonly ConcurrentDictionary<long, CancellationTokenSource> waiter;
-        private readonly ConcurrentDictionary<long, NetworkResponse> response;
-        private readonly ConcurrentDictionary<long, IMessage> outgoingMessages;
-        private long nextId;
-        private readonly object nextIdLock = new object();
+        public T Api => manager.Api;
 
         protected override IMessage[] GetMessages()
         {
-            return base.GetMessages()
-                .Concat(outgoingMessages.Values)
+            return manager.GetPendingRequests()
+                .Union(base.GetMessages())
+                .Distinct()
+                .Cast<IMessage>()
                 .ToArray();
-        }
-
-        protected override void PushMessage(IMessage[] messages)
-        {
-            _ = messages ?? throw new ArgumentNullException(nameof(messages));
-            foreach (var m in messages)
-            {
-                if (m is NetworkRequest request)
-                {
-                    long id;
-                    lock (nextIdLock)
-                        id = nextId++;
-                    request.Token = id;
-                }
-            }
-            base.PushMessage(messages);
         }
 
         /// <summary>
@@ -67,76 +49,56 @@ namespace sRPC
         public ApiClient(Stream input, Stream output)
             : base(input, output)
         {
-            waiter = new ConcurrentDictionary<long, CancellationTokenSource>();
-            response = new ConcurrentDictionary<long, NetworkResponse>();
-            outgoingMessages = new ConcurrentDictionary<long, IMessage>();
-            Api = new T();
-            Api.PerformMessage += Api_PerformMessage;
+            manager = new ClientMessageManager<T>();
+            manager.EnqueueNewMessage += Manager_EnqueueNewMessage;
+            manager.NotifyRequestCancelled += Manager_NotifyRequestCancelled;
         }
 
         protected internal ApiClient(Stream input, Stream output, ApiClient<T> oldClient)
             : base(input, output)
         {
-            waiter = new ConcurrentDictionary<long, CancellationTokenSource>();
-            response = oldClient?.response ?? new ConcurrentDictionary<long, NetworkResponse>();
-            outgoingMessages = oldClient?.outgoingMessages ?? new ConcurrentDictionary<long, IMessage>();
             if (oldClient != null)
             {
-                Api = oldClient.Api;
-                lock (nextIdLock)
-                    lock (oldClient.nextIdLock)
-                    {
-                        Api.PerformMessage += Api_PerformMessage;
-                        oldClient.DisconnectHook();
-                        nextId = oldClient.nextId;
-                    }
-                foreach (var p in oldClient.waiter)
-                    waiter.TryAdd(p.Key, p.Value);
-                oldClient.waiter.Clear();
+                manager = oldClient.manager;
+                manager.EnqueueNewMessage += Manager_EnqueueNewMessage;
+                manager.NotifyRequestCancelled += Manager_NotifyRequestCancelled;
+                oldClient.DisconnectHook();
                 PushMessage(oldClient.GetMessages());
+                oldClient.manager = null;
                 oldClient.Dispose();
             }
             else
             {
-                Api = new T();
-                Api.PerformMessage += Api_PerformMessage;
+                manager = new ClientMessageManager<T>();
+                manager.EnqueueNewMessage += Manager_EnqueueNewMessage;
+                manager.NotifyRequestCancelled += Manager_NotifyRequestCancelled;
             }
         }
 
         private void DisconnectHook()
         {
-            Api.PerformMessage -= Api_PerformMessage;
+            manager.EnqueueNewMessage -= Manager_EnqueueNewMessage;
+            manager.NotifyRequestCancelled -= Manager_NotifyRequestCancelled;
         }
 
-        private async Task<NetworkResponse> Api_PerformMessage(NetworkRequest request)
+        private void Manager_NotifyRequestCancelled(long id)
+        {
+            var request = new NetworkRequest();
+            request.CancelRequests.Add(id);
+            EnqueueMessage(request);
+        }
+
+        private void Manager_EnqueueNewMessage(NetworkRequest request)
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
-            long id;
-            lock (nextIdLock)
-                id = nextId++;
-            request.Token = id;
-            using var cancel = new CancellationTokenSource();
-            waiter.AddOrUpdate(id, cancel, (_, __) => cancel);
-            outgoingMessages.TryAdd(id, request);
             EnqueueMessage(request);
-            try { await Task.Delay(-1, cancel.Token); }
-            catch (TaskCanceledException) { }
-            if (!this.response.TryRemove(id, out NetworkResponse response))
-                response = null;
-            outgoingMessages.TryRemove(id, out _);
-            waiter.TryRemove(id, out _);
-            return response;
         }
 
         protected override void HandleReceived(byte[] data)
         {
             var nr = new NetworkResponse();
             nr.MergeFrom(data);
-            if (waiter.TryGetValue(nr.Token, out CancellationTokenSource cancellation))
-            {
-                response.TryAdd(nr.Token, nr);
-                cancellation.Cancel();
-            }
+            manager.SetResponse(nr);
         }
 
         /// <summary>
@@ -145,8 +107,7 @@ namespace sRPC
         public override void Dispose()
         {
             base.Dispose();
-            foreach (var x in waiter.Values)
-                x.Cancel();
+            manager?.Dispose();
         }
 
         /// <summary>
@@ -155,8 +116,7 @@ namespace sRPC
         public async override ValueTask DisposeAsync()
         {
             await base.DisposeAsync();
-            foreach (var x in waiter.Values)
-                x.Cancel();
+            manager?.Dispose();
         }
     }
 }
