@@ -8,6 +8,7 @@
 using gpw = global::Google.Protobuf.WellKnownTypes;
 using s = global::System;
 using srpc = global::sRPC;
+using st = global::System.Threading;
 using stt = global::System.Threading.Tasks;
 
 namespace ExampleProject
@@ -15,7 +16,7 @@ namespace ExampleProject
     /// <summary>
     /// The base class for the client implementation of the EmptyService api
     /// </summary>
-    public class EmptyServiceClient : srpc::IApiClientDefinition
+    public class EmptyServiceClient : srpc::IApiClientDefinition2
     {
         event s::Func<srpc::NetworkRequest, stt::Task<srpc::NetworkResponse>> srpc::IApiClientDefinition.PerformMessage
         {
@@ -23,15 +24,26 @@ namespace ExampleProject
             remove => PerformMessagePrivate -= value;
         }
 
+        event s::Func<srpc::NetworkRequest, st::CancellationToken, stt::Task<srpc::NetworkResponse>> srpc::IApiClientDefinition2.PerformMessage2
+        {
+            add => PerformMessage2Private += value;
+            remove => PerformMessage2Private -= value;
+        }
+
         private event s::Func<srpc::NetworkRequest, stt::Task<srpc::NetworkResponse>> PerformMessagePrivate;
+
+        private event s::Func<srpc::NetworkRequest, st::CancellationToken, stt::Task<srpc::NetworkResponse>> PerformMessage2Private;
     }
 
     /// <summary>
     /// The base class for the server implementation of the EmptyService api
     /// </summary>
-    public abstract class EmptyServiceServerBase : srpc::IApiServerDefinition
+    public abstract class EmptyServiceServerBase : srpc::IApiServerDefinition2
     {
-        async stt::Task<srpc::NetworkResponse> srpc::IApiServerDefinition.HandleMessage(srpc::NetworkRequest request)
+        stt::Task<srpc::NetworkResponse> srpc::IApiServerDefinition.HandleMessage(srpc::NetworkRequest request)
+            => ((srpc::IApiServerDefinition2)this).HandleMessage2(request, st::CancellationToken.None);
+
+        async stt::Task<srpc::NetworkResponse> srpc::IApiServerDefinition2.HandleMessage2(srpc::NetworkRequest request, st::CancellationToken cancellationToken)
         {
             _ = request ?? throw new s::ArgumentNullException(nameof(request));
             switch (request.ApiFunction)
