@@ -5,12 +5,9 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <!--<RestoreSources>$(RestoreSources);$(SolutionDir)sRPC.Tools/bin/Release;https://api.nuget.org/v3/index.json</RestoreSources>
+    <Use_Srpc_Tools_Version>2.1.6</Use_Srpc_Tools_Version>-->
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="empty_service.proto" />
-    <None Remove="simple_service.proto" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.12.3" />
@@ -22,9 +19,9 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <Protobuf Include="empty_service.proto" />
-    <Protobuf Include="simple_service.proto" />
-  </ItemGroup>
+  <PropertyGroup>
+    <Srpc_AutoSearchProj>true</Srpc_AutoSearchProj>
+    <Srpc_EmptySupport>true</Srpc_EmptySupport>
+  </PropertyGroup>
 
 </Project>

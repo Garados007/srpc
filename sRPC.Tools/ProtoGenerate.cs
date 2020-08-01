@@ -33,6 +33,20 @@ namespace sRPC.Tools
 
         public string StandardImportsPath { get; set; }
 
+        public string SrpcNamespaceBase { get; set; }
+
+        public string SrpcSrpcExt { get; set; }
+
+        public string SrpcProtoExt { get; set; }
+
+        public string SrpcAutoSearchProj { get; set; }
+
+        private bool IsSrpcAutoSearchProj => SrpcAutoSearchProj == "true";
+
+        public string SrpcEmptySupport { get; set; }
+
+        private bool IsSrpcEmptySupport => SrpcEmptySupport == "true";
+
 
         static readonly List<ErrorListFilter> s_errorListFilters = new List<ErrorListFilter>()
         {
@@ -163,6 +177,9 @@ namespace sRPC.Tools
             else sb.Append($"--{name}={arg}");
         }
 
+        private void AddArg(StringBuilder sb, string name, string arg, string defaultArg)
+            => AddArg(sb, name, string.IsNullOrEmpty(arg) ? defaultArg : arg);
+
         protected override string GenerateCommandLineCommands()
         {
             var sb = new StringBuilder();
@@ -170,12 +187,24 @@ namespace sRPC.Tools
             AddArg(sb, "build-protoc");
             AddArg(sb, "proto-import", ProjectPath);
             AddArg(sb, "proto-import", StandardImportsPath);
-            if (currentProtobuf != null)
+            if (IsSrpcEmptySupport)
+                AddArg(sb, "empty-support");
+            if (IsSrpcAutoSearchProj)
             {
-                AddArg(sb, "namespace-base", currentProtobuf.GetMetadata(Metadata.NamespaceBase));
-                AddArg(sb, "file-extension", currentProtobuf.GetMetadata(Metadata.SrpcExt));
-                AddArg(sb, "proto-extension", currentProtobuf.GetMetadata(Metadata.ProtoExt));
-                AddArg(sb, "file", currentProtobuf.ItemSpec);
+                AddArg(sb, "namespace-base", SrpcNamespaceBase);
+                AddArg(sb, "file-extension", SrpcSrpcExt);
+                AddArg(sb, "proto-extension", SrpcProtoExt);
+                AddArg(sb, "search-dir", ProjectPath);
+            }
+            else
+            {
+                if (currentProtobuf != null)
+                {
+                    AddArg(sb, "namespace-base", currentProtobuf.GetMetadata(Metadata.NamespaceBase), SrpcNamespaceBase);
+                    AddArg(sb, "file-extension", currentProtobuf.GetMetadata(Metadata.SrpcExt), SrpcSrpcExt);
+                    AddArg(sb, "proto-extension", currentProtobuf.GetMetadata(Metadata.ProtoExt), SrpcProtoExt);
+                    AddArg(sb, "file", currentProtobuf.ItemSpec);
+                }
             }
             return sb.ToString();
         }
@@ -271,15 +300,24 @@ namespace sRPC.Tools
                 $"PATH={new FileInfo(ProtocPath).Directory.FullName}",
             };
 
-            foreach (var task in Protobuf)
+            if (IsSrpcAutoSearchProj)
             {
-                currentProtobuf = task;
-                var compile = task.GetMetadata(Metadata.ProtoCompile).ToLowerInvariant();
-                if (compile == "false" || compile == "none")
-                    continue;
                 var ok = base.Execute();
                 if (!ok)
                     return false;
+            }
+            else
+            {
+                foreach (var task in Protobuf)
+                {
+                    currentProtobuf = task;
+                    var compile = task.GetMetadata(Metadata.ProtoCompile).ToLowerInvariant();
+                    if (compile == "false" || compile == "none")
+                        continue;
+                    var ok = base.Execute();
+                    if (!ok)
+                        return false;
+                }
             }
 
             return true;
