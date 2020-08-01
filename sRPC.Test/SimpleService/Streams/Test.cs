@@ -55,7 +55,7 @@ namespace sRPC.Test.SimpleService.Streams
 
             await Assert.ThrowsExceptionAsync<TaskCanceledException>(async () =>
             {
-                await client.Api.Indefinite(new Empty(), TimeSpan.FromMilliseconds(100));
+                await client.Api.Indefinite(TimeSpan.FromMilliseconds(100));
             });
         }
     }

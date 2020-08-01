@@ -2,7 +2,7 @@
   "profiles": {
     "sRPCgen": {
       "commandName": "Project",
-      "commandLineArgs": "--search-dir=S:\\Documents\\Projects\\Argus\\docs\\api\\argus --output-dir=S:\\Documents\\Projects\\Argus\\docs\\api\\bin --namespace-base=Argus.Api --file-extension=.service.cs --build-protoc --proto-import=S:\\Documents\\Projects\\Argus\\docs\\api --proto-extension=.g.cs"
+      "commandLineArgs": "--search-dir=S:\\Documents\\Projects\\Argus\\docs\\api\\argus --output-dir=S:\\Documents\\Projects\\Argus\\docs\\api\\bin --namespace-base=Argus.Api --file-extension=.service.cs --build-protoc --proto-import=S:\\Documents\\Projects\\Argus\\docs\\api --proto-extension=.g.cs --error-format=msvs --empty-support"
     }
   }
 }

@@ -19,6 +19,7 @@ namespace sRPCgen
         static readonly List<string> protoImports = new List<string>();
         static string protoExtension;
         static string errorFormat;
+        static bool emptySupport;
 
         static void Main(string[] args)
         {
@@ -298,6 +299,14 @@ namespace sRPCgen
                                     return false;
                             }
                             break;
+                        case "--empty-support":
+                            if (emptySupport)
+                            {
+                                Console.WriteLine("--empty-support is already defined");
+                                return false;
+                            }
+                            emptySupport = true;
+                            break;
                         case "-h":
                         case "--help":
                             return false;
@@ -397,6 +406,8 @@ the options given:
                             'default' or 'msvs' (Microsoft Visual Studio 
                             format). The format parameter is also set for
                             protoc.
+  --empty-support           Add special support for google.protobuf.Empty
+                            types.
   -v, --verbose             Print more information about the build process.
   -h, --help                Print this help.
 ");
@@ -493,35 +504,46 @@ the options given:
                         file: file.Name);
                     return;
                 }
+                var resp = emptySupport && method.OutputType == ".google.protobuf.Empty"
+                    ? ""
+                    : $"<{responseType}>";
+                var req = emptySupport && method.InputType == ".google.protobuf.Empty"
+                    ? ""
+                    : $"{requestType} message";
+                var req2 = req == "" ? "" : $"{req}, ";
                 writer.WriteLines(
                     $"",
-                    $"\t\tpublic virtual stt::Task<{responseType}> {method.Name}({requestType} message)",
+                    $"\t\tpublic virtual stt::Task{resp} {method.Name}({req})",
                     $"\t\t{{",
-                    $"\t\t\t_ = message ?? throw new s::ArgumentNullException(nameof(message));",
-                    $"\t\t\treturn {method.Name}(message, st::CancellationToken.None);",
+                    req == "" ? null 
+                        : $"\t\t\t_ = message ?? throw new s::ArgumentNullException(nameof(message));",
+                    $"\t\t\treturn {method.Name}({(req == "" ? "" : "message, ")}st::CancellationToken.None);",
                     $"\t\t}}",
                     $"",
-                    $"\t\tpublic virtual async stt::Task<{responseType}> {method.Name}({requestType} message, st::CancellationToken cancellationToken)",
+                    $"\t\tpublic virtual async stt::Task{resp} {method.Name}({req2}st::CancellationToken cancellationToken)",
                     $"\t\t{{",
-                    $"\t\t\t_ = message ?? throw new s::ArgumentNullException(nameof(message));",
+                    req == "" ? null
+                        : $"\t\t\t_ = message ?? throw new s::ArgumentNullException(nameof(message));",
                     $"\t\t\tvar networkMessage = new srpc::NetworkRequest()",
                     $"\t\t\t{{",
                     $"\t\t\t\tApiFunction = \"{method.Name}\",",
-                    $"\t\t\t\tRequest = gpw::Any.Pack(message),",
+                    $"\t\t\t\tRequest = gpw::Any.Pack({(req == "" ? "new gpw::Empty()" : "message")}),",
                     $"\t\t\t}};",
-                    $"\t\t\tvar response = PerformMessage2Private != null",
+                    $"\t\t\t{(resp == "" ? "_" : "var response")} = PerformMessage2Private != null",
                     $"\t\t\t\t? await PerformMessage2Private.Invoke(networkMessage, cancellationToken)",
                     $"\t\t\t\t: await PerformMessagePrivate?.Invoke(networkMessage);",
-                    $"\t\t\treturn response.Response?.Unpack<{responseType}>();",
+                    resp == "" ? null
+                        : $"\t\t\treturn response.Response?.Unpack<{responseType}>();",
                     $"\t\t}}",
                     $"",
-                    $"\t\tpublic virtual async stt::Task<{responseType}> {method.Name}({requestType} message, s::TimeSpan timeout)",
+                    $"\t\tpublic virtual async stt::Task{resp} {method.Name}({req2}s::TimeSpan timeout)",
                     $"\t\t{{",
-                    $"\t\t\t_ = message ?? throw new s::ArgumentNullException(nameof(message));",
+                    req == "" ? null
+                        : $"\t\t\t_ = message ?? throw new s::ArgumentNullException(nameof(message));",
                     $"\t\t\tif (timeout.Ticks < 0)",
                     $"\t\t\t\tthrow new s::ArgumentOutOfRangeException(nameof(timeout));",
                     $"\t\t\tusing var cancellationToken = new st::CancellationTokenSource(timeout);",
-                    $"\t\t\treturn await {method.Name}(message, cancellationToken.Token);",
+                    $"\t\t\t{(resp == "" ? "" : "return ")}await {method.Name}({(req == "" ? "" : "message, ")}cancellationToken.Token);",
                     $"\t\t}}"
                 );
             }
@@ -554,11 +576,17 @@ the options given:
                         file: file.Name);
                     return;
                 }
+                var resp = emptySupport && method.OutputType == ".google.protobuf.Empty";
+                var req = emptySupport && method.InputType == ".google.protobuf.Empty"
+                    ? ""
+                    : $"request.Request?.Unpack<{requestType}>(), ";
                 writer.WriteLines(
                     $"\t\t\t\tcase \"{method.Name}\":",
+                    !resp ? null 
+                        : $"\t\t\t\t\tawait {method.Name}({req}cancellationToken);",
                     $"\t\t\t\t\treturn new srpc::NetworkResponse()",
                     $"\t\t\t\t\t{{",
-                    $"\t\t\t\t\t\tResponse = gpw::Any.Pack(await {method.Name}(request.Request?.Unpack<{requestType}>(), cancellationToken)),",
+                    $"\t\t\t\t\t\tResponse = gpw::Any.Pack({(resp ? "new gpw::Empty()" : $"await {method.Name}({req}cancellationToken)")}),",
                     $"\t\t\t\t\t\tToken = request.Token,",
                     $"\t\t\t\t\t}};"
                 );
@@ -590,12 +618,19 @@ the options given:
                         file: file.Name);
                     return;
                 }
+                var resp = emptySupport && method.OutputType == ".google.protobuf.Empty"
+                    ? ""
+                    : $"<{responseType}>";
+                var req = emptySupport && method.InputType == ".google.protobuf.Empty"
+                    ? ""
+                    : $"{requestType} request";
+                var req2 = req == "" ? "" : $"{req}, ";
                 writer.WriteLines(
                     $"",
-                    $"\t\tpublic abstract stt::Task<{responseType}> {method.Name}({requestType} request);",
+                    $"\t\tpublic abstract stt::Task{resp} {method.Name}({req});",
                     $"",
-                    $"\t\tpublic virtual stt::Task<{responseType}> {method.Name}({requestType} request, st::CancellationToken cancellationToken)",
-                    $"\t\t\t=> {method.Name}(request);"
+                    $"\t\tpublic virtual stt::Task{resp} {method.Name}({req2}st::CancellationToken cancellationToken)",
+                    $"\t\t\t=> {method.Name}({(req == "" ? "" : "request")});"
                 );
             }
             writer.WriteLines(
