@@ -63,6 +63,12 @@
       <Protobuf_ProtocFullPath Condition=" '$(Protobuf_ProtocFullPath)' == '' ">$(PROTOBUF_PROTOC)</Protobuf_ProtocFullPath>
       <Protobuf_SrpcFullPath Condition=" '$(Protobuf_SrpcFullPath)' == '' ">$(PROTOBUF_SRPC)</Protobuf_SrpcFullPath>
 
+      <Srpc_NamespaceBase Condition=" '$(Srpc_NamespaceBase)' == '' ">$(SRPC_NAMESPACE_BASE)</Srpc_NamespaceBase>
+      <Srpc_SrpcExt Condition=" '$(Srpc_SrpcExt)' == '' ">$(SRPC_SRPC_EXT)</Srpc_SrpcExt>
+      <Srpc_ProtoExt Condition=" '$(Srpc_ProtoExt)' == '' ">$(SRPC_PROTO_EXT)</Srpc_ProtoExt>
+      <Srpc_AutoSearchProj Condition=" '$(Srpc_AutoSearchProj)' == '' ">$(SRPC_AUTO_SEARCH_PROJ)</Srpc_AutoSearchProj>
+      <Srpc_EmptySupport Condition=" '$(Srpc_EmptySupport)' == '' ">$(SRPC_EMPTY_SUPPORT)</Srpc_EmptySupport>
+
       <!-- Next try OS and CPU resolved by ProtoPlatform. -->
       <Protobuf_ToolsOs Condition=" '$(Protobuf_ToolsOs)' == '' ">$(_Protobuf_ToolsOs)</Protobuf_ToolsOs>
       <Protobuf_ToolsCpu Condition=" '$(Protobuf_ToolsCpu)' == '' ">$(_Protobuf_ToolsCpu)</Protobuf_ToolsCpu>
@@ -74,6 +80,12 @@
            >$(Protobuf_PackagedToolsPath)/$(Protobuf_ToolsOs)_$(Protobuf_ToolsCpu)/sRPCgen.exe</Protobuf_SrpcFullPath>
       <Protobuf_SrpcFullPath Condition=" '$(Protobuf_SrpcFullPath)' == '' "
            >$(Protobuf_PackagedToolsPath)/$(Protobuf_ToolsOs)_$(Protobuf_ToolsCpu)/sRPCgen</Protobuf_SrpcFullPath>
+
+      <Srpc_NamespaceBase Condition=" '$(Srpc_NamespaceBase)' == '' ">$(TargetName)</Srpc_NamespaceBase>
+      <Srpc_SrpcExt Condition=" '$(Srpc_SrpcExt)' == '' ">.service.cs</Srpc_SrpcExt>
+      <Srpc_ProtoExt Condition=" '$(Srpc_ProtoExt)' == '' ">.g.cs</Srpc_ProtoExt>
+      <Srpc_AutoSearchProj Condition=" '$(Srpc_AutoSearchProj)' != 'true' ">false</Srpc_AutoSearchProj>
+      <Srpc_EmptySupport Condition=" '$(Srpc_EmptySupport)' != 'true' ">false</Srpc_EmptySupport>
       
     </PropertyGroup>
 
@@ -88,7 +100,7 @@
   </Target>
 
   <Target Name="srpc_Generate"
-          Condition=" '@(Protobuf)' != '' "
+          Condition=" '@(Protobuf)' != '' or $(Srpc_AutoSearchProj) == 'true' "
           DependsOnTargets=" Protobuf_ResolvePlatform ">
     <Message Text="Generate SRPC" />
     <Error Condition=" '$(Protobuf_SrpcFullPath)' == '' "
@@ -101,6 +113,11 @@
       ProtocPath="$(Protobuf_ProtocFullPath)"
       ProjectPath="$(ProjectDir)"
       StandardImportsPath="$(Protobuf_StandardImportsPath)"
+      SrpcNamespaceBase="$(Srpc_NamespaceBase)"
+      SrpcSrpcExt="$(Srpc_SrpcExt)"
+      SrpcProtoExt="$(Srpc_ProtoExt)"
+      SrpcAutoSearchProj="$(Srpc_AutoSearchProj)"
+      SrpcEmptySupport="$(Srpc_EmptySupport)"
       />
   </Target>
 

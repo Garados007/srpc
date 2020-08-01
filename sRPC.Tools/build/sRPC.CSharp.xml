@@ -89,7 +89,7 @@
       </StringProperty.Metadata>
     </StringProperty>
 
-    <EnumProperty Name="Access" DisplayName="Class Access"
+    <!--<EnumProperty Name="Access" DisplayName="Class Access"
                   Category="Protobuf"
                   Description="Public or internal access modifier on generated classes.">
       <EnumValue Name="Public" DisplayName="Public" IsDefault="true" />
@@ -98,7 +98,7 @@
         <DataSource ItemType="Protobuf" SourceOfDefaultValue="AfterContext"
                     PersistenceStyle="Attribute" HasConfigurationCondition="false" />
       </EnumProperty.DataSource>
-    </EnumProperty>
+    </EnumProperty>-->
 
     <StringProperty Name="NamespaceBase" DisplayName="Namespace Base"
                     Category="sRPC"
