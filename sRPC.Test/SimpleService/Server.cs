@@ -1,5 +1,4 @@
-﻿using Google.Protobuf.WellKnownTypes;
-using sRPC.Test.Proto;
+﻿using sRPC.Test.Proto;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,15 +7,14 @@ namespace sRPC.Test.SimpleService
 {
     public class Server : SimpleServiceServerBase
     {
-        public override Task<Empty> Indefinite(Empty request)
+        public override Task Indefinite()
         {
-            return Task.FromResult(request);
+            return Task.CompletedTask;
         }
 
-        public override async Task<Empty> Indefinite(Empty request, CancellationToken cancellationToken)
+        public override async Task Indefinite(CancellationToken cancellationToken)
         {
             await Task.Delay(-1, cancellationToken);
-            return request;
         }
 
         public override Task<SqrtResponse> Sqrt(SqrtRequest request)

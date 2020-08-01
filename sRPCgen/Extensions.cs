@@ -12,7 +12,8 @@ namespace sRPCgen
             _ = writer ?? throw new ArgumentNullException(nameof(writer));
             _ = lines ?? throw new ArgumentNullException(nameof(lines));
             foreach (var line in lines)
-                writer.WriteLine(line?.Replace("\t", "    ") ?? "");
+                if (line != null)
+                    writer.WriteLine(line?.Replace("\t", "    ") ?? "");
         }
     }
 }
