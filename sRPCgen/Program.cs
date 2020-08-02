@@ -1,9 +1,11 @@
 ﻿using Google.Protobuf.Reflection;
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace sRPCgen
 {
@@ -20,6 +22,7 @@ namespace sRPCgen
         static string protoExtension;
         static string errorFormat;
         static bool emptySupport;
+        static readonly List<string> ignoreUnwrap = new List<string>();
 
         static void Main(string[] args)
         {
@@ -307,6 +310,17 @@ namespace sRPCgen
                             }
                             emptySupport = true;
                             break;
+                        case "--ignore-unwrap=":
+                            {
+                                var type = arg.Substring(ind + 1);
+                                if (ignoreUnwrap.Contains(type))
+                                {
+                                    Console.WriteLine($"--ignore-unwrap already defined for {type}");
+                                    return false;
+                                }
+                                ignoreUnwrap.Add($".{type}");
+                            }
+                            break;
                         case "-h":
                         case "--help":
                             return false;
@@ -406,6 +420,14 @@ the options given:
                             'default' or 'msvs' (Microsoft Visual Studio 
                             format). The format parameter is also set for
                             protoc.
+  --ignore-unwrap=TYPE      sRPCgen will try to generate unwrapped client
+                            Api call methods that will automaticly generate
+                            the required request object. With this argument
+                            certain protobuf request types are excluded
+                            from this behaviour. It is required to define
+                            the full protobuf name (include package).
+                            If --empty-support is activated the type
+                            google.protobuf.Empty is automaticly ignored.
   --empty-support           Add special support for google.protobuf.Empty
                             types.
   -v, --verbose             Print more information about the build process.
@@ -425,18 +447,34 @@ the options given:
                 csharpNamespace += ".";
             foreach (var type in descriptor.MessageType)
                 LoadTypes(type, names, protoPackage, csharpNamespace);
+            foreach (var @enum in descriptor.EnumType)
+                LoadEnums(@enum, names, protoPackage, csharpNamespace);
         }
 
         static void LoadTypes(DescriptorProto descriptor, List<NameInfo> names,
             string protoPackage, string csharpNamespace)
         {
             names.Add(new NameInfo(
+                descriptor: descriptor,
                 name: descriptor.Name,
                 protoBufName: $".{protoPackage}{descriptor.Name}",
                 csharpName: $"{csharpNamespace}{descriptor.Name}"));
             foreach (var type in descriptor.NestedType)
                 LoadTypes(type, names, $"{protoPackage}{descriptor.Name}.",
                     $"{csharpNamespace}{descriptor.Name}.");
+            foreach (var @enum in descriptor.EnumType)
+                LoadEnums(@enum, names, $"{protoPackage}{descriptor.Name}.",
+                    $"{csharpNamespace}{descriptor.Name}.");
+        }
+
+        static void LoadEnums(EnumDescriptorProto descriptor, List<NameInfo> names,
+            string protoPackage, string csharpNamespace)
+        {
+            names.Add(new NameInfo(
+                descriptor: null,
+                name: descriptor.Name,
+                protoBufName: $".{protoPackage}{descriptor.Name}",
+                csharpName: $"{csharpNamespace}{descriptor.Name}"));
         }
 
         static void GenerateServiceFile(
@@ -453,6 +491,7 @@ the options given:
                 $"#pragma warning disable CS0067, CS0076, CS0612, CS1591, CS1998, CS3021",
                 $"#region Designer generated code",
                 $"",
+                $"using gp = global::Google.Protobuf;",
                 $"using gpw = global::Google.Protobuf.WellKnownTypes;",
                 $"using s = global::System;",
                 $"using srpc = global::sRPC;",
@@ -546,6 +585,50 @@ the options given:
                     $"\t\t\t{(resp == "" ? "" : "return ")}await {method.Name}({(req == "" ? "" : "message, ")}cancellationToken.Token);",
                     $"\t\t}}"
                 );
+                if (req != "" && !ignoreUnwrap.Contains(method.InputType))
+                {
+                    var fields = GetRequestFields(method, names);
+                    var write = new Action<(string optType, string optName)?>(par =>
+                    {
+                        writer.WriteLine();
+                        writer.Write($"\t\tpublic virtual stt::Task{resp} {method.Name}(");
+                        var first = true;
+                        if (par != null)
+                        {
+                            first = false;
+                            writer.WriteLine();
+                            writer.Write($"\t\t\t{par.Value.optType} {par.Value.optName}");
+                        }
+                        foreach (var (field, type, defaultValue, _) in fields)
+                        {
+                            if (field is null || type is null || defaultValue is null)
+                                continue;
+                            if (first) first = false;
+                            else writer.Write(",");
+                            writer.WriteLine();
+                            writer.Write($"\t\t\t{type} {FirstLow(field)} = {defaultValue}");
+                        }
+                        writer.WriteLines(
+                            $")",
+                            $"\t\t{{",
+                            $"\t\t\tvar request = new {requestType}",
+                            $"\t\t\t{{"
+                            );
+                        foreach (var (field, _, _, converter) in fields)
+                        {
+                            writer.WriteLine($"\t\t\t\t{field} = {string.Format(converter, FirstLow(field))},");
+                        }
+                        writer.WriteLines(
+                            $"\t\t\t}};",
+                            $"\t\t\treturn {method.Name}(request{(par.HasValue ? $", {par.Value.optName}" : "")});",
+                            $"\t\t}}"
+                            );
+
+                    });
+                    write(null);
+                    write(("st::CancellationToken", "cancellationToken"));
+                    write(("s::TimeSpan", "timeout"));
+                }
             }
             writer.WriteLines(
                 $"\t}}",
@@ -639,6 +722,169 @@ the options given:
                 $"",
                 $"#endregion Designer generated code"
             );
+        }
+
+        static List<(string field, string type, string defaultValue, string converter)> GetRequestFields(
+            MethodDescriptorProto method,
+            List<NameInfo> names)
+        {
+            _ = method ?? throw new ArgumentNullException(nameof(method));
+            _ = names ?? throw new ArgumentNullException(nameof(names));
+            var result = new List<(string field, string type, string defaultValue, string converter)>();
+            var request = names
+                .Where(x => x.ProtoBufName == method.InputType)
+                .FirstOrDefault();
+            if (request is null || request.Descriptor is null)
+                return null;
+
+            var getCSharpName = new Func<string, string>(protoName => names
+                .Where(x => x.ProtoBufName == protoName)
+                .Select(x => x.CSharpName)
+                .FirstOrDefault());
+
+            foreach (var field in request.Descriptor.Field)
+            {
+                var (type, defaultValue, converter) = field.Type switch
+                {
+                    FieldDescriptorProto.Types.Type.Bool => 
+                        ( "bool"
+                        , string.IsNullOrEmpty(field.DefaultValue) ? "false" : field.DefaultValue
+                        , "{0}"
+                        ),
+                    FieldDescriptorProto.Types.Type.Bytes => 
+                        ( "byte[]"
+                        , "null"
+                        , "gp::ByteString.CopyFrom({0} ?? new byte[0])"
+                        ),
+                    FieldDescriptorProto.Types.Type.Double => 
+                        ( "double"
+                        , string.IsNullOrEmpty(field.DefaultValue) ? "0" : field.DefaultValue
+                        , "{0}"
+                        ),
+                    FieldDescriptorProto.Types.Type.Enum => 
+                        ( getCSharpName(field.TypeName)
+                        , string.IsNullOrEmpty(field.DefaultValue)
+                            ? $"({getCSharpName(field.TypeName)})0"
+                            : $"{getCSharpName(field.TypeName)}.{ConvertName(field.DefaultValue, field.TypeName)}"
+                        , "{0}"
+                        ),
+                    FieldDescriptorProto.Types.Type.Fixed32 =>
+                        ( "uint"
+                        , string.IsNullOrEmpty(field.DefaultValue) ? "0" : field.DefaultValue
+                        , "{0}"
+                        ),
+                    FieldDescriptorProto.Types.Type.Fixed64 =>
+                        ( "ulong"
+                        , string.IsNullOrEmpty(field.DefaultValue) ? "0" : field.DefaultValue
+                        , "{0}"
+                        ),
+                    FieldDescriptorProto.Types.Type.Float =>
+                        ( "float"
+                        , string.IsNullOrEmpty(field.DefaultValue) ? "0" : field.DefaultValue
+                        , "{0}"
+                        ),
+                    FieldDescriptorProto.Types.Type.Group => (null, null, null),
+                    FieldDescriptorProto.Types.Type.Int32 =>
+                        ( "int"
+                        , string.IsNullOrEmpty(field.DefaultValue) ? "0" : field.DefaultValue
+                        , "{0}"
+                        ),
+                    FieldDescriptorProto.Types.Type.Int64 =>
+                        ( "long"
+                        , string.IsNullOrEmpty(field.DefaultValue) ? "0" : field.DefaultValue
+                        , "{0}"
+                        ),
+                    FieldDescriptorProto.Types.Type.Message => 
+                        ( getCSharpName(field.TypeName)
+                        , "null"
+                        , "{0}"
+                        ),
+                    FieldDescriptorProto.Types.Type.Sfixed32 =>
+                        ( "int"
+                        , string.IsNullOrEmpty(field.DefaultValue) ? "0" : field.DefaultValue
+                        , "{0}"
+                        ),
+                    FieldDescriptorProto.Types.Type.Sfixed64 =>
+                        ( "long"
+                        , string.IsNullOrEmpty(field.DefaultValue) ? "0" : field.DefaultValue
+                        , "{0}"
+                        ),
+                    FieldDescriptorProto.Types.Type.Sint32 =>
+                        ( "int"
+                        , string.IsNullOrEmpty(field.DefaultValue) ? "0" : field.DefaultValue
+                        , "{0}"
+                        ),
+                    FieldDescriptorProto.Types.Type.Sint64 =>
+                        ( "long"
+                        , string.IsNullOrEmpty(field.DefaultValue) ? "0" : field.DefaultValue
+                        , "{0}"
+                        ),
+                    FieldDescriptorProto.Types.Type.String =>
+                        ( "string"
+                        , Escape(field.DefaultValue)
+                        , "{0} ?? \"\""
+                        ),
+                    FieldDescriptorProto.Types.Type.Uint32 =>
+                        ( "uint"
+                        , string.IsNullOrEmpty(field.DefaultValue) ? "0" : field.DefaultValue
+                        , "{0}"
+                        ),
+                    FieldDescriptorProto.Types.Type.Uint64 =>
+                        ( "ulong"
+                        , string.IsNullOrEmpty(field.DefaultValue) ? "0" : field.DefaultValue
+                        , "{0}"
+                        ),
+                    _ => (null, null, null)
+                };
+                if (field.Label == FieldDescriptorProto.Types.Label.Repeated)
+                    type = type == null ? null : type + "[]";
+                result.Add((ConvertName(field.Name), type, defaultValue, converter));
+            }
+
+            return result;
+        }
+
+        static string Escape(string input)
+        {
+            using var writer = new StringWriter();
+            using var provider = CodeDomProvider.CreateProvider("CSharp");
+            provider.GenerateCodeFromExpression(
+                new System.CodeDom.CodePrimitiveExpression(input),
+                writer,
+                null);
+            return writer.ToString();
+        }
+
+        static string ConvertName(string name, string trim = null)
+        {
+            if (trim != null)
+            {
+                var ind = trim.LastIndexOf('.');
+                if (ind >= 0)
+                    trim = trim.Substring(ind + 1);
+            }
+            var sb = new StringBuilder();
+            foreach (var p in name.Split(new [] { '_' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (trim?.ToLower() == p.ToLower())
+                {
+                    trim = null;
+                    continue;
+                }
+                if (p.Length == 0)
+                    continue;
+                sb.Append(char.ToUpper(p[0]));
+                if (p.Length > 1)
+                    sb.Append(p.Substring(1).ToLower());
+            }
+            return sb.ToString();
+        }
+
+        static string FirstLow(string name)
+        {
+            if (name == null || name.Length == 0)
+                return name;
+            return char.ToLower(name[0]) + name.Substring(1);
         }
     }
 }

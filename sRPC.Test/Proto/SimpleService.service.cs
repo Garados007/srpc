@@ -5,6 +5,7 @@
 #pragma warning disable CS0067, CS0076, CS0612, CS1591, CS1998, CS3021
 #region Designer generated code
 
+using gp = global::Google.Protobuf;
 using gpw = global::Google.Protobuf.WellKnownTypes;
 using s = global::System;
 using srpc = global::sRPC;
@@ -61,6 +62,38 @@ namespace sRPC.Test.Proto
                 throw new s::ArgumentOutOfRangeException(nameof(timeout));
             using var cancellationToken = new st::CancellationTokenSource(timeout);
             return await Sqrt(message, cancellationToken.Token);
+        }
+
+		public virtual stt::Task<sRPC.Test.Proto.SqrtResponse> Sqrt(
+			double value = 0)
+        {
+            var request = new sRPC.Test.Proto.SqrtRequest
+            {
+				Value = value,
+            };
+            return Sqrt(request);
+        }
+
+		public virtual stt::Task<sRPC.Test.Proto.SqrtResponse> Sqrt(
+			st::CancellationToken cancellationToken,
+			double value = 0)
+        {
+            var request = new sRPC.Test.Proto.SqrtRequest
+            {
+				Value = value,
+            };
+            return Sqrt(request, cancellationToken);
+        }
+
+		public virtual stt::Task<sRPC.Test.Proto.SqrtResponse> Sqrt(
+			s::TimeSpan timeout,
+			double value = 0)
+        {
+            var request = new sRPC.Test.Proto.SqrtRequest
+            {
+				Value = value,
+            };
+            return Sqrt(request, timeout);
         }
 
         public virtual stt::Task Indefinite()

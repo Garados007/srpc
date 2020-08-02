@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\sRPC\sRPC.csproj.include"/>
+  <Import Project="..\sRPC\sRPC.csproj.include" />
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.12.3" />
+    <PackageReference Include="System.CodeDom" Version="4.7.0" />
   </ItemGroup>
 
 </Project>
