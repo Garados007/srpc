@@ -68,6 +68,7 @@
       <Srpc_ProtoExt Condition=" '$(Srpc_ProtoExt)' == '' ">$(SRPC_PROTO_EXT)</Srpc_ProtoExt>
       <Srpc_AutoSearchProj Condition=" '$(Srpc_AutoSearchProj)' == '' ">$(SRPC_AUTO_SEARCH_PROJ)</Srpc_AutoSearchProj>
       <Srpc_EmptySupport Condition=" '$(Srpc_EmptySupport)' == '' ">$(SRPC_EMPTY_SUPPORT)</Srpc_EmptySupport>
+      <Srpc_IgnoreUnwrap>$(SRPC_IGNORE_UNWRAP);$(Srpc_IgnoreUnwrap)</Srpc_IgnoreUnwrap>
 
       <!-- Next try OS and CPU resolved by ProtoPlatform. -->
       <Protobuf_ToolsOs Condition=" '$(Protobuf_ToolsOs)' == '' ">$(_Protobuf_ToolsOs)</Protobuf_ToolsOs>
@@ -86,6 +87,7 @@
       <Srpc_ProtoExt Condition=" '$(Srpc_ProtoExt)' == '' ">.g.cs</Srpc_ProtoExt>
       <Srpc_AutoSearchProj Condition=" '$(Srpc_AutoSearchProj)' != 'true' ">false</Srpc_AutoSearchProj>
       <Srpc_EmptySupport Condition=" '$(Srpc_EmptySupport)' != 'true' ">false</Srpc_EmptySupport>
+      <Srpc_IgnoreUnwrap Condition=" '$(Srpc_IgnoreUnwrap)' == '' ">google.protobuf.Empty</Srpc_IgnoreUnwrap>
       
     </PropertyGroup>
 
@@ -118,6 +120,7 @@
       SrpcProtoExt="$(Srpc_ProtoExt)"
       SrpcAutoSearchProj="$(Srpc_AutoSearchProj)"
       SrpcEmptySupport="$(Srpc_EmptySupport)"
+      SrpcIgnoreUnwrap="$(Srpc_IgnoreUnwrap)"
       />
   </Target>
 

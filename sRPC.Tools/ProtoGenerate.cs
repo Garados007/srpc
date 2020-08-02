@@ -47,6 +47,15 @@ namespace sRPC.Tools
 
         private bool IsSrpcEmptySupport => SrpcEmptySupport == "true";
 
+        public string SrpcIgnoreUnwrap { get; set; }
+
+        private string[] SrpcIgnoreUnwrapList
+            => (SrpcIgnoreUnwrap ?? "")
+                .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(x => x.Trim())
+                .Distinct()
+                .ToArray();
+
 
         static readonly List<ErrorListFilter> s_errorListFilters = new List<ErrorListFilter>()
         {
@@ -206,6 +215,8 @@ namespace sRPC.Tools
                     AddArg(sb, "file", currentProtobuf.ItemSpec);
                 }
             }
+            foreach (var ignore in SrpcIgnoreUnwrapList)
+                AddArg(sb, "ignore-unwrap", ignore);
             return sb.ToString();
         }
 

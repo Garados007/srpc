@@ -22,6 +22,7 @@ namespace sRPCgen
         static string protoExtension;
         static string errorFormat;
         static bool emptySupport;
+        static readonly List<string> ignoreUnwrap = new List<string>();
 
         static void Main(string[] args)
         {
@@ -309,6 +310,17 @@ namespace sRPCgen
                             }
                             emptySupport = true;
                             break;
+                        case "--ignore-unwrap=":
+                            {
+                                var type = arg.Substring(ind + 1);
+                                if (ignoreUnwrap.Contains(type))
+                                {
+                                    Console.WriteLine($"--ignore-unwrap already defined for {type}");
+                                    return false;
+                                }
+                                ignoreUnwrap.Add($".{type}");
+                            }
+                            break;
                         case "-h":
                         case "--help":
                             return false;
@@ -408,6 +420,14 @@ the options given:
                             'default' or 'msvs' (Microsoft Visual Studio 
                             format). The format parameter is also set for
                             protoc.
+  --ignore-unwrap=TYPE      sRPCgen will try to generate unwrapped client
+                            Api call methods that will automaticly generate
+                            the required request object. With this argument
+                            certain protobuf request types are excluded
+                            from this behaviour. It is required to define
+                            the full protobuf name (include package).
+                            If --empty-support is activated the type
+                            google.protobuf.Empty is automaticly ignored.
   --empty-support           Add special support for google.protobuf.Empty
                             types.
   -v, --verbose             Print more information about the build process.
@@ -565,7 +585,7 @@ the options given:
                     $"\t\t\t{(resp == "" ? "" : "return ")}await {method.Name}({(req == "" ? "" : "message, ")}cancellationToken.Token);",
                     $"\t\t}}"
                 );
-                if (req != "")
+                if (req != "" && !ignoreUnwrap.Contains(method.InputType))
                 {
                     var fields = GetRequestFields(method, names);
                     var write = new Action<(string optType, string optName)?>(par =>
