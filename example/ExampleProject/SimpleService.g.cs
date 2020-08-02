@@ -24,13 +24,13 @@ namespace ExampleProject {
     static SimpleServiceReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChRzaW1wbGVfc2VydmljZS5wcm90bxIMc3JwYy5leGFtcGxlIkgKE1JhbmRv",
-            "bk51bWJlclJlcXVlc3QSDQoFY291bnQYASABKAUSEAoIbWluVmFsdWUYAiAB",
-            "KAUSEAoIbWF4VmFsdWUYAyABKAUiJgoUUmFuZG9tTnVtYmVyUmVzcG9uc2US",
-            "DgoGbnVtYmVyGAEgAygFMmkKDVNpbXBsZVNlcnZpY2USWAoPR2V0UmFuZG9t",
-            "TnVtYmVyEiEuc3JwYy5leGFtcGxlLlJhbmRvbk51bWJlclJlcXVlc3QaIi5z",
-            "cnBjLmV4YW1wbGUuUmFuZG9tTnVtYmVyUmVzcG9uc2VCEaoCDkV4YW1wbGVQ",
-            "cm9qZWN0YgZwcm90bzM="));
+            "ChRzaW1wbGVfc2VydmljZS5wcm90bxIMc3JwYy5leGFtcGxlIkoKE1JhbmRv",
+            "bk51bWJlclJlcXVlc3QSDQoFY291bnQYASABKAUSEQoJbWluX3ZhbHVlGAIg",
+            "ASgFEhEKCW1heF92YWx1ZRgDIAEoBSImChRSYW5kb21OdW1iZXJSZXNwb25z",
+            "ZRIOCgZudW1iZXIYASADKAUyaQoNU2ltcGxlU2VydmljZRJYCg9HZXRSYW5k",
+            "b21OdW1iZXISIS5zcnBjLmV4YW1wbGUuUmFuZG9uTnVtYmVyUmVxdWVzdBoi",
+            "LnNycGMuZXhhbXBsZS5SYW5kb21OdW1iZXJSZXNwb25zZUIRqgIORXhhbXBs",
+            "ZVByb2plY3RiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -92,7 +92,7 @@ namespace ExampleProject {
       }
     }
 
-    /// <summary>Field number for the "minValue" field.</summary>
+    /// <summary>Field number for the "min_value" field.</summary>
     public const int MinValueFieldNumber = 2;
     private int minValue_;
     /// <summary>
@@ -106,7 +106,7 @@ namespace ExampleProject {
       }
     }
 
-    /// <summary>Field number for the "maxValue" field.</summary>
+    /// <summary>Field number for the "max_value" field.</summary>
     public const int MaxValueFieldNumber = 3;
     private int maxValue_;
     /// <summary>

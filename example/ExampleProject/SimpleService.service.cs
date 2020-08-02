@@ -5,6 +5,7 @@
 #pragma warning disable CS0067, CS0076, CS0612, CS1591, CS1998, CS3021
 #region Designer generated code
 
+using gp = global::Google.Protobuf;
 using gpw = global::Google.Protobuf.WellKnownTypes;
 using s = global::System;
 using srpc = global::sRPC;
@@ -61,6 +62,50 @@ namespace ExampleProject
                 throw new s::ArgumentOutOfRangeException(nameof(timeout));
             using var cancellationToken = new st::CancellationTokenSource(timeout);
             return await GetRandomNumber(message, cancellationToken.Token);
+        }
+
+		public virtual stt::Task<ExampleProject.RandomNumberResponse> GetRandomNumber(
+			int count = 0,
+			int minValue = 0,
+			int maxValue = 0)
+        {
+            var request = new ExampleProject.RandonNumberRequest
+            {
+				Count = count,
+				MinValue = minValue,
+				MaxValue = maxValue,
+            };
+            return GetRandomNumber(request);
+        }
+
+		public virtual stt::Task<ExampleProject.RandomNumberResponse> GetRandomNumber(
+			st::CancellationToken cancellationToken,
+			int count = 0,
+			int minValue = 0,
+			int maxValue = 0)
+        {
+            var request = new ExampleProject.RandonNumberRequest
+            {
+				Count = count,
+				MinValue = minValue,
+				MaxValue = maxValue,
+            };
+            return GetRandomNumber(request, cancellationToken);
+        }
+
+		public virtual stt::Task<ExampleProject.RandomNumberResponse> GetRandomNumber(
+			s::TimeSpan timeout,
+			int count = 0,
+			int minValue = 0,
+			int maxValue = 0)
+        {
+            var request = new ExampleProject.RandonNumberRequest
+            {
+				Count = count,
+				MinValue = minValue,
+				MaxValue = maxValue,
+            };
+            return GetRandomNumber(request, timeout);
         }
     }
 

@@ -84,15 +84,8 @@ NetworkStream stream;
 using var client = new ApiClient<SimpleServiceClient>(stream);
 // start the client. This will now send and listen to requests
 client.Start();
-// create your request
-var request = new RandomNumberRequest
-{
-    Count = 5,
-    MinValue = 0,
-    MaxValue = 100,
-};
 // submit your request and await the response
-var response = await client.Api.GetRandomNumber(request);
+var response = await client.Api.GetRandomNumber(count: 5, minValue: 0, maxValue: 100);
 ```
 ```csharp
 // ### SERVER ###

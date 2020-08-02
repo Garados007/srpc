@@ -13,9 +13,9 @@ message RandonNumberRequest {
 	// the number of random numbers to generate
 	int32 count = 1;
 	// the minimum value of the random numbers (inclusive)
-	int32 minValue = 2;
+	int32 min_value = 2;
 	// the maximum value of the random numbers (exclusive)
-	int32 maxValue = 3;
+	int32 max_value = 3;
 }
 
 message RandomNumberResponse {

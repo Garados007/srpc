@@ -5,6 +5,7 @@
 #pragma warning disable CS0067, CS0076, CS0612, CS1591, CS1998, CS3021
 #region Designer generated code
 
+using gp = global::Google.Protobuf;
 using gpw = global::Google.Protobuf.WellKnownTypes;
 using s = global::System;
 using srpc = global::sRPC;
