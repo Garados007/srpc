@@ -1,0 +1,44 @@
+﻿syntax = "proto3";
+
+package srpc.test;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "sRPC.Test.Proto";
+
+// This service is not used for test cases. This service is only
+// for testing various build features. This test succeeds if the
+// generated code can be build by the csharp compiler.
+service BuildTestService {
+	rpc TestMultiFields(MultiFields)
+		returns (google.protobuf.Empty);
+}
+
+// this message type contains a wide variety of field types
+message MultiFields {
+	/* basic definitions */
+	bool bool_flag = 1;
+	bytes bytes_value = 2;
+	double double_value = 3;
+	EnumObject enum_value = 4;
+	fixed32 fixed32_value = 5;
+	fixed64 fixed64_value = 6;
+	float float_value = 7;
+	int32 int32_value = 8;
+	int64 int64_value = 9;
+	google.protobuf.Timestamp message_value = 10;
+	sfixed32 sfixed32_value = 11;
+	sfixed64 sfixed64_value = 12;
+	sint32 sint32_value = 13;
+	sint64 sint64_value = 14;
+	string string_value = 15;
+	uint32 uint32_value = 16;
+	uint64 uint64_value = 17;
+
+}
+
+enum EnumObject {
+	DEFAULT_VALUE = 0;
+	SECOND_VALUE = 1;
+}

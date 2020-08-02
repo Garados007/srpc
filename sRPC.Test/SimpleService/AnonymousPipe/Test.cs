@@ -35,10 +35,7 @@ namespace sRPC.Test.SimpleService.AnonymousPipe
             foreach (var num in testNumbers)
             {
                 var check = num < 0 ? double.NaN : Math.Sqrt(num);
-                var response = await client.Api.Sqrt(new SqrtRequest
-                {
-                    Value = num
-                });
+                var response = await client.Api.Sqrt(value: num);
                 Assert.AreEqual(check, response.Value);
             }
         }
