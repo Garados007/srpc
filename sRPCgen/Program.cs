@@ -494,6 +494,7 @@ the options given:
                 $"using gp = global::Google.Protobuf;",
                 $"using gpw = global::Google.Protobuf.WellKnownTypes;",
                 $"using s = global::System;",
+                $"using global::System.Linq;",
                 $"using srpc = global::sRPC;",
                 $"using st = global::System.Threading;",
                 $"using stt = global::System.Threading.Tasks;",
@@ -744,99 +745,102 @@ the options given:
 
             foreach (var field in request.Descriptor.Field)
             {
+                var repeated = field.Label == FieldDescriptorProto.Types.Label.Repeated;
                 var (type, defaultValue, converter) = field.Type switch
                 {
                     FieldDescriptorProto.Types.Type.Bool => 
                         ( "bool"
                         , string.IsNullOrEmpty(field.DefaultValue) ? "false" : field.DefaultValue
-                        , "{0}"
+                        , repeated ? "{{ {0} ?? new bool[0] }}" : "{0}"
                         ),
                     FieldDescriptorProto.Types.Type.Bytes => 
                         ( "byte[]"
                         , "null"
-                        , "gp::ByteString.CopyFrom({0} ?? new byte[0])"
+                        , repeated 
+                            ? "{{ {0}?.Select(x => gp::ByteString.CopyFrom(x ?? new byte[0])) ?? new gp::ByteString[0] }}" 
+                            : "gp::ByteString.CopyFrom({0} ?? new byte[0])"
                         ),
                     FieldDescriptorProto.Types.Type.Double => 
                         ( "double"
                         , string.IsNullOrEmpty(field.DefaultValue) ? "0" : field.DefaultValue
-                        , "{0}"
+                        , repeated ? "{{ {0} ?? new double[0] }}" : "{0}"
                         ),
                     FieldDescriptorProto.Types.Type.Enum => 
                         ( getCSharpName(field.TypeName)
                         , string.IsNullOrEmpty(field.DefaultValue)
                             ? $"({getCSharpName(field.TypeName)})0"
                             : $"{getCSharpName(field.TypeName)}.{ConvertName(field.DefaultValue, field.TypeName)}"
-                        , "{0}"
+                        , repeated ? "{{ {0} ?? new " + getCSharpName(field.TypeName) + "[0] }}" : "{0}"
                         ),
                     FieldDescriptorProto.Types.Type.Fixed32 =>
                         ( "uint"
                         , string.IsNullOrEmpty(field.DefaultValue) ? "0" : field.DefaultValue
-                        , "{0}"
+                        , repeated ? "{{ {0} ?? new uint[0] }}" : "{0}"
                         ),
                     FieldDescriptorProto.Types.Type.Fixed64 =>
                         ( "ulong"
                         , string.IsNullOrEmpty(field.DefaultValue) ? "0" : field.DefaultValue
-                        , "{0}"
+                        , repeated ? "{{ {0} ?? new ulong[0] }}" : "{0}"
                         ),
                     FieldDescriptorProto.Types.Type.Float =>
                         ( "float"
                         , string.IsNullOrEmpty(field.DefaultValue) ? "0" : field.DefaultValue
-                        , "{0}"
+                        , repeated ? "{{ {0} ?? new float[0] }}" : "{0}"
                         ),
                     FieldDescriptorProto.Types.Type.Group => (null, null, null),
                     FieldDescriptorProto.Types.Type.Int32 =>
                         ( "int"
                         , string.IsNullOrEmpty(field.DefaultValue) ? "0" : field.DefaultValue
-                        , "{0}"
+                        , repeated ? "{{ {0} ?? new int[0] }}" : "{0}"
                         ),
                     FieldDescriptorProto.Types.Type.Int64 =>
                         ( "long"
                         , string.IsNullOrEmpty(field.DefaultValue) ? "0" : field.DefaultValue
-                        , "{0}"
+                        , repeated ? "{{ {0} ?? new long[0] }}" : "{0}"
                         ),
                     FieldDescriptorProto.Types.Type.Message => 
                         ( getCSharpName(field.TypeName)
                         , "null"
-                        , "{0}"
+                        , repeated ? "{{ {0} ?? new " + getCSharpName(field.TypeName) + "[0] }}" : "{0}"
                         ),
                     FieldDescriptorProto.Types.Type.Sfixed32 =>
                         ( "int"
                         , string.IsNullOrEmpty(field.DefaultValue) ? "0" : field.DefaultValue
-                        , "{0}"
+                        , repeated ? "{{ {0} ?? new int[0] }}" : "{0}"
                         ),
                     FieldDescriptorProto.Types.Type.Sfixed64 =>
                         ( "long"
                         , string.IsNullOrEmpty(field.DefaultValue) ? "0" : field.DefaultValue
-                        , "{0}"
+                        , repeated ? "{{ {0} ?? new long[0] }}" : "{0}"
                         ),
                     FieldDescriptorProto.Types.Type.Sint32 =>
                         ( "int"
                         , string.IsNullOrEmpty(field.DefaultValue) ? "0" : field.DefaultValue
-                        , "{0}"
+                        , repeated ? "{{ {0} ?? new int[0] }}" : "{0}"
                         ),
                     FieldDescriptorProto.Types.Type.Sint64 =>
                         ( "long"
                         , string.IsNullOrEmpty(field.DefaultValue) ? "0" : field.DefaultValue
-                        , "{0}"
+                        , repeated ? "{{ {0} ?? new long[0] }}" : "{0}"
                         ),
                     FieldDescriptorProto.Types.Type.String =>
                         ( "string"
                         , Escape(field.DefaultValue)
-                        , "{0} ?? \"\""
+                        , repeated ? "{{ {0}?.Select(x => x ?? \"\") ?? new string[0] }}" : "{0} ?? \"\""
                         ),
                     FieldDescriptorProto.Types.Type.Uint32 =>
                         ( "uint"
                         , string.IsNullOrEmpty(field.DefaultValue) ? "0" : field.DefaultValue
-                        , "{0}"
+                        , repeated ? "{{ {0} ?? new uint[0] }}" : "{0}"
                         ),
                     FieldDescriptorProto.Types.Type.Uint64 =>
                         ( "ulong"
                         , string.IsNullOrEmpty(field.DefaultValue) ? "0" : field.DefaultValue
-                        , "{0}"
+                        , repeated ? "{{ {0} ?? new ulong[0] }}" : "{0}"
                         ),
                     _ => (null, null, null)
                 };
-                if (field.Label == FieldDescriptorProto.Types.Label.Repeated)
+                if (repeated)
                 {
                     type = type == null ? null : type + "[]";
                     defaultValue = "null";
