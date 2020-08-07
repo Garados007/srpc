@@ -26,7 +26,7 @@ namespace sRPC.Test.Proto {
           string.Concat(
             "Ch5Qcm90by9idWlsZF90ZXN0X3NlcnZpY2UucHJvdG8SCXNycGMudGVzdBob",
             "Z29vZ2xlL3Byb3RvYnVmL2VtcHR5LnByb3RvGh9nb29nbGUvcHJvdG9idWYv",
-            "dGltZXN0YW1wLnByb3RvIrQDCgtNdWx0aUZpZWxkcxIRCglib29sX2ZsYWcY",
+            "dGltZXN0YW1wLnByb3RvItIICgtNdWx0aUZpZWxkcxIRCglib29sX2ZsYWcY",
             "ASABKAgSEwoLYnl0ZXNfdmFsdWUYAiABKAwSFAoMZG91YmxlX3ZhbHVlGAMg",
             "ASgBEikKCmVudW1fdmFsdWUYBCABKA4yFS5zcnBjLnRlc3QuRW51bU9iamVj",
             "dBIVCg1maXhlZDMyX3ZhbHVlGAUgASgHEhUKDWZpeGVkNjRfdmFsdWUYBiAB",
@@ -36,14 +36,32 @@ namespace sRPC.Test.Proto {
             "CyABKA8SFgoOc2ZpeGVkNjRfdmFsdWUYDCABKBASFAoMc2ludDMyX3ZhbHVl",
             "GA0gASgREhQKDHNpbnQ2NF92YWx1ZRgOIAEoEhIUCgxzdHJpbmdfdmFsdWUY",
             "DyABKAkSFAoMdWludDMyX3ZhbHVlGBAgASgNEhQKDHVpbnQ2NF92YWx1ZRgR",
-            "IAEoBCoxCgpFbnVtT2JqZWN0EhEKDURFRkFVTFRfVkFMVUUQABIQCgxTRUNP",
-            "TkRfVkFMVUUQATJVChBCdWlsZFRlc3RTZXJ2aWNlEkEKD1Rlc3RNdWx0aUZp",
-            "ZWxkcxIWLnNycGMudGVzdC5NdWx0aUZpZWxkcxoWLmdvb2dsZS5wcm90b2J1",
-            "Zi5FbXB0eUISqgIPc1JQQy5UZXN0LlByb3RvYgZwcm90bzM="));
+            "IAEoBBIaChJyZXBlYXRlZF9ib29sX2ZsYWcYFSADKAgSHAoUcmVwZWF0ZWRf",
+            "Ynl0ZXNfdmFsdWUYFiADKAwSHQoVcmVwZWF0ZWRfZG91YmxlX3ZhbHVlGBcg",
+            "AygBEjIKE3JlcGVhdGVkX2VudW1fdmFsdWUYGCADKA4yFS5zcnBjLnRlc3Qu",
+            "RW51bU9iamVjdBIeChZyZXBlYXRlZF9maXhlZDMyX3ZhbHVlGBkgAygHEh4K",
+            "FnJlcGVhdGVkX2ZpeGVkNjRfdmFsdWUYGiADKAYSHAoUcmVwZWF0ZWRfZmxv",
+            "YXRfdmFsdWUYGyADKAISHAoUcmVwZWF0ZWRfaW50MzJfdmFsdWUYHCADKAUS",
+            "HAoUcmVwZWF0ZWRfaW50NjRfdmFsdWUYHSADKAMSOgoWcmVwZWF0ZWRfbWVz",
+            "c2FnZV92YWx1ZRgeIAMoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAS",
+            "HwoXcmVwZWF0ZWRfc2ZpeGVkMzJfdmFsdWUYHyADKA8SHwoXcmVwZWF0ZWRf",
+            "c2ZpeGVkNjRfdmFsdWUYICADKBASHQoVcmVwZWF0ZWRfc2ludDMyX3ZhbHVl",
+            "GCEgAygREh0KFXJlcGVhdGVkX3NpbnQ2NF92YWx1ZRgiIAMoEhIdChVyZXBl",
+            "YXRlZF9zdHJpbmdfdmFsdWUYIyADKAkSHQoVcmVwZWF0ZWRfdWludDMyX3Zh",
+            "bHVlGCQgAygNEh0KFXJlcGVhdGVkX3VpbnQ2NF92YWx1ZRglIAMoBBIvCgVt",
+            "YXBfMRgoIAMoCzIgLnNycGMudGVzdC5NdWx0aUZpZWxkcy5NYXAxRW50cnka",
+            "KwoJTWFwMUVudHJ5EgsKA2tleRgBIAEoBRINCgV2YWx1ZRgCIAEoCToCOAEi",
+            "HgoJSWRlbnRpY2FsEhEKCWlkZW50aWNhbBgBIAEoDCoxCgpFbnVtT2JqZWN0",
+            "EhEKDURFRkFVTFRfVkFMVUUQABIQCgxTRUNPTkRfVkFMVUUQATKUAQoQQnVp",
+            "bGRUZXN0U2VydmljZRJBCg9UZXN0TXVsdGlGaWVsZHMSFi5zcnBjLnRlc3Qu",
+            "TXVsdGlGaWVsZHMaFi5nb29nbGUucHJvdG9idWYuRW1wdHkSPQoNVGVzdElk",
+            "ZW50aWNhbBIULnNycGMudGVzdC5JZGVudGljYWwaFi5nb29nbGUucHJvdG9i",
+            "dWYuRW1wdHlCEqoCD3NSUEMuVGVzdC5Qcm90b2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.EmptyReflection.Descriptor, global::Google.Protobuf.WellKnownTypes.TimestampReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::sRPC.Test.Proto.EnumObject), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::sRPC.Test.Proto.MultiFields), global::sRPC.Test.Proto.MultiFields.Parser, new[]{ "BoolFlag", "BytesValue", "DoubleValue", "EnumValue", "Fixed32Value", "Fixed64Value", "FloatValue", "Int32Value", "Int64Value", "MessageValue", "Sfixed32Value", "Sfixed64Value", "Sint32Value", "Sint64Value", "StringValue", "Uint32Value", "Uint64Value" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::sRPC.Test.Proto.MultiFields), global::sRPC.Test.Proto.MultiFields.Parser, new[]{ "BoolFlag", "BytesValue", "DoubleValue", "EnumValue", "Fixed32Value", "Fixed64Value", "FloatValue", "Int32Value", "Int64Value", "MessageValue", "Sfixed32Value", "Sfixed64Value", "Sint32Value", "Sint64Value", "StringValue", "Uint32Value", "Uint64Value", "RepeatedBoolFlag", "RepeatedBytesValue", "RepeatedDoubleValue", "RepeatedEnumValue", "RepeatedFixed32Value", "RepeatedFixed64Value", "RepeatedFloatValue", "RepeatedInt32Value", "RepeatedInt64Value", "RepeatedMessageValue", "RepeatedSfixed32Value", "RepeatedSfixed64Value", "RepeatedSint32Value", "RepeatedSint64Value", "RepeatedStringValue", "RepeatedUint32Value", "RepeatedUint64Value", "Map1" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
+            new pbr::GeneratedClrTypeInfo(typeof(global::sRPC.Test.Proto.Identical), global::sRPC.Test.Proto.Identical.Parser, new[]{ "Identical_" }, null, null, null, null)
           }));
     }
     #endregion
@@ -103,6 +121,24 @@ namespace sRPC.Test.Proto {
       stringValue_ = other.stringValue_;
       uint32Value_ = other.uint32Value_;
       uint64Value_ = other.uint64Value_;
+      repeatedBoolFlag_ = other.repeatedBoolFlag_.Clone();
+      repeatedBytesValue_ = other.repeatedBytesValue_.Clone();
+      repeatedDoubleValue_ = other.repeatedDoubleValue_.Clone();
+      repeatedEnumValue_ = other.repeatedEnumValue_.Clone();
+      repeatedFixed32Value_ = other.repeatedFixed32Value_.Clone();
+      repeatedFixed64Value_ = other.repeatedFixed64Value_.Clone();
+      repeatedFloatValue_ = other.repeatedFloatValue_.Clone();
+      repeatedInt32Value_ = other.repeatedInt32Value_.Clone();
+      repeatedInt64Value_ = other.repeatedInt64Value_.Clone();
+      repeatedMessageValue_ = other.repeatedMessageValue_.Clone();
+      repeatedSfixed32Value_ = other.repeatedSfixed32Value_.Clone();
+      repeatedSfixed64Value_ = other.repeatedSfixed64Value_.Clone();
+      repeatedSint32Value_ = other.repeatedSint32Value_.Clone();
+      repeatedSint64Value_ = other.repeatedSint64Value_.Clone();
+      repeatedStringValue_ = other.repeatedStringValue_.Clone();
+      repeatedUint32Value_ = other.repeatedUint32Value_.Clone();
+      repeatedUint64Value_ = other.repeatedUint64Value_.Clone();
+      map1_ = other.map1_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -301,6 +337,192 @@ namespace sRPC.Test.Proto {
       }
     }
 
+    /// <summary>Field number for the "repeated_bool_flag" field.</summary>
+    public const int RepeatedBoolFlagFieldNumber = 21;
+    private static readonly pb::FieldCodec<bool> _repeated_repeatedBoolFlag_codec
+        = pb::FieldCodec.ForBool(170);
+    private readonly pbc::RepeatedField<bool> repeatedBoolFlag_ = new pbc::RepeatedField<bool>();
+    /// <summary>
+    /// repeated definitions 
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<bool> RepeatedBoolFlag {
+      get { return repeatedBoolFlag_; }
+    }
+
+    /// <summary>Field number for the "repeated_bytes_value" field.</summary>
+    public const int RepeatedBytesValueFieldNumber = 22;
+    private static readonly pb::FieldCodec<pb::ByteString> _repeated_repeatedBytesValue_codec
+        = pb::FieldCodec.ForBytes(178);
+    private readonly pbc::RepeatedField<pb::ByteString> repeatedBytesValue_ = new pbc::RepeatedField<pb::ByteString>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<pb::ByteString> RepeatedBytesValue {
+      get { return repeatedBytesValue_; }
+    }
+
+    /// <summary>Field number for the "repeated_double_value" field.</summary>
+    public const int RepeatedDoubleValueFieldNumber = 23;
+    private static readonly pb::FieldCodec<double> _repeated_repeatedDoubleValue_codec
+        = pb::FieldCodec.ForDouble(186);
+    private readonly pbc::RepeatedField<double> repeatedDoubleValue_ = new pbc::RepeatedField<double>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<double> RepeatedDoubleValue {
+      get { return repeatedDoubleValue_; }
+    }
+
+    /// <summary>Field number for the "repeated_enum_value" field.</summary>
+    public const int RepeatedEnumValueFieldNumber = 24;
+    private static readonly pb::FieldCodec<global::sRPC.Test.Proto.EnumObject> _repeated_repeatedEnumValue_codec
+        = pb::FieldCodec.ForEnum(194, x => (int) x, x => (global::sRPC.Test.Proto.EnumObject) x);
+    private readonly pbc::RepeatedField<global::sRPC.Test.Proto.EnumObject> repeatedEnumValue_ = new pbc::RepeatedField<global::sRPC.Test.Proto.EnumObject>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<global::sRPC.Test.Proto.EnumObject> RepeatedEnumValue {
+      get { return repeatedEnumValue_; }
+    }
+
+    /// <summary>Field number for the "repeated_fixed32_value" field.</summary>
+    public const int RepeatedFixed32ValueFieldNumber = 25;
+    private static readonly pb::FieldCodec<uint> _repeated_repeatedFixed32Value_codec
+        = pb::FieldCodec.ForFixed32(202);
+    private readonly pbc::RepeatedField<uint> repeatedFixed32Value_ = new pbc::RepeatedField<uint>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<uint> RepeatedFixed32Value {
+      get { return repeatedFixed32Value_; }
+    }
+
+    /// <summary>Field number for the "repeated_fixed64_value" field.</summary>
+    public const int RepeatedFixed64ValueFieldNumber = 26;
+    private static readonly pb::FieldCodec<ulong> _repeated_repeatedFixed64Value_codec
+        = pb::FieldCodec.ForFixed64(210);
+    private readonly pbc::RepeatedField<ulong> repeatedFixed64Value_ = new pbc::RepeatedField<ulong>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<ulong> RepeatedFixed64Value {
+      get { return repeatedFixed64Value_; }
+    }
+
+    /// <summary>Field number for the "repeated_float_value" field.</summary>
+    public const int RepeatedFloatValueFieldNumber = 27;
+    private static readonly pb::FieldCodec<float> _repeated_repeatedFloatValue_codec
+        = pb::FieldCodec.ForFloat(218);
+    private readonly pbc::RepeatedField<float> repeatedFloatValue_ = new pbc::RepeatedField<float>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<float> RepeatedFloatValue {
+      get { return repeatedFloatValue_; }
+    }
+
+    /// <summary>Field number for the "repeated_int32_value" field.</summary>
+    public const int RepeatedInt32ValueFieldNumber = 28;
+    private static readonly pb::FieldCodec<int> _repeated_repeatedInt32Value_codec
+        = pb::FieldCodec.ForInt32(226);
+    private readonly pbc::RepeatedField<int> repeatedInt32Value_ = new pbc::RepeatedField<int>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<int> RepeatedInt32Value {
+      get { return repeatedInt32Value_; }
+    }
+
+    /// <summary>Field number for the "repeated_int64_value" field.</summary>
+    public const int RepeatedInt64ValueFieldNumber = 29;
+    private static readonly pb::FieldCodec<long> _repeated_repeatedInt64Value_codec
+        = pb::FieldCodec.ForInt64(234);
+    private readonly pbc::RepeatedField<long> repeatedInt64Value_ = new pbc::RepeatedField<long>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<long> RepeatedInt64Value {
+      get { return repeatedInt64Value_; }
+    }
+
+    /// <summary>Field number for the "repeated_message_value" field.</summary>
+    public const int RepeatedMessageValueFieldNumber = 30;
+    private static readonly pb::FieldCodec<global::Google.Protobuf.WellKnownTypes.Timestamp> _repeated_repeatedMessageValue_codec
+        = pb::FieldCodec.ForMessage(242, global::Google.Protobuf.WellKnownTypes.Timestamp.Parser);
+    private readonly pbc::RepeatedField<global::Google.Protobuf.WellKnownTypes.Timestamp> repeatedMessageValue_ = new pbc::RepeatedField<global::Google.Protobuf.WellKnownTypes.Timestamp>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<global::Google.Protobuf.WellKnownTypes.Timestamp> RepeatedMessageValue {
+      get { return repeatedMessageValue_; }
+    }
+
+    /// <summary>Field number for the "repeated_sfixed32_value" field.</summary>
+    public const int RepeatedSfixed32ValueFieldNumber = 31;
+    private static readonly pb::FieldCodec<int> _repeated_repeatedSfixed32Value_codec
+        = pb::FieldCodec.ForSFixed32(250);
+    private readonly pbc::RepeatedField<int> repeatedSfixed32Value_ = new pbc::RepeatedField<int>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<int> RepeatedSfixed32Value {
+      get { return repeatedSfixed32Value_; }
+    }
+
+    /// <summary>Field number for the "repeated_sfixed64_value" field.</summary>
+    public const int RepeatedSfixed64ValueFieldNumber = 32;
+    private static readonly pb::FieldCodec<long> _repeated_repeatedSfixed64Value_codec
+        = pb::FieldCodec.ForSFixed64(258);
+    private readonly pbc::RepeatedField<long> repeatedSfixed64Value_ = new pbc::RepeatedField<long>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<long> RepeatedSfixed64Value {
+      get { return repeatedSfixed64Value_; }
+    }
+
+    /// <summary>Field number for the "repeated_sint32_value" field.</summary>
+    public const int RepeatedSint32ValueFieldNumber = 33;
+    private static readonly pb::FieldCodec<int> _repeated_repeatedSint32Value_codec
+        = pb::FieldCodec.ForSInt32(266);
+    private readonly pbc::RepeatedField<int> repeatedSint32Value_ = new pbc::RepeatedField<int>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<int> RepeatedSint32Value {
+      get { return repeatedSint32Value_; }
+    }
+
+    /// <summary>Field number for the "repeated_sint64_value" field.</summary>
+    public const int RepeatedSint64ValueFieldNumber = 34;
+    private static readonly pb::FieldCodec<long> _repeated_repeatedSint64Value_codec
+        = pb::FieldCodec.ForSInt64(274);
+    private readonly pbc::RepeatedField<long> repeatedSint64Value_ = new pbc::RepeatedField<long>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<long> RepeatedSint64Value {
+      get { return repeatedSint64Value_; }
+    }
+
+    /// <summary>Field number for the "repeated_string_value" field.</summary>
+    public const int RepeatedStringValueFieldNumber = 35;
+    private static readonly pb::FieldCodec<string> _repeated_repeatedStringValue_codec
+        = pb::FieldCodec.ForString(282);
+    private readonly pbc::RepeatedField<string> repeatedStringValue_ = new pbc::RepeatedField<string>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<string> RepeatedStringValue {
+      get { return repeatedStringValue_; }
+    }
+
+    /// <summary>Field number for the "repeated_uint32_value" field.</summary>
+    public const int RepeatedUint32ValueFieldNumber = 36;
+    private static readonly pb::FieldCodec<uint> _repeated_repeatedUint32Value_codec
+        = pb::FieldCodec.ForUInt32(290);
+    private readonly pbc::RepeatedField<uint> repeatedUint32Value_ = new pbc::RepeatedField<uint>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<uint> RepeatedUint32Value {
+      get { return repeatedUint32Value_; }
+    }
+
+    /// <summary>Field number for the "repeated_uint64_value" field.</summary>
+    public const int RepeatedUint64ValueFieldNumber = 37;
+    private static readonly pb::FieldCodec<ulong> _repeated_repeatedUint64Value_codec
+        = pb::FieldCodec.ForUInt64(298);
+    private readonly pbc::RepeatedField<ulong> repeatedUint64Value_ = new pbc::RepeatedField<ulong>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<ulong> RepeatedUint64Value {
+      get { return repeatedUint64Value_; }
+    }
+
+    /// <summary>Field number for the "map_1" field.</summary>
+    public const int Map1FieldNumber = 40;
+    private static readonly pbc::MapField<int, string>.Codec _map_map1_codec
+        = new pbc::MapField<int, string>.Codec(pb::FieldCodec.ForInt32(8, 0), pb::FieldCodec.ForString(18, ""), 322);
+    private readonly pbc::MapField<int, string> map1_ = new pbc::MapField<int, string>();
+    /// <summary>
+    /// some map definition 
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::MapField<int, string> Map1 {
+      get { return map1_; }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as MultiFields);
@@ -331,6 +553,24 @@ namespace sRPC.Test.Proto {
       if (StringValue != other.StringValue) return false;
       if (Uint32Value != other.Uint32Value) return false;
       if (Uint64Value != other.Uint64Value) return false;
+      if(!repeatedBoolFlag_.Equals(other.repeatedBoolFlag_)) return false;
+      if(!repeatedBytesValue_.Equals(other.repeatedBytesValue_)) return false;
+      if(!repeatedDoubleValue_.Equals(other.repeatedDoubleValue_)) return false;
+      if(!repeatedEnumValue_.Equals(other.repeatedEnumValue_)) return false;
+      if(!repeatedFixed32Value_.Equals(other.repeatedFixed32Value_)) return false;
+      if(!repeatedFixed64Value_.Equals(other.repeatedFixed64Value_)) return false;
+      if(!repeatedFloatValue_.Equals(other.repeatedFloatValue_)) return false;
+      if(!repeatedInt32Value_.Equals(other.repeatedInt32Value_)) return false;
+      if(!repeatedInt64Value_.Equals(other.repeatedInt64Value_)) return false;
+      if(!repeatedMessageValue_.Equals(other.repeatedMessageValue_)) return false;
+      if(!repeatedSfixed32Value_.Equals(other.repeatedSfixed32Value_)) return false;
+      if(!repeatedSfixed64Value_.Equals(other.repeatedSfixed64Value_)) return false;
+      if(!repeatedSint32Value_.Equals(other.repeatedSint32Value_)) return false;
+      if(!repeatedSint64Value_.Equals(other.repeatedSint64Value_)) return false;
+      if(!repeatedStringValue_.Equals(other.repeatedStringValue_)) return false;
+      if(!repeatedUint32Value_.Equals(other.repeatedUint32Value_)) return false;
+      if(!repeatedUint64Value_.Equals(other.repeatedUint64Value_)) return false;
+      if (!Map1.Equals(other.Map1)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -354,6 +594,24 @@ namespace sRPC.Test.Proto {
       if (StringValue.Length != 0) hash ^= StringValue.GetHashCode();
       if (Uint32Value != 0) hash ^= Uint32Value.GetHashCode();
       if (Uint64Value != 0UL) hash ^= Uint64Value.GetHashCode();
+      hash ^= repeatedBoolFlag_.GetHashCode();
+      hash ^= repeatedBytesValue_.GetHashCode();
+      hash ^= repeatedDoubleValue_.GetHashCode();
+      hash ^= repeatedEnumValue_.GetHashCode();
+      hash ^= repeatedFixed32Value_.GetHashCode();
+      hash ^= repeatedFixed64Value_.GetHashCode();
+      hash ^= repeatedFloatValue_.GetHashCode();
+      hash ^= repeatedInt32Value_.GetHashCode();
+      hash ^= repeatedInt64Value_.GetHashCode();
+      hash ^= repeatedMessageValue_.GetHashCode();
+      hash ^= repeatedSfixed32Value_.GetHashCode();
+      hash ^= repeatedSfixed64Value_.GetHashCode();
+      hash ^= repeatedSint32Value_.GetHashCode();
+      hash ^= repeatedSint64Value_.GetHashCode();
+      hash ^= repeatedStringValue_.GetHashCode();
+      hash ^= repeatedUint32Value_.GetHashCode();
+      hash ^= repeatedUint64Value_.GetHashCode();
+      hash ^= Map1.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -435,6 +693,24 @@ namespace sRPC.Test.Proto {
         output.WriteRawTag(136, 1);
         output.WriteUInt64(Uint64Value);
       }
+      repeatedBoolFlag_.WriteTo(output, _repeated_repeatedBoolFlag_codec);
+      repeatedBytesValue_.WriteTo(output, _repeated_repeatedBytesValue_codec);
+      repeatedDoubleValue_.WriteTo(output, _repeated_repeatedDoubleValue_codec);
+      repeatedEnumValue_.WriteTo(output, _repeated_repeatedEnumValue_codec);
+      repeatedFixed32Value_.WriteTo(output, _repeated_repeatedFixed32Value_codec);
+      repeatedFixed64Value_.WriteTo(output, _repeated_repeatedFixed64Value_codec);
+      repeatedFloatValue_.WriteTo(output, _repeated_repeatedFloatValue_codec);
+      repeatedInt32Value_.WriteTo(output, _repeated_repeatedInt32Value_codec);
+      repeatedInt64Value_.WriteTo(output, _repeated_repeatedInt64Value_codec);
+      repeatedMessageValue_.WriteTo(output, _repeated_repeatedMessageValue_codec);
+      repeatedSfixed32Value_.WriteTo(output, _repeated_repeatedSfixed32Value_codec);
+      repeatedSfixed64Value_.WriteTo(output, _repeated_repeatedSfixed64Value_codec);
+      repeatedSint32Value_.WriteTo(output, _repeated_repeatedSint32Value_codec);
+      repeatedSint64Value_.WriteTo(output, _repeated_repeatedSint64Value_codec);
+      repeatedStringValue_.WriteTo(output, _repeated_repeatedStringValue_codec);
+      repeatedUint32Value_.WriteTo(output, _repeated_repeatedUint32Value_codec);
+      repeatedUint64Value_.WriteTo(output, _repeated_repeatedUint64Value_codec);
+      map1_.WriteTo(output, _map_map1_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -494,6 +770,24 @@ namespace sRPC.Test.Proto {
       if (Uint64Value != 0UL) {
         size += 2 + pb::CodedOutputStream.ComputeUInt64Size(Uint64Value);
       }
+      size += repeatedBoolFlag_.CalculateSize(_repeated_repeatedBoolFlag_codec);
+      size += repeatedBytesValue_.CalculateSize(_repeated_repeatedBytesValue_codec);
+      size += repeatedDoubleValue_.CalculateSize(_repeated_repeatedDoubleValue_codec);
+      size += repeatedEnumValue_.CalculateSize(_repeated_repeatedEnumValue_codec);
+      size += repeatedFixed32Value_.CalculateSize(_repeated_repeatedFixed32Value_codec);
+      size += repeatedFixed64Value_.CalculateSize(_repeated_repeatedFixed64Value_codec);
+      size += repeatedFloatValue_.CalculateSize(_repeated_repeatedFloatValue_codec);
+      size += repeatedInt32Value_.CalculateSize(_repeated_repeatedInt32Value_codec);
+      size += repeatedInt64Value_.CalculateSize(_repeated_repeatedInt64Value_codec);
+      size += repeatedMessageValue_.CalculateSize(_repeated_repeatedMessageValue_codec);
+      size += repeatedSfixed32Value_.CalculateSize(_repeated_repeatedSfixed32Value_codec);
+      size += repeatedSfixed64Value_.CalculateSize(_repeated_repeatedSfixed64Value_codec);
+      size += repeatedSint32Value_.CalculateSize(_repeated_repeatedSint32Value_codec);
+      size += repeatedSint64Value_.CalculateSize(_repeated_repeatedSint64Value_codec);
+      size += repeatedStringValue_.CalculateSize(_repeated_repeatedStringValue_codec);
+      size += repeatedUint32Value_.CalculateSize(_repeated_repeatedUint32Value_codec);
+      size += repeatedUint64Value_.CalculateSize(_repeated_repeatedUint64Value_codec);
+      size += map1_.CalculateSize(_map_map1_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -559,6 +853,24 @@ namespace sRPC.Test.Proto {
       if (other.Uint64Value != 0UL) {
         Uint64Value = other.Uint64Value;
       }
+      repeatedBoolFlag_.Add(other.repeatedBoolFlag_);
+      repeatedBytesValue_.Add(other.repeatedBytesValue_);
+      repeatedDoubleValue_.Add(other.repeatedDoubleValue_);
+      repeatedEnumValue_.Add(other.repeatedEnumValue_);
+      repeatedFixed32Value_.Add(other.repeatedFixed32Value_);
+      repeatedFixed64Value_.Add(other.repeatedFixed64Value_);
+      repeatedFloatValue_.Add(other.repeatedFloatValue_);
+      repeatedInt32Value_.Add(other.repeatedInt32Value_);
+      repeatedInt64Value_.Add(other.repeatedInt64Value_);
+      repeatedMessageValue_.Add(other.repeatedMessageValue_);
+      repeatedSfixed32Value_.Add(other.repeatedSfixed32Value_);
+      repeatedSfixed64Value_.Add(other.repeatedSfixed64Value_);
+      repeatedSint32Value_.Add(other.repeatedSint32Value_);
+      repeatedSint64Value_.Add(other.repeatedSint64Value_);
+      repeatedStringValue_.Add(other.repeatedStringValue_);
+      repeatedUint32Value_.Add(other.repeatedUint32Value_);
+      repeatedUint64Value_.Add(other.repeatedUint64Value_);
+      map1_.Add(other.map1_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -639,6 +951,221 @@ namespace sRPC.Test.Proto {
           }
           case 136: {
             Uint64Value = input.ReadUInt64();
+            break;
+          }
+          case 170:
+          case 168: {
+            repeatedBoolFlag_.AddEntriesFrom(input, _repeated_repeatedBoolFlag_codec);
+            break;
+          }
+          case 178: {
+            repeatedBytesValue_.AddEntriesFrom(input, _repeated_repeatedBytesValue_codec);
+            break;
+          }
+          case 186:
+          case 185: {
+            repeatedDoubleValue_.AddEntriesFrom(input, _repeated_repeatedDoubleValue_codec);
+            break;
+          }
+          case 194:
+          case 192: {
+            repeatedEnumValue_.AddEntriesFrom(input, _repeated_repeatedEnumValue_codec);
+            break;
+          }
+          case 202:
+          case 205: {
+            repeatedFixed32Value_.AddEntriesFrom(input, _repeated_repeatedFixed32Value_codec);
+            break;
+          }
+          case 210:
+          case 209: {
+            repeatedFixed64Value_.AddEntriesFrom(input, _repeated_repeatedFixed64Value_codec);
+            break;
+          }
+          case 218:
+          case 221: {
+            repeatedFloatValue_.AddEntriesFrom(input, _repeated_repeatedFloatValue_codec);
+            break;
+          }
+          case 226:
+          case 224: {
+            repeatedInt32Value_.AddEntriesFrom(input, _repeated_repeatedInt32Value_codec);
+            break;
+          }
+          case 234:
+          case 232: {
+            repeatedInt64Value_.AddEntriesFrom(input, _repeated_repeatedInt64Value_codec);
+            break;
+          }
+          case 242: {
+            repeatedMessageValue_.AddEntriesFrom(input, _repeated_repeatedMessageValue_codec);
+            break;
+          }
+          case 250:
+          case 253: {
+            repeatedSfixed32Value_.AddEntriesFrom(input, _repeated_repeatedSfixed32Value_codec);
+            break;
+          }
+          case 258:
+          case 257: {
+            repeatedSfixed64Value_.AddEntriesFrom(input, _repeated_repeatedSfixed64Value_codec);
+            break;
+          }
+          case 266:
+          case 264: {
+            repeatedSint32Value_.AddEntriesFrom(input, _repeated_repeatedSint32Value_codec);
+            break;
+          }
+          case 274:
+          case 272: {
+            repeatedSint64Value_.AddEntriesFrom(input, _repeated_repeatedSint64Value_codec);
+            break;
+          }
+          case 282: {
+            repeatedStringValue_.AddEntriesFrom(input, _repeated_repeatedStringValue_codec);
+            break;
+          }
+          case 290:
+          case 288: {
+            repeatedUint32Value_.AddEntriesFrom(input, _repeated_repeatedUint32Value_codec);
+            break;
+          }
+          case 298:
+          case 296: {
+            repeatedUint64Value_.AddEntriesFrom(input, _repeated_repeatedUint64Value_codec);
+            break;
+          }
+          case 322: {
+            map1_.AddEntriesFrom(input, _map_map1_codec);
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  public sealed partial class Identical : pb::IMessage<Identical> {
+    private static readonly pb::MessageParser<Identical> _parser = new pb::MessageParser<Identical>(() => new Identical());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<Identical> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::sRPC.Test.Proto.BuildTestServiceReflection.Descriptor.MessageTypes[1]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Identical() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Identical(Identical other) : this() {
+      identical_ = other.identical_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Identical Clone() {
+      return new Identical(this);
+    }
+
+    /// <summary>Field number for the "identical" field.</summary>
+    public const int Identical_FieldNumber = 1;
+    private pb::ByteString identical_ = pb::ByteString.Empty;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString Identical_ {
+      get { return identical_; }
+      set {
+        identical_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as Identical);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(Identical other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Identical_ != other.Identical_) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Identical_.Length != 0) hash ^= Identical_.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (Identical_.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteBytes(Identical_);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (Identical_.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Identical_);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(Identical other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Identical_.Length != 0) {
+        Identical_ = other.Identical_;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            Identical_ = input.ReadBytes();
             break;
           }
         }
