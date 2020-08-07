@@ -13,6 +13,8 @@ option csharp_namespace = "sRPC.Test.Proto";
 service BuildTestService {
 	rpc TestMultiFields(MultiFields)
 		returns (google.protobuf.Empty);
+	rpc TestIdentical(Identical)
+		returns (google.protobuf.Empty);
 }
 
 // this message type contains a wide variety of field types
@@ -35,10 +37,34 @@ message MultiFields {
 	string string_value = 15;
 	uint32 uint32_value = 16;
 	uint64 uint64_value = 17;
+	/* repeated definitions */
+	repeated bool repeated_bool_flag = 21;
+	repeated bytes repeated_bytes_value = 22;
+	repeated double repeated_double_value = 23;
+	repeated EnumObject repeated_enum_value = 24;
+	repeated fixed32 repeated_fixed32_value = 25;
+	repeated fixed64 repeated_fixed64_value = 26;
+	repeated float repeated_float_value = 27;
+	repeated int32 repeated_int32_value = 28;
+	repeated int64 repeated_int64_value = 29;
+	repeated google.protobuf.Timestamp repeated_message_value = 30;
+	repeated sfixed32 repeated_sfixed32_value = 31;
+	repeated sfixed64 repeated_sfixed64_value = 32;
+	repeated sint32 repeated_sint32_value = 33;
+	repeated sint64 repeated_sint64_value = 34;
+	repeated string repeated_string_value = 35;
+	repeated uint32 repeated_uint32_value = 36;
+	repeated uint64 repeated_uint64_value = 37;
+	/* some map definition */
+	map<int32, string> map_1 = 40;
+}
 
+message Identical {
+	bytes identical = 1;
 }
 
 enum EnumObject {
 	DEFAULT_VALUE = 0;
 	SECOND_VALUE = 1;
 }
+
