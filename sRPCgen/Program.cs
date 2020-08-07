@@ -837,8 +837,14 @@ the options given:
                     _ => (null, null, null)
                 };
                 if (field.Label == FieldDescriptorProto.Types.Label.Repeated)
+                {
                     type = type == null ? null : type + "[]";
-                result.Add((ConvertName(field.Name), type, defaultValue, converter));
+                    defaultValue = "null";
+                }
+                var fieldName = ConvertName(field.Name);
+                if (fieldName.ToLower() == request.Name.ToLower())
+                    fieldName += "_";
+                result.Add((fieldName, type, defaultValue, converter));
             }
 
             return result;
