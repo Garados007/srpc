@@ -25,5 +25,16 @@ namespace sRPCgen.Report
             writer.WriteBoolean("srpc", Srpc);
             writer.WriteEndObject();
         }
+
+        public static GeneratedReport Load(ref JsonElement json)
+        {
+            return new GeneratedReport
+            {
+                File = json.GetProperty("file").GetString(),
+                Source = json.GetProperty("source").GetString(),
+                LastBuild = json.GetProperty("last-build").GetDateTime(),
+                Srpc = json.GetProperty("srpc").GetBoolean(),
+            };
+        }
     }
 }

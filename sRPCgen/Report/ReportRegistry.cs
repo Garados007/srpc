@@ -36,5 +36,32 @@ namespace sRPCgen.Report
             writer.Flush();
             stream.Flush();
         }
+
+        public static ReportRegistry Load(string file)
+        {
+            if (!File.Exists(file))
+                return null;
+            var content = File.ReadAllBytes(file);
+            var reader = new Utf8JsonReader(content,
+                new JsonReaderOptions
+                {
+                    AllowTrailingCommas = true,
+                    CommentHandling = JsonCommentHandling.Skip
+                });
+            if (!JsonDocument.TryParseValue(ref reader, out JsonDocument document))
+                return null;
+            try
+            {
+                var registry = new ReportRegistry();
+                registry.Protos.AddRange(document.RootElement
+                    .GetProperty("proto").EnumerateArray()
+                    .Select(x => ProtoReport.Load(ref x)));
+                registry.Generateds.AddRange(document.RootElement
+                    .GetProperty("generated").EnumerateArray()
+                    .Select(x => GeneratedReport.Load(ref x)));
+                return registry;
+            }
+            catch { return null; }
+        }
     }
 }

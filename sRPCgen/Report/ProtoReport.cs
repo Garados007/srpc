@@ -47,10 +47,7 @@ namespace sRPCgen.Report
         {
             _ = writer ?? throw new ArgumentNullException(nameof(writer));
             writer.WriteStartObject();
-            writer.WritePropertyName("file");
-            if (File == null)
-                writer.WriteNullValue();
-            else writer.WriteStringValue(File);
+            writer.WriteString("file", File);
             writer.WriteString("last-change", LastChange);
             writer.WritePropertyName("deps");
             writer.WriteStartArray();
@@ -58,6 +55,18 @@ namespace sRPCgen.Report
                 writer.WriteStringValue(dep);
             writer.WriteEndArray();
             writer.WriteEndObject();
+        }
+
+        public static ProtoReport Load(ref JsonElement json)
+        {
+            var report = new ProtoReport
+            {
+                File = json.GetProperty("file").GetString(),
+                LastChange = json.GetProperty("last-change").GetDateTime(),
+            };
+            report.Dependencies.AddRange(
+                json.GetProperty("deps").EnumerateArray().Select(x => x.GetString()));
+            return report;
         }
     }
 }

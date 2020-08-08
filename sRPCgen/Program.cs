@@ -13,6 +13,7 @@ namespace sRPCgen
         static readonly Settings settings = new Settings();
         static readonly Log log = new Log(settings);
         static ReportRegistry report;
+        static ReportRegistry oldReport;
 
         static void Main(string[] args)
         {
@@ -26,6 +27,7 @@ namespace sRPCgen
             if (settings.Report != null)
             {
                 report = new ReportRegistry();
+                oldReport = ReportRegistry.Load(settings.Report);
             }
 
             if (settings.Verbose)
