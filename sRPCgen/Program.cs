@@ -1,11 +1,9 @@
 ﻿using Google.Protobuf.Reflection;
 using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace sRPCgen
 {
@@ -54,11 +52,21 @@ namespace sRPCgen
                 var startInfo = new ProcessStartInfo
                 {
                     FileName = "protoc",
-                    Arguments = $"{string.Join(" ", settings.ProtoImports.Select(x => $"-I{x}"))} " +
-                        $"-o{file}.bin --csharp_out={settings.OutputDir} " +
-                        $"--csharp_opt=base_namespace={settings.NamespaceBase},file_extension={settings.ProtoExtension} " +
-                        (settings.ErrorFormat != "default" ? $"--error_format={settings.ErrorFormat} " : "") +
-                        $"--include_imports {file}",
+                    Arguments = new ArgsBuilder()
+                        .Multi(settings.ProtoImports, 
+                            (x, b) => b.Key('I', x))
+                        .Key('o', $"{file}.bin")
+                        .Key("csharp_out", settings.OutputDir)
+                        .DictValue("csharp_opt", new Dictionary<string, string>
+                        {
+                            { "base_namespace", settings.NamespaceBase },
+                            { "file_extension", settings.ProtoExtension }
+                        })
+                        .Key("error_format", settings.ErrorFormat, 
+                            condition: settings.ErrorFormat != "default")
+                        .Flag("include_imports")
+                        .File(file)
+                        .ToString(),
                     CreateNoWindow = true,
                     RedirectStandardError = true,
                     RedirectStandardOutput = true,
