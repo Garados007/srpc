@@ -11,18 +11,7 @@ namespace sRPCgen
 {
     class Program
     {
-        static string file;
-        static string outputDir;
-        static string namespaceBase;
-        static string fileExtension;
-        static bool verbose;
-        static bool buildProtoc;
-        static string searchDir;
-        static readonly List<string> protoImports = new List<string>();
-        static string protoExtension;
-        static string errorFormat;
-        static bool emptySupport;
-        static readonly List<string> ignoreUnwrap = new List<string>();
+        static readonly Settings settings = new Settings();
 
         static void Main(string[] args)
         {
@@ -32,31 +21,27 @@ namespace sRPCgen
                 return;
             }
 
-            outputDir ??= Environment.CurrentDirectory;
-            namespaceBase ??= "";
-            fileExtension ??= ".g.cs";
-            protoExtension ??= ".cs";
-            errorFormat ??= "default";
+            settings.SetDefaults();
 
-            if (verbose)
+            if (settings.Verbose)
             {
-                Console.WriteLine($"Protobuf descriptor: {file}");
-                Console.WriteLine($"Output directory:    {outputDir}");
-                Console.WriteLine($"Namespace base:      {namespaceBase}");
+                Console.WriteLine($"Protobuf descriptor: {settings.File}");
+                Console.WriteLine($"Output directory:    {settings.OutputDir}");
+                Console.WriteLine($"Namespace base:      {settings.NamespaceBase}");
             }
 
-            if (searchDir != null)
-                WorkAtDir(searchDir);
-            else WorkSingleFile(file);
+            if (settings.SearchDir != null)
+                WorkAtDir(settings.SearchDir);
+            else WorkSingleFile(settings.File);
 
-            if (verbose)
+            if (settings.Verbose)
                 Console.WriteLine("Finish.");
         }
 
         static void WriteWarning(string text, string errorKind = null, string code = null, string file = null)
         {
-            file ??= Program.file ?? "sRPC";
-            switch (errorFormat)
+            file ??= settings.File ?? "sRPC";
+            switch (settings.ErrorFormat)
             {
                 case "default":
                     Console.WriteLine(text);
@@ -69,8 +54,8 @@ namespace sRPCgen
 
         static void WriteError(string text, string errorKind = null, string code = null, string file = null)
         {
-            file ??= Program.file ?? "sRPC";
-            switch (errorFormat)
+            file ??= settings.File ?? "sRPC";
+            switch (settings.ErrorFormat)
             {
                 case "default":
                     Console.Error.WriteLine(text);
@@ -83,7 +68,7 @@ namespace sRPCgen
 
         static void WorkAtDir(string dir)
         {
-            foreach (var file in Directory.EnumerateFiles(dir, buildProtoc ? "*.proto" : "*.proto.bin"))
+            foreach (var file in Directory.EnumerateFiles(dir, settings.BuildProtoc ? "*.proto" : "*.proto.bin"))
                 WorkSingleFile(file);
             foreach (var sub in Directory.EnumerateDirectories(dir))
                 WorkAtDir(sub);
@@ -91,15 +76,15 @@ namespace sRPCgen
 
         static void WorkSingleFile(string file)
         {
-            if (buildProtoc)
+            if (settings.BuildProtoc)
             {
                 var startInfo = new ProcessStartInfo
                 {
                     FileName = "protoc",
-                    Arguments = $"{string.Join(" ", protoImports.Select(x => $"-I{x}"))} " +
-                        $"-o{file}.bin --csharp_out={outputDir} " +
-                        $"--csharp_opt=base_namespace={namespaceBase},file_extension={protoExtension} " +
-                        (errorFormat != "default" ? $"--error_format={errorFormat} " : "") +
+                    Arguments = $"{string.Join(" ", settings.ProtoImports.Select(x => $"-I{x}"))} " +
+                        $"-o{file}.bin --csharp_out={settings.OutputDir} " +
+                        $"--csharp_opt=base_namespace={settings.NamespaceBase},file_extension={settings.ProtoExtension} " +
+                        (settings.ErrorFormat != "default" ? $"--error_format={settings.ErrorFormat} " : "") +
                         $"--include_imports {file}",
                     CreateNoWindow = true,
                     RedirectStandardError = true,
@@ -135,7 +120,7 @@ namespace sRPCgen
 
         static void WorkSingleBinFile(string file)
         {
-            if (verbose)
+            if (settings.Verbose)
                 Console.WriteLine($"Read protobuf descriptor of {file}...");
             FileDescriptorSet descriptor;
             using var stream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
@@ -146,7 +131,7 @@ namespace sRPCgen
                 return;
             }
 
-            if (verbose)
+            if (settings.Verbose)
                 Console.WriteLine("Load type list...");
             List<NameInfo> names = new List<NameInfo>();
             foreach (var filedesc in descriptor.File)
@@ -162,18 +147,18 @@ namespace sRPCgen
         static void WorkSingleEntry(FileDescriptorProto filedesc, ServiceDescriptorProto service, List<NameInfo> names)
         {
             var targetName = filedesc.Options?.CsharpNamespace ?? "";
-            if (targetName.StartsWith(namespaceBase))
-                targetName = targetName.Substring(namespaceBase.Length);
+            if (targetName.StartsWith(settings.NamespaceBase))
+                targetName = targetName.Substring(settings.NamespaceBase.Length);
             else
-                WriteWarning(text: $"the c# namespace {targetName} has not the base {namespaceBase}. The namespace will not be shortened.",
+                WriteWarning(text: $"the c# namespace {targetName} has not the base {settings.NamespaceBase}. The namespace will not be shortened.",
                     file: filedesc.Name);
             if (targetName != null)
                 targetName += '.';
             targetName = (targetName + service.Name).Replace('.', '/');
             if (targetName.StartsWith("/"))
                 targetName = targetName.Substring(1);
-            targetName = Path.Combine(outputDir + "/", targetName + fileExtension);
-            if (verbose)
+            targetName = Path.Combine(settings.OutputDir + "/", targetName + settings.FileExtension);
+            if (settings.Verbose)
                 Console.WriteLine($" Generate service for {service.Name} at {targetName}...");
             var fi = new FileInfo(targetName);
             if (!fi.Directory.Exists)
@@ -201,54 +186,54 @@ namespace sRPCgen
                     switch (command)
                     {
                         case "--file=":
-                            if (file != null)
+                            if (settings.File != null)
                             {
                                 Console.WriteLine("--file is already defined");
                                 return false;
                             }
-                            if (searchDir != null)
+                            if (settings.SearchDir != null)
                             {
                                 Console.WriteLine("--file cannot be used in --search-dir");
                                 return false;
                             }
-                            file = arg.Substring(ind + 1);
+                            settings.File = arg.Substring(ind + 1);
                             break;
                         case "--output-dir=":
-                            if (outputDir != null)
+                            if (settings.OutputDir != null)
                             {
                                 Console.WriteLine("--output-dir is already defined");
                                 return false;
                             }
-                            outputDir = arg.Substring(ind + 1);
+                            settings.OutputDir = arg.Substring(ind + 1);
                             break;
                         case "--namespace-base=":
-                            if (namespaceBase != null)
+                            if (settings.NamespaceBase != null)
                             {
                                 Console.WriteLine("--namespace-base is already defined");
                                 return false;
                             }
-                            namespaceBase = arg.Substring(ind + 1);
+                            settings.NamespaceBase = arg.Substring(ind + 1);
                             break;
                         case "--file-extension=":
-                            if (fileExtension != null)
+                            if (settings.FileExtension != null)
                             {
                                 Console.WriteLine("--file-extension is already defined");
                                 return false;
                             }
-                            fileExtension = arg.Substring(ind + 1);
+                            settings.FileExtension = arg.Substring(ind + 1);
                             break;
                         case "--build-protoc":
-                            if (buildProtoc)
+                            if (settings.BuildProtoc)
                             {
                                 Console.WriteLine("--build-protoc is already defined");
                                 return false;
                             }
-                            buildProtoc = true;
+                            settings.BuildProtoc = true;
                             break;
                         case "--proto-import=":
                             {
                                 var path = arg.Substring(ind + 1);
-                                if (protoImports.Contains(path))
+                                if (settings.ProtoImports.Contains(path))
                                 {
                                     Console.WriteLine($"--proto-import already defined for {path}");
                                     return false;
@@ -258,67 +243,67 @@ namespace sRPCgen
                                     Console.WriteLine($"directory {path} doesn't exists as proto import");
                                     return false;
                                 }
-                                protoImports.Add(path);
+                                settings.ProtoImports.Add(path);
                             }
                             break;
                         case "--proto-extension=":
-                            if (protoExtension != null)
+                            if (settings.ProtoExtension != null)
                             {
                                 Console.WriteLine("--proto-extension is already defined");
                                 return false;
                             }
-                            protoExtension = arg.Substring(ind + 1);
+                            settings.ProtoExtension = arg.Substring(ind + 1);
                             break;
                         case "--search-dir=":
-                            if (searchDir != null)
+                            if (settings.SearchDir != null)
                             {
                                 Console.WriteLine("--search-dir is already defined");
                                 return false;
                             }
-                            if (file != null)
+                            if (settings.File != null)
                             {
                                 Console.WriteLine("--search-dir cannot be used in combination with --file");
                                 return false;
                             }
-                            searchDir = arg.Substring(ind + 1);
-                            if (!Directory.Exists(searchDir))
+                            settings.SearchDir = arg.Substring(ind + 1);
+                            if (!Directory.Exists(settings.SearchDir))
                             {
-                                Console.WriteLine($"the search dir {searchDir} doesn't exists");
+                                Console.WriteLine($"the search dir {settings.SearchDir} doesn't exists");
                                 return false;
                             }
                             break;
                         case "--error-format=":
-                            if (errorFormat != null)
+                            if (settings.ErrorFormat != null)
                             {
                                 Console.WriteLine("--error-format is already defined");
                                 return false;
                             }
                             switch (arg.Substring(ind + 1))
                             {
-                                case "msvs": errorFormat = "msvs"; break;
-                                case "default": errorFormat = "default"; break;
+                                case "msvs": settings.ErrorFormat = "msvs"; break;
+                                case "default": settings.ErrorFormat = "default"; break;
                                 default: 
                                     Console.WriteLine($"unknown error format {arg.Substring(ind + 1)}"); 
                                     return false;
                             }
                             break;
                         case "--empty-support":
-                            if (emptySupport)
+                            if (settings.EmptySupport)
                             {
                                 Console.WriteLine("--empty-support is already defined");
                                 return false;
                             }
-                            emptySupport = true;
+                            settings.EmptySupport = true;
                             break;
                         case "--ignore-unwrap=":
                             {
                                 var type = arg.Substring(ind + 1);
-                                if (ignoreUnwrap.Contains(type))
+                                if (settings.IgnoreUnwrap.Contains(type))
                                 {
                                     Console.WriteLine($"--ignore-unwrap already defined for {type}");
                                     return false;
                                 }
-                                ignoreUnwrap.Add($".{type}");
+                                settings.IgnoreUnwrap.Add($".{type}");
                             }
                             break;
                         case "-h":
@@ -326,7 +311,7 @@ namespace sRPCgen
                             return false;
                         case "-v":
                         case "--verbose":
-                            verbose = true;
+                            settings.Verbose = true;
                             break;
                         default:
                             Console.WriteLine($"unknown argument: {arg}");
@@ -335,37 +320,37 @@ namespace sRPCgen
                 }
                 else
                 {
-                    if (searchDir != null)
+                    if (settings.SearchDir != null)
                     {
                         Console.WriteLine("a file cannot be used if --search-dir is used");
                         return false;
                     }
-                    if (file != null)
+                    if (settings.File != null)
                     {
                         Console.WriteLine("a file is already defined");
                         return false;
                     }
-                    file = arg;
+                    settings.File = arg;
                 }
             }
-            if (file is null && searchDir is null)
+            if (settings.File is null && settings.SearchDir is null)
             {
                 Console.WriteLine("no file or search directory are specified");
                 return false;
             }
-            if (!(file is null || File.Exists(file)))
+            if (!(settings.File is null || File.Exists(settings.File)))
             {
-                Console.WriteLine($"file not found: {file}");
+                Console.WriteLine($"file not found: {settings.File}");
                 return false;
             }
-            if (!buildProtoc)
+            if (!settings.BuildProtoc)
             {
-                if (protoImports.Count > 0)
+                if (settings.ProtoImports.Count > 0)
                 {
                     Console.WriteLine("--proto-import can only be used if --build-protoc is defined");
                     return false;
                 }
-                if (protoExtension != null)
+                if (settings.ProtoExtension != null)
                 {
                     Console.WriteLine("--proto-extension can only be used if --build-protoc is defined");
                     return false;
@@ -545,10 +530,10 @@ the options given:
                         file: file.Name);
                     return;
                 }
-                var resp = emptySupport && method.OutputType == ".google.protobuf.Empty"
+                var resp = settings.EmptySupport && method.OutputType == ".google.protobuf.Empty"
                     ? ""
                     : $"<{responseType}>";
-                var req = emptySupport && method.InputType == ".google.protobuf.Empty"
+                var req = settings.EmptySupport && method.InputType == ".google.protobuf.Empty"
                     ? ""
                     : $"{requestType} message";
                 var req2 = req == "" ? "" : $"{req}, ";
@@ -587,7 +572,7 @@ the options given:
                     $"\t\t\t{(resp == "" ? "" : "return ")}await {method.Name}({(req == "" ? "" : "message, ")}cancellationToken.Token);",
                     $"\t\t}}"
                 );
-                if (req != "" && !ignoreUnwrap.Contains(method.InputType))
+                if (req != "" && !settings.IgnoreUnwrap.Contains(method.InputType))
                 {
                     var fields = GetRequestFields(method, names);
                     var write = new Action<(string optType, string optName)?>(par =>
@@ -661,8 +646,8 @@ the options given:
                         file: file.Name);
                     return;
                 }
-                var resp = emptySupport && method.OutputType == ".google.protobuf.Empty";
-                var req = emptySupport && method.InputType == ".google.protobuf.Empty"
+                var resp = settings.EmptySupport && method.OutputType == ".google.protobuf.Empty";
+                var req = settings.EmptySupport && method.InputType == ".google.protobuf.Empty"
                     ? ""
                     : $"request.Request?.Unpack<{requestType}>(), ";
                 writer.WriteLines(
@@ -703,10 +688,10 @@ the options given:
                         file: file.Name);
                     return;
                 }
-                var resp = emptySupport && method.OutputType == ".google.protobuf.Empty"
+                var resp = settings.EmptySupport && method.OutputType == ".google.protobuf.Empty"
                     ? ""
                     : $"<{responseType}>";
-                var req = emptySupport && method.InputType == ".google.protobuf.Empty"
+                var req = settings.EmptySupport && method.InputType == ".google.protobuf.Empty"
                     ? ""
                     : $"{requestType} request";
                 var req2 = req == "" ? "" : $"{req}, ";
