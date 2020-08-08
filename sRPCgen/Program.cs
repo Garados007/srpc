@@ -41,6 +41,17 @@ namespace sRPCgen
                 WorkAtDir(settings.SearchDir);
             else WorkSingleFile(settings.File);
 
+            if (oldReport != null && settings.RemoveWidowFiles)
+            {
+                if (settings.Verbose)
+                    Console.WriteLine("searching for widow files");
+                var remove = oldReport.Generateds.Select(x => x.File)
+                    .Except(report.Generateds.Select(x => x.File));
+                foreach (var file in remove)
+                    if (File.Exists(file))
+                        File.Delete(file);
+            }
+
             report?.Save(settings.Report);
 
             if (settings.Verbose)
