@@ -57,6 +57,12 @@ message MultiFields {
 	repeated uint64 repeated_uint64_value = 37;
 	/* some map definition */
 	map<int32, string> map_1 = 40;
+	/* some reserved keywords */
+	int32 short = 51;
+	int32 foreach = 52;
+	int32 var = 53;
+	int32 null = 54;
+	int32 is = 55;
 }
 
 message Identical {

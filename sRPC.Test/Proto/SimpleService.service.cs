@@ -67,33 +67,33 @@ namespace sRPC.Test.Proto
         }
 
 		public virtual stt::Task<sRPC.Test.Proto.SqrtResponse> Sqrt(
-			double value = 0)
+			double @value = 0)
         {
             var request = new sRPC.Test.Proto.SqrtRequest
             {
-				Value = value,
+				Value = @value,
             };
             return Sqrt(request);
         }
 
 		public virtual stt::Task<sRPC.Test.Proto.SqrtResponse> Sqrt(
 			st::CancellationToken cancellationToken,
-			double value = 0)
+			double @value = 0)
         {
             var request = new sRPC.Test.Proto.SqrtRequest
             {
-				Value = value,
+				Value = @value,
             };
             return Sqrt(request, cancellationToken);
         }
 
 		public virtual stt::Task<sRPC.Test.Proto.SqrtResponse> Sqrt(
 			s::TimeSpan timeout,
-			double value = 0)
+			double @value = 0)
         {
             var request = new sRPC.Test.Proto.SqrtRequest
             {
-				Value = value,
+				Value = @value,
             };
             return Sqrt(request, timeout);
         }
