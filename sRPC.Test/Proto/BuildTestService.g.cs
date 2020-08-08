@@ -26,7 +26,7 @@ namespace sRPC.Test.Proto {
           string.Concat(
             "Ch5Qcm90by9idWlsZF90ZXN0X3NlcnZpY2UucHJvdG8SCXNycGMudGVzdBob",
             "Z29vZ2xlL3Byb3RvYnVmL2VtcHR5LnByb3RvGh9nb29nbGUvcHJvdG9idWYv",
-            "dGltZXN0YW1wLnByb3RvItIICgtNdWx0aUZpZWxkcxIRCglib29sX2ZsYWcY",
+            "dGltZXN0YW1wLnByb3RvIpkJCgtNdWx0aUZpZWxkcxIRCglib29sX2ZsYWcY",
             "ASABKAgSEwoLYnl0ZXNfdmFsdWUYAiABKAwSFAoMZG91YmxlX3ZhbHVlGAMg",
             "ASgBEikKCmVudW1fdmFsdWUYBCABKA4yFS5zcnBjLnRlc3QuRW51bU9iamVj",
             "dBIVCg1maXhlZDMyX3ZhbHVlGAUgASgHEhUKDWZpeGVkNjRfdmFsdWUYBiAB",
@@ -49,18 +49,20 @@ namespace sRPC.Test.Proto {
             "GCEgAygREh0KFXJlcGVhdGVkX3NpbnQ2NF92YWx1ZRgiIAMoEhIdChVyZXBl",
             "YXRlZF9zdHJpbmdfdmFsdWUYIyADKAkSHQoVcmVwZWF0ZWRfdWludDMyX3Zh",
             "bHVlGCQgAygNEh0KFXJlcGVhdGVkX3VpbnQ2NF92YWx1ZRglIAMoBBIvCgVt",
-            "YXBfMRgoIAMoCzIgLnNycGMudGVzdC5NdWx0aUZpZWxkcy5NYXAxRW50cnka",
-            "KwoJTWFwMUVudHJ5EgsKA2tleRgBIAEoBRINCgV2YWx1ZRgCIAEoCToCOAEi",
-            "HgoJSWRlbnRpY2FsEhEKCWlkZW50aWNhbBgBIAEoDCoxCgpFbnVtT2JqZWN0",
-            "EhEKDURFRkFVTFRfVkFMVUUQABIQCgxTRUNPTkRfVkFMVUUQATKUAQoQQnVp",
-            "bGRUZXN0U2VydmljZRJBCg9UZXN0TXVsdGlGaWVsZHMSFi5zcnBjLnRlc3Qu",
-            "TXVsdGlGaWVsZHMaFi5nb29nbGUucHJvdG9idWYuRW1wdHkSPQoNVGVzdElk",
-            "ZW50aWNhbBIULnNycGMudGVzdC5JZGVudGljYWwaFi5nb29nbGUucHJvdG9i",
-            "dWYuRW1wdHlCEqoCD3NSUEMuVGVzdC5Qcm90b2IGcHJvdG8z"));
+            "YXBfMRgoIAMoCzIgLnNycGMudGVzdC5NdWx0aUZpZWxkcy5NYXAxRW50cnkS",
+            "DQoFc2hvcnQYMyABKAUSDwoHZm9yZWFjaBg0IAEoBRILCgN2YXIYNSABKAUS",
+            "DAoEbnVsbBg2IAEoBRIKCgJpcxg3IAEoBRorCglNYXAxRW50cnkSCwoDa2V5",
+            "GAEgASgFEg0KBXZhbHVlGAIgASgJOgI4ASIeCglJZGVudGljYWwSEQoJaWRl",
+            "bnRpY2FsGAEgASgMKjEKCkVudW1PYmplY3QSEQoNREVGQVVMVF9WQUxVRRAA",
+            "EhAKDFNFQ09ORF9WQUxVRRABMpQBChBCdWlsZFRlc3RTZXJ2aWNlEkEKD1Rl",
+            "c3RNdWx0aUZpZWxkcxIWLnNycGMudGVzdC5NdWx0aUZpZWxkcxoWLmdvb2ds",
+            "ZS5wcm90b2J1Zi5FbXB0eRI9Cg1UZXN0SWRlbnRpY2FsEhQuc3JwYy50ZXN0",
+            "LklkZW50aWNhbBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eUISqgIPc1JQQy5U",
+            "ZXN0LlByb3RvYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.EmptyReflection.Descriptor, global::Google.Protobuf.WellKnownTypes.TimestampReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::sRPC.Test.Proto.EnumObject), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::sRPC.Test.Proto.MultiFields), global::sRPC.Test.Proto.MultiFields.Parser, new[]{ "BoolFlag", "BytesValue", "DoubleValue", "EnumValue", "Fixed32Value", "Fixed64Value", "FloatValue", "Int32Value", "Int64Value", "MessageValue", "Sfixed32Value", "Sfixed64Value", "Sint32Value", "Sint64Value", "StringValue", "Uint32Value", "Uint64Value", "RepeatedBoolFlag", "RepeatedBytesValue", "RepeatedDoubleValue", "RepeatedEnumValue", "RepeatedFixed32Value", "RepeatedFixed64Value", "RepeatedFloatValue", "RepeatedInt32Value", "RepeatedInt64Value", "RepeatedMessageValue", "RepeatedSfixed32Value", "RepeatedSfixed64Value", "RepeatedSint32Value", "RepeatedSint64Value", "RepeatedStringValue", "RepeatedUint32Value", "RepeatedUint64Value", "Map1" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
+            new pbr::GeneratedClrTypeInfo(typeof(global::sRPC.Test.Proto.MultiFields), global::sRPC.Test.Proto.MultiFields.Parser, new[]{ "BoolFlag", "BytesValue", "DoubleValue", "EnumValue", "Fixed32Value", "Fixed64Value", "FloatValue", "Int32Value", "Int64Value", "MessageValue", "Sfixed32Value", "Sfixed64Value", "Sint32Value", "Sint64Value", "StringValue", "Uint32Value", "Uint64Value", "RepeatedBoolFlag", "RepeatedBytesValue", "RepeatedDoubleValue", "RepeatedEnumValue", "RepeatedFixed32Value", "RepeatedFixed64Value", "RepeatedFloatValue", "RepeatedInt32Value", "RepeatedInt64Value", "RepeatedMessageValue", "RepeatedSfixed32Value", "RepeatedSfixed64Value", "RepeatedSint32Value", "RepeatedSint64Value", "RepeatedStringValue", "RepeatedUint32Value", "RepeatedUint64Value", "Map1", "Short", "Foreach", "Var", "Null", "Is" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
             new pbr::GeneratedClrTypeInfo(typeof(global::sRPC.Test.Proto.Identical), global::sRPC.Test.Proto.Identical.Parser, new[]{ "Identical_" }, null, null, null, null)
           }));
     }
@@ -139,6 +141,11 @@ namespace sRPC.Test.Proto {
       repeatedUint32Value_ = other.repeatedUint32Value_.Clone();
       repeatedUint64Value_ = other.repeatedUint64Value_.Clone();
       map1_ = other.map1_.Clone();
+      short_ = other.short_;
+      foreach_ = other.foreach_;
+      var_ = other.var_;
+      null_ = other.null_;
+      is_ = other.is_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -523,6 +530,64 @@ namespace sRPC.Test.Proto {
       get { return map1_; }
     }
 
+    /// <summary>Field number for the "short" field.</summary>
+    public const int ShortFieldNumber = 51;
+    private int short_;
+    /// <summary>
+    /// some reserved keywords 
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Short {
+      get { return short_; }
+      set {
+        short_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "foreach" field.</summary>
+    public const int ForeachFieldNumber = 52;
+    private int foreach_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Foreach {
+      get { return foreach_; }
+      set {
+        foreach_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "var" field.</summary>
+    public const int VarFieldNumber = 53;
+    private int var_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Var {
+      get { return var_; }
+      set {
+        var_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "null" field.</summary>
+    public const int NullFieldNumber = 54;
+    private int null_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Null {
+      get { return null_; }
+      set {
+        null_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "is" field.</summary>
+    public const int IsFieldNumber = 55;
+    private int is_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Is {
+      get { return is_; }
+      set {
+        is_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as MultiFields);
@@ -571,6 +636,11 @@ namespace sRPC.Test.Proto {
       if(!repeatedUint32Value_.Equals(other.repeatedUint32Value_)) return false;
       if(!repeatedUint64Value_.Equals(other.repeatedUint64Value_)) return false;
       if (!Map1.Equals(other.Map1)) return false;
+      if (Short != other.Short) return false;
+      if (Foreach != other.Foreach) return false;
+      if (Var != other.Var) return false;
+      if (Null != other.Null) return false;
+      if (Is != other.Is) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -612,6 +682,11 @@ namespace sRPC.Test.Proto {
       hash ^= repeatedUint32Value_.GetHashCode();
       hash ^= repeatedUint64Value_.GetHashCode();
       hash ^= Map1.GetHashCode();
+      if (Short != 0) hash ^= Short.GetHashCode();
+      if (Foreach != 0) hash ^= Foreach.GetHashCode();
+      if (Var != 0) hash ^= Var.GetHashCode();
+      if (Null != 0) hash ^= Null.GetHashCode();
+      if (Is != 0) hash ^= Is.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -711,6 +786,26 @@ namespace sRPC.Test.Proto {
       repeatedUint32Value_.WriteTo(output, _repeated_repeatedUint32Value_codec);
       repeatedUint64Value_.WriteTo(output, _repeated_repeatedUint64Value_codec);
       map1_.WriteTo(output, _map_map1_codec);
+      if (Short != 0) {
+        output.WriteRawTag(152, 3);
+        output.WriteInt32(Short);
+      }
+      if (Foreach != 0) {
+        output.WriteRawTag(160, 3);
+        output.WriteInt32(Foreach);
+      }
+      if (Var != 0) {
+        output.WriteRawTag(168, 3);
+        output.WriteInt32(Var);
+      }
+      if (Null != 0) {
+        output.WriteRawTag(176, 3);
+        output.WriteInt32(Null);
+      }
+      if (Is != 0) {
+        output.WriteRawTag(184, 3);
+        output.WriteInt32(Is);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -788,6 +883,21 @@ namespace sRPC.Test.Proto {
       size += repeatedUint32Value_.CalculateSize(_repeated_repeatedUint32Value_codec);
       size += repeatedUint64Value_.CalculateSize(_repeated_repeatedUint64Value_codec);
       size += map1_.CalculateSize(_map_map1_codec);
+      if (Short != 0) {
+        size += 2 + pb::CodedOutputStream.ComputeInt32Size(Short);
+      }
+      if (Foreach != 0) {
+        size += 2 + pb::CodedOutputStream.ComputeInt32Size(Foreach);
+      }
+      if (Var != 0) {
+        size += 2 + pb::CodedOutputStream.ComputeInt32Size(Var);
+      }
+      if (Null != 0) {
+        size += 2 + pb::CodedOutputStream.ComputeInt32Size(Null);
+      }
+      if (Is != 0) {
+        size += 2 + pb::CodedOutputStream.ComputeInt32Size(Is);
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -871,6 +981,21 @@ namespace sRPC.Test.Proto {
       repeatedUint32Value_.Add(other.repeatedUint32Value_);
       repeatedUint64Value_.Add(other.repeatedUint64Value_);
       map1_.Add(other.map1_);
+      if (other.Short != 0) {
+        Short = other.Short;
+      }
+      if (other.Foreach != 0) {
+        Foreach = other.Foreach;
+      }
+      if (other.Var != 0) {
+        Var = other.Var;
+      }
+      if (other.Null != 0) {
+        Null = other.Null;
+      }
+      if (other.Is != 0) {
+        Is = other.Is;
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -1037,6 +1162,26 @@ namespace sRPC.Test.Proto {
           }
           case 322: {
             map1_.AddEntriesFrom(input, _map_map1_codec);
+            break;
+          }
+          case 408: {
+            Short = input.ReadInt32();
+            break;
+          }
+          case 416: {
+            Foreach = input.ReadInt32();
+            break;
+          }
+          case 424: {
+            Var = input.ReadInt32();
+            break;
+          }
+          case 432: {
+            Null = input.ReadInt32();
+            break;
+          }
+          case 440: {
+            Is = input.ReadInt32();
             break;
           }
         }

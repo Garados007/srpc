@@ -151,7 +151,7 @@ namespace sRPCgen
                             if (first) first = false;
                             else writer.Write(",");
                             writer.WriteLine();
-                            writer.Write($"\t\t\t{type} {FirstLow(field)} = {defaultValue}");
+                            writer.Write($"\t\t\t{type} @{FirstLow(field)} = {defaultValue}");
                         }
                         writer.WriteLines(
                             $")",
@@ -161,7 +161,7 @@ namespace sRPCgen
                             );
                         foreach (var (field, _, _, converter) in fields)
                         {
-                            writer.WriteLine($"\t\t\t\t{field} = {string.Format(converter, FirstLow(field))},");
+                            writer.WriteLine($"\t\t\t\t{field} = {string.Format(converter, "@" + FirstLow(field))},");
                         }
                         writer.WriteLines(
                             $"\t\t\t}};",
