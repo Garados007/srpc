@@ -49,6 +49,8 @@ namespace sRPC.Tools
 
         public string SrpcIgnoreUnwrap { get; set; }
 
+        public string Report { get; set; }
+
         private string[] SrpcIgnoreUnwrapList
             => (SrpcIgnoreUnwrap ?? "")
                 .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
@@ -204,6 +206,7 @@ namespace sRPC.Tools
                 AddArg(sb, "file-extension", SrpcSrpcExt);
                 AddArg(sb, "proto-extension", SrpcProtoExt);
                 AddArg(sb, "search-dir", ProjectPath);
+                AddArg(sb, "report", Report);
             }
             else
             {

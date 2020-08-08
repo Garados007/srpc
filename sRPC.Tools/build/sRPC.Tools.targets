@@ -69,6 +69,7 @@
       <Srpc_AutoSearchProj Condition=" '$(Srpc_AutoSearchProj)' == '' ">$(SRPC_AUTO_SEARCH_PROJ)</Srpc_AutoSearchProj>
       <Srpc_EmptySupport Condition=" '$(Srpc_EmptySupport)' == '' ">$(SRPC_EMPTY_SUPPORT)</Srpc_EmptySupport>
       <Srpc_IgnoreUnwrap>$(SRPC_IGNORE_UNWRAP);$(Srpc_IgnoreUnwrap)</Srpc_IgnoreUnwrap>
+      <Srpc_Report Condition=" '$(Srpc_Report)' == '' ">$(SRPC_REPORT)</Srpc_Report>
 
       <!-- Next try OS and CPU resolved by ProtoPlatform. -->
       <Protobuf_ToolsOs Condition=" '$(Protobuf_ToolsOs)' == '' ">$(_Protobuf_ToolsOs)</Protobuf_ToolsOs>
@@ -121,6 +122,7 @@
       SrpcAutoSearchProj="$(Srpc_AutoSearchProj)"
       SrpcEmptySupport="$(Srpc_EmptySupport)"
       SrpcIgnoreUnwrap="$(Srpc_IgnoreUnwrap)"
+      Report="$(Srpc_Report)"
       />
   </Target>
 
