@@ -1,4 +1,5 @@
 ﻿using Google.Protobuf.Reflection;
+using sRPCgen.Report;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,6 +12,7 @@ namespace sRPCgen
     {
         static readonly Settings settings = new Settings();
         static readonly Log log = new Log(settings);
+        static ReportRegistry report;
 
         static void Main(string[] args)
         {
@@ -21,6 +23,10 @@ namespace sRPCgen
             }
 
             settings.SetDefaults();
+            if (settings.Report != null)
+            {
+                report = new ReportRegistry();
+            }
 
             if (settings.Verbose)
             {
@@ -32,6 +38,8 @@ namespace sRPCgen
             if (settings.SearchDir != null)
                 WorkAtDir(settings.SearchDir);
             else WorkSingleFile(settings.File);
+
+            report?.Save(settings.Report);
 
             if (settings.Verbose)
                 Console.WriteLine("Finish.");
@@ -65,6 +73,8 @@ namespace sRPCgen
                         .Key("error_format", settings.ErrorFormat, 
                             condition: settings.ErrorFormat != "default")
                         .Flag("include_imports")
+                        .Key("dependency_out", $"{file}.dep", 
+                            condition: report != null)
                         .File(file)
                         .ToString(),
                     CreateNoWindow = true,
@@ -95,6 +105,17 @@ namespace sRPCgen
                 WorkSingleBinFile(bin);
                 if (File.Exists(bin))
                     File.Delete(bin);
+                if (report != null)
+                {
+                    var dep = $"{file}.dep";
+                    var (rep, gen) = ProtoReport.ReadReport(dep, file);
+                    if (rep != null)
+                        report.Protos.Add(rep);
+                    if (gen != null)
+                        report.Generateds.Add(gen);
+                    if (File.Exists(dep))
+                        File.Delete(dep);
+                }
             }
             else WorkSingleBinFile(file);
         }
@@ -121,11 +142,11 @@ namespace sRPCgen
             foreach (var filedesc in descriptor.File)
                 foreach (var service in filedesc.Service)
                 {
-                    WorkSingleEntry(filedesc, service, names);
+                    WorkSingleEntry(filedesc, service, names, file);
                 }
         }
 
-        static void WorkSingleEntry(FileDescriptorProto filedesc, ServiceDescriptorProto service, List<NameInfo> names)
+        static void WorkSingleEntry(FileDescriptorProto filedesc, ServiceDescriptorProto service, List<NameInfo> names, string sourceFile)
         {
             var targetName = filedesc.Options?.CsharpNamespace ?? "";
             if (targetName.StartsWith(settings.NamespaceBase))
@@ -155,6 +176,20 @@ namespace sRPCgen
             var generator = new Generator(settings, log);
             generator.GenerateServiceFile(filedesc, service, writer, names);
             writer.Flush();
+
+            if (report != null)
+            {
+                if (settings.BuildProtoc)
+                    sourceFile = sourceFile[0..^4];
+                var gen = new GeneratedReport
+                {
+                    File = targetName,
+                    Source = sourceFile,
+                    LastBuild = new FileInfo(targetName).LastWriteTimeUtc,
+                    Srpc = true
+                };
+                report.Generateds.Add(gen);
+            }
         }
 
         static void LoadTypes(FileDescriptorProto descriptor, List<NameInfo> names)
