@@ -2,7 +2,7 @@
 <Project>
   
   <PropertyGroup>
-    <Version>2.3.3</Version>
+    <Version>2.4.0</Version>
     <AssemblyVersion>$(Version).0</AssemblyVersion>
     <FileVersion>$(Version).0</FileVersion>
 
@@ -14,8 +14,8 @@
          The test projects will not use these versions. They will not use the sRPC NuGet
          packages at all. The test projects link these directly.
     -->
-    <Use_Srpc_Version>2.3.0</Use_Srpc_Version>
-    <Use_Srpc_Tools_Version>2.3.0</Use_Srpc_Tools_Version>
+    <Use_Srpc_Version>2.3.3</Use_Srpc_Version>
+    <Use_Srpc_Tools_Version>2.3.3</Use_Srpc_Tools_Version>
   </PropertyGroup>
   
 </Project>
