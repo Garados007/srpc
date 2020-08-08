@@ -49,6 +49,12 @@ namespace sRPC.Tools
 
         public string SrpcIgnoreUnwrap { get; set; }
 
+        public string Report { get; set; }
+
+        public string RemoveWidowFiles { get; set; }
+
+        private bool IsRemoveWidowFiles => RemoveWidowFiles == "true";
+
         private string[] SrpcIgnoreUnwrapList
             => (SrpcIgnoreUnwrap ?? "")
                 .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
@@ -204,6 +210,9 @@ namespace sRPC.Tools
                 AddArg(sb, "file-extension", SrpcSrpcExt);
                 AddArg(sb, "proto-extension", SrpcProtoExt);
                 AddArg(sb, "search-dir", ProjectPath);
+                AddArg(sb, "report", Report);
+                if (IsRemoveWidowFiles && !string.IsNullOrWhiteSpace(Report))
+                    AddArg(sb, "remove-widow-files");
             }
             else
             {

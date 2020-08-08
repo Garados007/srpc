@@ -20,6 +20,8 @@ namespace sRPCgen
         public string ErrorFormat { get; set; }
         public bool EmptySupport { get; set; }
         public List<string> IgnoreUnwrap { get; } = new List<string>();
+        public string Report { get; set; }
+        public bool RemoveWidowFiles { get; set; }
 
         public void SetDefaults()
         {
@@ -161,6 +163,22 @@ namespace sRPCgen
                                 IgnoreUnwrap.Add($".{type}");
                             }
                             break;
+                        case "--report=":
+                            if (Report != null)
+                            {
+                                Console.WriteLine("--report is already defined");
+                                return false;
+                            }
+                            Report = arg.Substring(ind + 1);
+                            break;
+                        case "--remove-widow-files":
+                            if (RemoveWidowFiles)
+                            {
+                                Console.WriteLine("--remove-widow-files is already set");
+                                return false;
+                            }
+                            RemoveWidowFiles = true;
+                            break;
                         case "-h":
                         case "--help":
                             return false;
@@ -210,6 +228,16 @@ namespace sRPCgen
                     Console.WriteLine("--proto-extension can only be used if --build-protoc is defined");
                     return false;
                 }
+            }
+            if (SearchDir is null && Report != null)
+            {
+                Console.WriteLine("--report can only be defined if --search-dir is set");
+                return false;
+            }
+            if (RemoveWidowFiles && Report is null)
+            {
+                Console.WriteLine("--remove-widow-files can only be used if --report is set");
+                return false;
             }
             return true;
         }
@@ -270,6 +298,14 @@ the options given:
                             google.protobuf.Empty is automaticly ignored.
   --empty-support           Add special support for google.protobuf.Empty
                             types.
+  --report=REPORT_FILE      Prints the building report in the specified file.
+                            --report can only be defined if --search-dir
+                            is used.
+  --remove-widow-files      Searches for generated files which source does no
+                            longer exists and delete them. This wil be done
+                            after the complete generation step. For this the
+                            report of the previous build is required.
+                            This can only be used if --report is used.
   -v, --verbose             Print more information about the build process.
   -h, --help                Print this help.
 ");
