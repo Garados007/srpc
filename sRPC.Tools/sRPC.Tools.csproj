@@ -61,7 +61,7 @@ It is recommended to install the NuGet packages sRPC and Google.Protobuf.
     <_Asset PackagePath="tools/macosx_x64/" Include="$(Assets_ProtoCompiler)protoc-osx-x86_64/bin/protoc" />
 
     <!--sRPCgen Assets-->
-    <_GlobalBuildAssetName Include="Google.Protobuf.dll;sRPCgen.deps.json;sRPCgen.dll;sRPCgen.pdb;sRPCgen.runtimeconfig.json;System.CodeDom.dll" />
+    <_GlobalBuildAssetName Include="Google.Protobuf.dll;sRPCgen.deps.json;sRPCgen.dll;sRPCgen.pdb;sRPCgen.runtimeconfig.json;System.CodeDom.dll;System.Text.Json.dll" />
     <!-- win-x86 -->
     <_Asset PackagePath="tools/windows_x86"
             Include="@(_GlobalBuildAssetName->'$(Assets_SrpcCompiler)\win-x86\publish\%(Identity)')" />
