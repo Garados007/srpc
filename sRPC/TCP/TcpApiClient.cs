@@ -100,4 +100,119 @@ namespace sRPC.TCP
             await client.DisposeAsync();
         }
     }
+
+    /// <summary>
+    /// The <see cref="ApiClient{TRequest, TResponse}"/> wrapper for a <see cref="TcpClient"/>. This
+    /// manages the connection and automatic reconnection of it.
+    /// </summary>
+    /// <typeparam name="TRequest">the type of the API inteface for making requests</typeparam>
+    /// <typeparam name="TResponse">the type of the API interface for responding</typeparam>
+    public class TcpApiClient<TRequest, TResponse> : IDisposable, IAsyncDisposable, IApi<TRequest>, IApi<TRequest, TResponse>
+        where TRequest : IApiClientDefinition, new()
+        where TResponse : IApiServerDefinition, new()
+    {
+        private ApiClient<TRequest, TResponse> client;
+        private TcpClient tcpClient;
+
+        /// <summary>
+        /// The current Api interface for creating Api requests
+        /// </summary>
+        public TRequest RequestApi => client.RequestApi;
+
+        /// <summary>
+        /// The current Api interface for responding Api requests
+        /// </summary>
+        public TResponse ResponseApi => client.ResponseApi;
+
+        TRequest IApi<TRequest>.Api => client.RequestApi;
+
+        /// <summary>
+        /// The current <see cref="IPEndPoint"/> of the Server.
+        /// </summary>
+        public IPEndPoint EndPoint { get; }
+
+        /// <summary>
+        /// The initializer that whould be used to initialize
+        /// the <typeparamref name="TRequest"/> Api.
+        /// </summary>
+        public Action<TRequest> SetupRequestApi { get; }
+
+        /// <summary>
+        /// The initializer that whould be used to initialize
+        /// the <typeparamref name="TResponse"/> Api.
+        /// </summary>
+        public Action<TResponse> SetupResponseApi { get; }
+
+        /// <summary>
+        /// A task that finishes when the first <see cref="Api"/> has been created.
+        /// </summary>
+        public Task WaitConnect { get; }
+
+        /// <summary>
+        /// Create a <see cref="ApiClient{TRequest, TResponse}"/> wrapper for a <see cref="TcpClient"/>.
+        /// </summary>
+        /// <param name="endPoint">the <see cref="IPEndPoint"/> of the server</param>
+        /// <exception cref="ArgumentNullException" />
+        public TcpApiClient(IPEndPoint endPoint)
+            : this(endPoint, null, null)
+        {
+        }
+
+        /// <summary>
+        /// Create a <see cref="ApiClient{TRequest, TResponse}"/> wrapper for a <see cref="TcpClient"/>.
+        /// </summary>
+        /// <param name="endPoint">the <see cref="IPEndPoint"/> of the server</param>
+        /// <param name="setupRequestApi">the initializer for the api interface before the client is started</param>
+        /// <param name="setupResponseApi">the initializer for the api interface before the client is started</param>
+        /// <exception cref="ArgumentNullException" />
+        public TcpApiClient(IPEndPoint endPoint,
+            Action<TRequest> setupRequestApi, Action<TResponse> setupResponseApi)
+        {
+            EndPoint = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
+            SetupRequestApi = setupRequestApi;
+            SetupResponseApi = setupResponseApi;
+            WaitConnect = Connect();
+        }
+
+        private async Task Connect(ApiClient<TRequest, TResponse> oldApi = null)
+        {
+            tcpClient = new TcpClient();
+            await tcpClient.ConnectAsync(EndPoint.Address, EndPoint.Port);
+            var stream = tcpClient.GetStream();
+            client = new ApiClient<TRequest, TResponse>(stream, stream, oldApi);
+            client.Disconnected += Client_Disconnected;
+            if (oldApi == null)
+            {
+                SetupRequestApi?.Invoke(client.RequestApi);
+                SetupResponseApi?.Invoke(client.ResponseApi);
+            }
+            client.Start();
+        }
+
+        private void Client_Disconnected(ApiBase api, IOException ex)
+        {
+            if (api != client)
+                return;
+            tcpClient.Dispose();
+            _ = Connect((ApiClient<TRequest, TResponse>)api);
+        }
+
+        /// <summary>
+        /// Dispose the <see cref="ApiClient{TRequest, TResponse}"/> and <see cref="TcpClient"/>
+        /// </summary>
+        public void Dispose()
+        {
+            tcpClient?.Dispose();
+            client?.Dispose();
+        }
+
+        /// <summary>
+        /// Dispose the <see cref="ApiClient{TRequest, TResponse}"/> and <see cref="TcpClient"/>
+        /// </summary>
+        public async ValueTask DisposeAsync()
+        {
+            tcpClient?.Dispose();
+            await client.DisposeAsync();
+        }
+    }
 }
