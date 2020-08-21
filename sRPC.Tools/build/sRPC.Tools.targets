@@ -71,6 +71,7 @@
       <Srpc_IgnoreUnwrap>$(SRPC_IGNORE_UNWRAP);$(Srpc_IgnoreUnwrap)</Srpc_IgnoreUnwrap>
       <Srpc_Report Condition=" '$(Srpc_Report)' == '' ">$(SRPC_REPORT)</Srpc_Report>
       <Srpc_RemoveWidowFiles Condition=" '$(Srpc_RemoveWidowFiles)' == '' ">$(SRPC_REMOVE_WIDOW_FILES)</Srpc_RemoveWidowFiles>
+      <Srpc_OutputFormat Condition=" '$(Srpc_OutputFormat)' == '' ">$(SRPC_OUTPUT_FORMAT)</Srpc_OutputFormat>
 
       <!-- Next try OS and CPU resolved by ProtoPlatform. -->
       <Protobuf_ToolsOs Condition=" '$(Protobuf_ToolsOs)' == '' ">$(_Protobuf_ToolsOs)</Protobuf_ToolsOs>
@@ -126,6 +127,7 @@
       SrpcIgnoreUnwrap="$(Srpc_IgnoreUnwrap)"
       Report="$(Srpc_Report)"
       RemoveWidowFiles="$(Srpc_RemoveWidowFiles)"
+      OutputFormat="$(Srpc_OutputFormat)"
       />
   </Target>
 
