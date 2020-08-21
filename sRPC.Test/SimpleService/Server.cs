@@ -7,17 +7,12 @@ namespace sRPC.Test.SimpleService
 {
     public class Server : SimpleServiceServerBase
     {
-        public override Task Indefinite()
-        {
-            return Task.CompletedTask;
-        }
-
         public override async Task Indefinite(CancellationToken cancellationToken)
         {
             await Task.Delay(-1, cancellationToken);
         }
 
-        public override Task<SqrtResponse> Sqrt(SqrtRequest request)
+        public override Task<SqrtResponse> Sqrt(SqrtRequest request, CancellationToken cancellationToken)
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
             return Task.FromResult(new SqrtResponse

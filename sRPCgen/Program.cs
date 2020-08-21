@@ -189,6 +189,7 @@ namespace sRPCgen
             Generator generator = settings.OutputFormat switch
             {
                 "1" => new Generator(settings, log),
+                "2" => new Generator2(settings, log),
                 _ => new Generator(settings, log),
             };
             generator.GenerateServiceFile(filedesc, service, writer, names);
