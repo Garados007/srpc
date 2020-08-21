@@ -20,7 +20,7 @@ namespace sRPCgen
             Log = log ?? throw new ArgumentNullException(nameof(log));
         }
 
-        public void GenerateServiceFile(
+        public virtual void GenerateServiceFile(
             FileDescriptorProto file,
             ServiceDescriptorProto service,
             StreamWriter writer,
@@ -33,7 +33,25 @@ namespace sRPCgen
                 $"// </auto-generated>",
                 $"#pragma warning disable CS0067, CS0076, CS0612, CS1591, CS1998, CS3021",
                 $"#region Designer generated code",
+                $""
+            );
+            GenerateFileUsingsHeader(writer);
+            writer.WriteLines(
+                $"namespace {file.Options?.CsharpNamespace ?? "Api"}",
+                $"{{"
+            );
+            GenerateClientService(file, service, writer, names);
+            GenerateServerService(file, service, writer, names);
+            writer.WriteLines(
+                $"}}",
                 $"",
+                $"#endregion Designer generated code"
+            );
+        }
+
+        protected virtual void GenerateFileUsingsHeader(StreamWriter writer)
+        {
+            writer.WriteLines(
                 $"using gp = global::Google.Protobuf;",
                 $"using gpw = global::Google.Protobuf.WellKnownTypes;",
                 $"using s = global::System;",
@@ -42,9 +60,17 @@ namespace sRPCgen
                 $"using srpc = global::sRPC;",
                 $"using st = global::System.Threading;",
                 $"using stt = global::System.Threading.Tasks;",
-                $"",
-                $"namespace {file.Options?.CsharpNamespace ?? "Api"}",
-                $"{{",
+                $""
+            );
+        }
+
+        protected virtual void GenerateClientService(
+            FileDescriptorProto file,
+            ServiceDescriptorProto service,
+            StreamWriter writer,
+            List<NameInfo> names)
+        {
+            writer.WriteLines(
                 $"\t/// <summary>",
                 $"\t/// The base class for the client implementation of the {service.Name} api",
                 $"\t/// </summary>",
@@ -67,117 +93,134 @@ namespace sRPCgen
                 $"\t\tprivate event s::Func<srpc::NetworkRequest, st::CancellationToken, stt::Task<srpc::NetworkResponse>> PerformMessage2Private;"
             );
             foreach (var method in service.Method)
-            {
-                var requestType = names
-                    .Where(x => x.ProtoBufName == method.InputType)
-                    .Select(x => x.CSharpName)
-                    .FirstOrDefault();
-                var responseType = names
-                    .Where(x => x.ProtoBufName == method.OutputType)
-                    .Select(x => x.CSharpName)
-                    .FirstOrDefault();
-                if (requestType is null)
-                {
-                    Log.WriteError(text: $"c# type for protobuf message {method.InputType} not found",
-                        file: file.Name);
-                    return;
-                }
-                if (responseType is null)
-                {
-                    Log.WriteError(text: $"c# type for protobuf message {method.OutputType} not found",
-                        file: file.Name);
-                    return;
-                }
-                var resp = Settings.EmptySupport && method.OutputType == ".google.protobuf.Empty"
-                    ? ""
-                    : $"<{responseType}>";
-                var req = Settings.EmptySupport && method.InputType == ".google.protobuf.Empty"
-                    ? ""
-                    : $"{requestType} message";
-                var req2 = req == "" ? "" : $"{req}, ";
-                writer.WriteLines(
-                    $"",
-                    $"\t\tpublic virtual stt::Task{resp} {method.Name}({req})",
-                    $"\t\t{{",
-                    req == "" ? null
-                        : $"\t\t\t_ = message ?? throw new s::ArgumentNullException(nameof(message));",
-                    $"\t\t\treturn {method.Name}({(req == "" ? "" : "message, ")}st::CancellationToken.None);",
-                    $"\t\t}}",
-                    $"",
-                    $"\t\tpublic virtual async stt::Task{resp} {method.Name}({req2}st::CancellationToken cancellationToken)",
-                    $"\t\t{{",
-                    req == "" ? null
-                        : $"\t\t\t_ = message ?? throw new s::ArgumentNullException(nameof(message));",
-                    $"\t\t\tvar networkMessage = new srpc::NetworkRequest()",
-                    $"\t\t\t{{",
-                    $"\t\t\t\tApiFunction = \"{method.Name}\",",
-                    $"\t\t\t\tRequest = gpw::Any.Pack({(req == "" ? "new gpw::Empty()" : "message")}),",
-                    $"\t\t\t}};",
-                    $"\t\t\t{(resp == "" ? "_" : "var response")} = PerformMessage2Private != null",
-                    $"\t\t\t\t? await PerformMessage2Private.Invoke(networkMessage, cancellationToken)",
-                    $"\t\t\t\t: await PerformMessagePrivate?.Invoke(networkMessage);",
-                    resp == "" ? null
-                        : $"\t\t\treturn response.Response?.Unpack<{responseType}>();",
-                    $"\t\t}}",
-                    $"",
-                    $"\t\tpublic virtual async stt::Task{resp} {method.Name}({req2}s::TimeSpan timeout)",
-                    $"\t\t{{",
-                    req == "" ? null
-                        : $"\t\t\t_ = message ?? throw new s::ArgumentNullException(nameof(message));",
-                    $"\t\t\tif (timeout.Ticks < 0)",
-                    $"\t\t\t\tthrow new s::ArgumentOutOfRangeException(nameof(timeout));",
-                    $"\t\t\tusing var cancellationToken = new st::CancellationTokenSource(timeout);",
-                    $"\t\t\t{(resp == "" ? "" : "return ")}await {method.Name}({(req == "" ? "" : "message, ")}cancellationToken.Token);",
-                    $"\t\t}}"
-                );
-                if (req != "" && !Settings.IgnoreUnwrap.Contains(method.InputType))
-                {
-                    var fields = GetRequestFields(method, names);
-                    var write = new Action<(string optType, string optName)?>(par =>
-                    {
-                        writer.WriteLine();
-                        writer.Write($"\t\tpublic virtual stt::Task{resp} {method.Name}(");
-                        var first = true;
-                        if (par != null)
-                        {
-                            first = false;
-                            writer.WriteLine();
-                            writer.Write($"\t\t\t{par.Value.optType} {par.Value.optName}");
-                        }
-                        foreach (var (field, type, defaultValue, _) in fields)
-                        {
-                            if (field is null || type is null || defaultValue is null)
-                                continue;
-                            if (first) first = false;
-                            else writer.Write(",");
-                            writer.WriteLine();
-                            writer.Write($"\t\t\t{type} @{FirstLow(field)} = {defaultValue}");
-                        }
-                        writer.WriteLines(
-                            $")",
-                            $"\t\t{{",
-                            $"\t\t\tvar request = new {requestType}",
-                            $"\t\t\t{{"
-                            );
-                        foreach (var (field, _, _, converter) in fields)
-                        {
-                            writer.WriteLine($"\t\t\t\t{field} = {string.Format(converter, "@" + FirstLow(field))},");
-                        }
-                        writer.WriteLines(
-                            $"\t\t\t}};",
-                            $"\t\t\treturn {method.Name}(request{(par.HasValue ? $", {par.Value.optName}" : "")});",
-                            $"\t\t}}"
-                            );
-
-                    });
-                    write(null);
-                    write(("st::CancellationToken", "cancellationToken"));
-                    write(("s::TimeSpan", "timeout"));
-                }
-            }
+                GenerateClientServiceMethod(file, service, writer, names, method);
             writer.WriteLines(
                 $"\t}}",
+                $"");
+        }
+
+        protected virtual void GenerateClientServiceMethod(
+            FileDescriptorProto file,
+            ServiceDescriptorProto service,
+            StreamWriter writer,
+            List<NameInfo> names,
+            MethodDescriptorProto method)
+        {
+            var requestType = names
+                .Where(x => x.ProtoBufName == method.InputType)
+                .Select(x => x.CSharpName)
+                .FirstOrDefault();
+            var responseType = names
+                .Where(x => x.ProtoBufName == method.OutputType)
+                .Select(x => x.CSharpName)
+                .FirstOrDefault();
+            if (requestType is null)
+            {
+                Log.WriteError(text: $"c# type for protobuf message {method.InputType} not found",
+                    file: file.Name);
+                return;
+            }
+            if (responseType is null)
+            {
+                Log.WriteError(text: $"c# type for protobuf message {method.OutputType} not found",
+                    file: file.Name);
+                return;
+            }
+            var resp = Settings.EmptySupport && method.OutputType == ".google.protobuf.Empty"
+                ? ""
+                : $"<{responseType}>";
+            var req = Settings.EmptySupport && method.InputType == ".google.protobuf.Empty"
+                ? ""
+                : $"{requestType} message";
+            var req2 = req == "" ? "" : $"{req}, ";
+            writer.WriteLines(
                 $"",
+                $"\t\tpublic virtual stt::Task{resp} {method.Name}({req})",
+                $"\t\t{{",
+                req == "" ? null
+                    : $"\t\t\t_ = message ?? throw new s::ArgumentNullException(nameof(message));",
+                $"\t\t\treturn {method.Name}({(req == "" ? "" : "message, ")}st::CancellationToken.None);",
+                $"\t\t}}",
+                $"",
+                $"\t\tpublic virtual async stt::Task{resp} {method.Name}({req2}st::CancellationToken cancellationToken)",
+                $"\t\t{{",
+                req == "" ? null
+                    : $"\t\t\t_ = message ?? throw new s::ArgumentNullException(nameof(message));",
+                $"\t\t\tvar networkMessage = new srpc::NetworkRequest()",
+                $"\t\t\t{{",
+                $"\t\t\t\tApiFunction = \"{method.Name}\",",
+                $"\t\t\t\tRequest = gpw::Any.Pack({(req == "" ? "new gpw::Empty()" : "message")}),",
+                $"\t\t\t}};",
+                $"\t\t\t{(resp == "" ? "_" : "var response")} = PerformMessage2Private != null",
+                $"\t\t\t\t? await PerformMessage2Private.Invoke(networkMessage, cancellationToken)",
+                $"\t\t\t\t: await PerformMessagePrivate?.Invoke(networkMessage);",
+                resp == "" ? null
+                    : $"\t\t\treturn response.Response?.Unpack<{responseType}>();",
+                $"\t\t}}",
+                $"",
+                $"\t\tpublic virtual async stt::Task{resp} {method.Name}({req2}s::TimeSpan timeout)",
+                $"\t\t{{",
+                req == "" ? null
+                    : $"\t\t\t_ = message ?? throw new s::ArgumentNullException(nameof(message));",
+                $"\t\t\tif (timeout.Ticks < 0)",
+                $"\t\t\t\tthrow new s::ArgumentOutOfRangeException(nameof(timeout));",
+                $"\t\t\tusing var cancellationToken = new st::CancellationTokenSource(timeout);",
+                $"\t\t\t{(resp == "" ? "" : "return ")}await {method.Name}({(req == "" ? "" : "message, ")}cancellationToken.Token);",
+                $"\t\t}}"
+            );
+            if (req != "" && !Settings.IgnoreUnwrap.Contains(method.InputType))
+            {
+                var fields = GetRequestFields(method, names);
+                var write = new Action<(string optType, string optName)?>(par =>
+                {
+                    writer.WriteLine();
+                    writer.Write($"\t\tpublic virtual stt::Task{resp} {method.Name}(");
+                    var first = true;
+                    if (par != null)
+                    {
+                        first = false;
+                        writer.WriteLine();
+                        writer.Write($"\t\t\t{par.Value.optType} {par.Value.optName}");
+                    }
+                    foreach (var (field, type, defaultValue, _) in fields)
+                    {
+                        if (field is null || type is null || defaultValue is null)
+                            continue;
+                        if (first) first = false;
+                        else writer.Write(",");
+                        writer.WriteLine();
+                        writer.Write($"\t\t\t{type} @{FirstLow(field)} = {defaultValue}");
+                    }
+                    writer.WriteLines(
+                        $")",
+                        $"\t\t{{",
+                        $"\t\t\tvar request = new {requestType}",
+                        $"\t\t\t{{"
+                        );
+                    foreach (var (field, _, _, converter) in fields)
+                    {
+                        writer.WriteLine($"\t\t\t\t{field} = {string.Format(converter, "@" + FirstLow(field))},");
+                    }
+                    writer.WriteLines(
+                        $"\t\t\t}};",
+                        $"\t\t\treturn {method.Name}(request{(par.HasValue ? $", {par.Value.optName}" : "")});",
+                        $"\t\t}}"
+                        );
+
+                });
+                write(null);
+                write(("st::CancellationToken", "cancellationToken"));
+                write(("s::TimeSpan", "timeout"));
+            }
+        }
+
+        protected virtual void GenerateServerService(
+            FileDescriptorProto file,
+            ServiceDescriptorProto service,
+            StreamWriter writer,
+            List<NameInfo> names)
+        {
+            writer.WriteLines(
                 $"\t/// <summary>",
                 $"\t/// The base class for the server implementation of the {service.Name} api",
                 $"\t/// </summary>",
@@ -193,84 +236,96 @@ namespace sRPCgen
                 $"\t\t\t{{"
             );
             foreach (var method in service.Method)
-            {
-                var requestType = names
-                    .Where(x => x.ProtoBufName == method.InputType)
-                    .Select(x => x.CSharpName)
-                    .FirstOrDefault();
-                if (requestType is null)
-                {
-                    Log.WriteError(text: $"c# type for protobuf message {method.InputType} not found",
-                        file: file.Name);
-                    return;
-                }
-                var resp = Settings.EmptySupport && method.OutputType == ".google.protobuf.Empty";
-                var req = Settings.EmptySupport && method.InputType == ".google.protobuf.Empty"
-                    ? ""
-                    : $"request.Request?.Unpack<{requestType}>(), ";
-                writer.WriteLines(
-                    $"\t\t\t\tcase \"{method.Name}\":",
-                    !resp ? null
-                        : $"\t\t\t\t\tawait {method.Name}({req}cancellationToken);",
-                    $"\t\t\t\t\treturn new srpc::NetworkResponse()",
-                    $"\t\t\t\t\t{{",
-                    $"\t\t\t\t\t\tResponse = gpw::Any.Pack({(resp ? "new gpw::Empty()" : $"await {method.Name}({req}cancellationToken)")}),",
-                    $"\t\t\t\t\t\tToken = request.Token,",
-                    $"\t\t\t\t\t}};"
-                );
-            }
+                GenerateServerServiceMessageHandler(file, service, writer, names, method);
             writer.WriteLines(
                 $"\t\t\t\tdefault: throw new s::NotSupportedException($\"{{request.ApiFunction}} is not defined\");",
                 $"\t\t\t}}",
                 $"\t\t}}"
             );
             foreach (var method in service.Method)
-            {
-                var requestType = names
-                    .Where(x => x.ProtoBufName == method.InputType)
-                    .Select(x => x.CSharpName)
-                    .FirstOrDefault();
-                var responseType = names
-                    .Where(x => x.ProtoBufName == method.OutputType)
-                    .Select(x => x.CSharpName)
-                    .FirstOrDefault();
-                if (requestType is null)
-                {
-                    Log.WriteError(text: $"c# type for protobuf message {method.InputType} not found",
-                        file: file.Name);
-                    return;
-                }
-                if (responseType is null)
-                {
-                    Log.WriteError(text: $"c# type for protobuf message {method.OutputType} not found",
-                        file: file.Name);
-                    return;
-                }
-                var resp = Settings.EmptySupport && method.OutputType == ".google.protobuf.Empty"
-                    ? ""
-                    : $"<{responseType}>";
-                var req = Settings.EmptySupport && method.InputType == ".google.protobuf.Empty"
-                    ? ""
-                    : $"{requestType} request";
-                var req2 = req == "" ? "" : $"{req}, ";
-                writer.WriteLines(
-                    $"",
-                    $"\t\tpublic abstract stt::Task{resp} {method.Name}({req});",
-                    $"",
-                    $"\t\tpublic virtual stt::Task{resp} {method.Name}({req2}st::CancellationToken cancellationToken)",
-                    $"\t\t\t=> {method.Name}({(req == "" ? "" : "request")});"
-                );
-            }
+                GenerateServerServiceMethods(file, service, writer, names, method);
             writer.WriteLines(
-                $"\t}}",
-                $"}}",
-                $"",
-                $"#endregion Designer generated code"
+                $"\t}}"
             );
         }
 
+        protected virtual void GenerateServerServiceMessageHandler(
+            FileDescriptorProto file,
+            ServiceDescriptorProto service,
+            StreamWriter writer,
+            List<NameInfo> names,
+            MethodDescriptorProto method)
+        {
+            var requestType = names
+                .Where(x => x.ProtoBufName == method.InputType)
+                .Select(x => x.CSharpName)
+                .FirstOrDefault();
+            if (requestType is null)
+            {
+                Log.WriteError(text: $"c# type for protobuf message {method.InputType} not found",
+                    file: file.Name);
+                return;
+            }
+            var resp = Settings.EmptySupport && method.OutputType == ".google.protobuf.Empty";
+            var req = Settings.EmptySupport && method.InputType == ".google.protobuf.Empty"
+                ? ""
+                : $"request.Request?.Unpack<{requestType}>(), ";
+            writer.WriteLines(
+                $"\t\t\t\tcase \"{method.Name}\":",
+                !resp ? null
+                    : $"\t\t\t\t\tawait {method.Name}({req}cancellationToken);",
+                $"\t\t\t\t\treturn new srpc::NetworkResponse()",
+                $"\t\t\t\t\t{{",
+                $"\t\t\t\t\t\tResponse = gpw::Any.Pack({(resp ? "new gpw::Empty()" : $"await {method.Name}({req}cancellationToken)")}),",
+                $"\t\t\t\t\t\tToken = request.Token,",
+                $"\t\t\t\t\t}};"
+            );
+        }
 
-        private List<(string field, string type, string defaultValue, string converter)> GetRequestFields(
+        protected virtual void GenerateServerServiceMethods(
+            FileDescriptorProto file,
+            ServiceDescriptorProto service,
+            StreamWriter writer,
+            List<NameInfo> names,
+            MethodDescriptorProto method)
+        {
+            var requestType = names
+                .Where(x => x.ProtoBufName == method.InputType)
+                .Select(x => x.CSharpName)
+                .FirstOrDefault();
+            var responseType = names
+                .Where(x => x.ProtoBufName == method.OutputType)
+                .Select(x => x.CSharpName)
+                .FirstOrDefault();
+            if (requestType is null)
+            {
+                Log.WriteError(text: $"c# type for protobuf message {method.InputType} not found",
+                    file: file.Name);
+                return;
+            }
+            if (responseType is null)
+            {
+                Log.WriteError(text: $"c# type for protobuf message {method.OutputType} not found",
+                    file: file.Name);
+                return;
+            }
+            var resp = Settings.EmptySupport && method.OutputType == ".google.protobuf.Empty"
+                ? ""
+                : $"<{responseType}>";
+            var req = Settings.EmptySupport && method.InputType == ".google.protobuf.Empty"
+                ? ""
+                : $"{requestType} request";
+            var req2 = req == "" ? "" : $"{req}, ";
+            writer.WriteLines(
+                $"",
+                $"\t\tpublic abstract stt::Task{resp} {method.Name}({req});",
+                $"",
+                $"\t\tpublic virtual stt::Task{resp} {method.Name}({req2}st::CancellationToken cancellationToken)",
+                $"\t\t\t=> {method.Name}({(req == "" ? "" : "request")});"
+            );
+        }
+
+        protected virtual List<(string field, string type, string defaultValue, string converter)> GetRequestFields(
             MethodDescriptorProto method,
             List<NameInfo> names)
         {
@@ -404,13 +459,13 @@ namespace sRPCgen
 
             return result;
         }
-        private string GetCSharpName(List<NameInfo> names, string protoName)
+        protected virtual string GetCSharpName(List<NameInfo> names, string protoName)
             => names
                 .Where(x => x.ProtoBufName == protoName)
                 .Select(x => x.CSharpName)
                 .FirstOrDefault();
 
-        private string GetCSharpType(List<NameInfo> names, FieldDescriptorProto.Types.Type type, string typeName)
+        protected virtual string GetCSharpType(List<NameInfo> names, FieldDescriptorProto.Types.Type type, string typeName)
             => type switch
             {
                 FieldDescriptorProto.Types.Type.Bool => "bool",
@@ -434,7 +489,7 @@ namespace sRPCgen
                 _ => null
             };
 
-        private string Escape(string input)
+        protected virtual string Escape(string input)
         {
             using var writer = new StringWriter();
             using var provider = CodeDomProvider.CreateProvider("CSharp");
@@ -445,7 +500,7 @@ namespace sRPCgen
             return writer.ToString();
         }
 
-       private string ConvertName(string name, string trim = null)
+        protected virtual string ConvertName(string name, string trim = null)
         {
             if (trim != null)
             {
@@ -470,7 +525,7 @@ namespace sRPCgen
             return sb.ToString();
         }
 
-        private string FirstLow(string name)
+        protected virtual string FirstLow(string name)
         {
             if (name == null || name.Length == 0)
                 return name;
