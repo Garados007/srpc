@@ -22,6 +22,7 @@
   <PropertyGroup>
     <Srpc_AutoSearchProj>true</Srpc_AutoSearchProj>
     <Srpc_EmptySupport>true</Srpc_EmptySupport>
+    <Srpc_OutputFormat>2</Srpc_OutputFormat>
   </PropertyGroup>
 
 </Project>
