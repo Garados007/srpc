@@ -186,7 +186,12 @@ namespace sRPCgen
                 }
             using var writer = new StreamWriter(new FileStream(targetName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite));
             writer.BaseStream.SetLength(0);
-            var generator = new Generator(settings, log);
+            Generator generator = settings.OutputFormat switch
+            {
+                "1" => new Generator(settings, log),
+                "2" => new Generator2(settings, log),
+                _ => new Generator(settings, log),
+            };
             generator.GenerateServiceFile(filedesc, service, writer, names);
             writer.Flush();
 

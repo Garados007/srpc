@@ -18,6 +18,9 @@ message NetworkRequest {
 	// The server should now stop the computation of the response.
 	// There is no response message needed.
 	repeated int64 cancelRequests = 4;
+	// determine if the message is for the reverse direction. Only used
+	// for interfaces that supports API calls in both directions.
+	bool reverse = 5;
 }
 
 // the base response information that is used be the internal Api
@@ -28,4 +31,7 @@ message NetworkResponse {
 	google.protobuf.Any response = 2;
 	// the token to identify this response
 	int64 token = 3;
+	// determine if the message is for the reverse direction. Only used
+	// for interfaces that supports API calls in both directions.
+	bool reverse = 5;
 }

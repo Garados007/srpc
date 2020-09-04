@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\sRPC\sRPC.csproj.include"/>
+  <Import Project="..\sRPC\sRPC.csproj.include" />
 
   <PropertyGroup>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
@@ -49,8 +49,7 @@ It is recommended to install the NuGet packages sRPC and Google.Protobuf.
     <None Pack="true" PackagePath="build\" Include="build\**\*.xml; build\**\*.props; build\**\*.targets;" />
 
     <_ProtoAssetName Include="any;api;descriptor;duration;empty;field_mask;source_context;struct;timestamp;type;wrappers" />
-    <_Asset PackagePath="build/native/include/google/protobuf/" 
-            Include="@(_ProtoAssetName->'$(Assets_ProtoInclude)\%(Identity).proto')" />
+    <_Asset PackagePath="build/native/include/google/protobuf/" Include="@(_ProtoAssetName->'$(Assets_ProtoInclude)\%(Identity).proto')" />
 
     <!--protoc Assets-->
     <_Asset PackagePath="tools/windows_x86/" Include="$(Assets_ProtoCompiler)protoc-win32/bin/protoc.exe" />
@@ -63,28 +62,22 @@ It is recommended to install the NuGet packages sRPC and Google.Protobuf.
     <!--sRPCgen Assets-->
     <_GlobalBuildAssetName Include="Google.Protobuf.dll;sRPCgen.deps.json;sRPCgen.dll;sRPCgen.pdb;sRPCgen.runtimeconfig.json;System.CodeDom.dll;System.Text.Json.dll" />
     <!-- win-x86 -->
-    <_Asset PackagePath="tools/windows_x86"
-            Include="@(_GlobalBuildAssetName->'$(Assets_SrpcCompiler)\win-x86\publish\%(Identity)')" />
+    <_Asset PackagePath="tools/windows_x86" Include="@(_GlobalBuildAssetName->'$(Assets_SrpcCompiler)\win-x86\publish\%(Identity)')" />
     <_Asset PackagePath="tools/windows_x86" Include="$(Assets_SrpcCompiler)\win-x86\publish\sRPCgen.exe" />
     <!-- win-x64 -->
-    <_Asset PackagePath="tools/windows_x64"
-            Include="@(_GlobalBuildAssetName->'$(Assets_SrpcCompiler)\win-x64\publish\%(Identity)')" />
+    <_Asset PackagePath="tools/windows_x64" Include="@(_GlobalBuildAssetName->'$(Assets_SrpcCompiler)\win-x64\publish\%(Identity)')" />
     <_Asset PackagePath="tools/windows_x64" Include="$(Assets_SrpcCompiler)\win-x64\publish\sRPCgen.exe" />
     <!-- no builder for linux-x86 -->
-    <_Asset PackagePath="tools/linux_x86"
-            Include="@(_GlobalBuildAssetName->'$(Assets_SrpcCompiler)\linux-x64\publish\%(Identity)')" />
+    <_Asset PackagePath="tools/linux_x86" Include="@(_GlobalBuildAssetName->'$(Assets_SrpcCompiler)\linux-x64\publish\%(Identity)')" />
     <_Asset PackagePath="tools/linux_x86" Include="build\sRPCgen" />
     <!-- linux-x64 -->
-    <_Asset PackagePath="tools/linux_x64"
-            Include="@(_GlobalBuildAssetName->'$(Assets_SrpcCompiler)\linux-x64\publish\%(Identity)')" />
+    <_Asset PackagePath="tools/linux_x64" Include="@(_GlobalBuildAssetName->'$(Assets_SrpcCompiler)\linux-x64\publish\%(Identity)')" />
     <_Asset PackagePath="tools/linux_x64" Include="$(Assets_SrpcCompiler)\linux-x64\publish\sRPCgen" />
     <!-- no builder for osx-x86 -->
-    <_Asset PackagePath="tools/osx_x86"
-            Include="@(_GlobalBuildAssetName->'$(Assets_SrpcCompiler)\osx-x64\publish\%(Identity)')" />
+    <_Asset PackagePath="tools/osx_x86" Include="@(_GlobalBuildAssetName->'$(Assets_SrpcCompiler)\osx-x64\publish\%(Identity)')" />
     <_Asset PackagePath="tools/osx_x86" Include="build\sRPCgen" />
     <!-- osx-x64 -->
-    <_Asset PackagePath="tools/osx_x64"
-            Include="@(_GlobalBuildAssetName->'$(Assets_SrpcCompiler)\osx-x64\publish\%(Identity)')" />
+    <_Asset PackagePath="tools/osx_x64" Include="@(_GlobalBuildAssetName->'$(Assets_SrpcCompiler)\osx-x64\publish\%(Identity)')" />
     <_Asset PackagePath="tools/osx_x64" Include="$(Assets_SrpcCompiler)\osx-x64\publish\sRPCgen" />
 
     <None Include="@(_Asset)" Pack="true" Visible="false" />
@@ -93,6 +86,8 @@ It is recommended to install the NuGet packages sRPC and Google.Protobuf.
   <ItemGroup>
     <PackageReference Include="Microsoft.Build.Framework; Microsoft.Build.Utilities.Core" Version="15.6.*" />
     <PackageReference Update="@(PackageReference)" PrivateAssets="All" />
+    <PackageReference Update="Microsoft.Build.Framework" Version="16.6.0" />
+    <PackageReference Update="Microsoft.Build.Utilities.Core" Version="16.6.0" />
   </ItemGroup>
 
   <Target Name="BuildDeps" BeforeTargets="PreBuildEvent">

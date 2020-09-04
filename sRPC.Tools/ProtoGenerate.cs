@@ -55,6 +55,8 @@ namespace sRPC.Tools
 
         private bool IsRemoveWidowFiles => RemoveWidowFiles == "true";
 
+        public string OutputFormat { get; set; }
+
         private string[] SrpcIgnoreUnwrapList
             => (SrpcIgnoreUnwrap ?? "")
                 .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
@@ -202,6 +204,7 @@ namespace sRPC.Tools
             AddArg(sb, "build-protoc");
             AddArg(sb, "proto-import", ProjectPath);
             AddArg(sb, "proto-import", StandardImportsPath);
+            AddArg(sb, "output-format", OutputFormat);
             if (IsSrpcEmptySupport)
                 AddArg(sb, "empty-support");
             if (IsSrpcAutoSearchProj)

@@ -8,6 +8,8 @@
 using gp = global::Google.Protobuf;
 using gpw = global::Google.Protobuf.WellKnownTypes;
 using s = global::System;
+using scg = global::System.Collections.Generic;
+using global::System.Linq;
 using srpc = global::sRPC;
 using st = global::System.Threading;
 using stt = global::System.Threading.Tasks;
@@ -65,45 +67,45 @@ namespace ExampleProject
         }
 
 		public virtual stt::Task<ExampleProject.RandomNumberResponse> GetRandomNumber(
-			int count = 0,
-			int minValue = 0,
-			int maxValue = 0)
+			int @count = 0,
+			int @minValue = 0,
+			int @maxValue = 0)
         {
             var request = new ExampleProject.RandonNumberRequest
             {
-				Count = count,
-				MinValue = minValue,
-				MaxValue = maxValue,
+				Count = @count,
+				MinValue = @minValue,
+				MaxValue = @maxValue,
             };
             return GetRandomNumber(request);
         }
 
 		public virtual stt::Task<ExampleProject.RandomNumberResponse> GetRandomNumber(
 			st::CancellationToken cancellationToken,
-			int count = 0,
-			int minValue = 0,
-			int maxValue = 0)
+			int @count = 0,
+			int @minValue = 0,
+			int @maxValue = 0)
         {
             var request = new ExampleProject.RandonNumberRequest
             {
-				Count = count,
-				MinValue = minValue,
-				MaxValue = maxValue,
+				Count = @count,
+				MinValue = @minValue,
+				MaxValue = @maxValue,
             };
             return GetRandomNumber(request, cancellationToken);
         }
 
 		public virtual stt::Task<ExampleProject.RandomNumberResponse> GetRandomNumber(
 			s::TimeSpan timeout,
-			int count = 0,
-			int minValue = 0,
-			int maxValue = 0)
+			int @count = 0,
+			int @minValue = 0,
+			int @maxValue = 0)
         {
             var request = new ExampleProject.RandonNumberRequest
             {
-				Count = count,
-				MinValue = minValue,
-				MaxValue = maxValue,
+				Count = @count,
+				MinValue = @minValue,
+				MaxValue = @maxValue,
             };
             return GetRandomNumber(request, timeout);
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace sRPCgen
 {
@@ -22,6 +23,15 @@ namespace sRPCgen
         public List<string> IgnoreUnwrap { get; } = new List<string>();
         public string Report { get; set; }
         public bool RemoveWidowFiles { get; set; }
+        public string OutputFormat { get; set; }
+
+        static readonly string[] SupportedOutputFormats = new[]
+        {
+            // the default output format for version 1. This is the main output format.
+            "1", 
+            // the format that is introduced in 2.5.0. This has some changes in the server code
+            "2",
+        };
 
         public void SetDefaults()
         {
@@ -30,6 +40,7 @@ namespace sRPCgen
             FileExtension ??= ".g.cs";
             ProtoExtension ??= ".cs";
             ErrorFormat ??= "default";
+            OutputFormat ??= "1";
         }
 
         public bool ParseArgs(string[] args)
@@ -179,6 +190,19 @@ namespace sRPCgen
                             }
                             RemoveWidowFiles = true;
                             break;
+                        case "--output-format=":
+                            if (OutputFormat != null)
+                            {
+                                Console.WriteLine("--output-format is already defined");
+                                return false;
+                            }
+                            OutputFormat = arg.Substring(ind + 1);
+                            if (!SupportedOutputFormats.Contains(OutputFormat))
+                            {
+                                Console.WriteLine("--output-format is not supported");
+                                return false;
+                            }
+                            break;
                         case "-h":
                         case "--help":
                             return false;
@@ -306,6 +330,9 @@ the options given:
                             after the complete generation step. For this the
                             report of the previous build is required.
                             This can only be used if --report is used.
+  --output-format=FORMAT    Defines the format of the generated files. See
+                            in the online wiki for more information about
+                            the behaviour of the output formats.
   -v, --verbose             Print more information about the build process.
   -h, --help                Print this help.
 ");

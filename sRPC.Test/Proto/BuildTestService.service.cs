@@ -423,15 +423,9 @@ namespace sRPC.Test.Proto
             }
         }
 
-        public abstract stt::Task TestMultiFields(sRPC.Test.Proto.MultiFields request);
+        public abstract stt::Task TestMultiFields(sRPC.Test.Proto.MultiFields request, st::CancellationToken cancellationToken);
 
-        public virtual stt::Task TestMultiFields(sRPC.Test.Proto.MultiFields request, st::CancellationToken cancellationToken)
-            => TestMultiFields(request);
-
-        public abstract stt::Task TestIdentical(sRPC.Test.Proto.Identical request);
-
-        public virtual stt::Task TestIdentical(sRPC.Test.Proto.Identical request, st::CancellationToken cancellationToken)
-            => TestIdentical(request);
+        public abstract stt::Task TestIdentical(sRPC.Test.Proto.Identical request, st::CancellationToken cancellationToken);
     }
 }
 

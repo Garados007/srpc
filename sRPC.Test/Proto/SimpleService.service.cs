@@ -154,15 +154,9 @@ namespace sRPC.Test.Proto
             }
         }
 
-        public abstract stt::Task<sRPC.Test.Proto.SqrtResponse> Sqrt(sRPC.Test.Proto.SqrtRequest request);
+        public abstract stt::Task<sRPC.Test.Proto.SqrtResponse> Sqrt(sRPC.Test.Proto.SqrtRequest request, st::CancellationToken cancellationToken);
 
-        public virtual stt::Task<sRPC.Test.Proto.SqrtResponse> Sqrt(sRPC.Test.Proto.SqrtRequest request, st::CancellationToken cancellationToken)
-            => Sqrt(request);
-
-        public abstract stt::Task Indefinite();
-
-        public virtual stt::Task Indefinite(st::CancellationToken cancellationToken)
-            => Indefinite();
+        public abstract stt::Task Indefinite(st::CancellationToken cancellationToken);
     }
 }
 
