@@ -134,10 +134,7 @@ namespace ExampleProject
             }
         }
 
-        public abstract stt::Task<ExampleProject.RandomNumberResponse> GetRandomNumber(ExampleProject.RandonNumberRequest request);
-
-        public virtual stt::Task<ExampleProject.RandomNumberResponse> GetRandomNumber(ExampleProject.RandonNumberRequest request, st::CancellationToken cancellationToken)
-            => GetRandomNumber(request);
+        public abstract stt::Task<ExampleProject.RandomNumberResponse> GetRandomNumber(ExampleProject.RandonNumberRequest request, st::CancellationToken cancellationToken);
     }
 }
 

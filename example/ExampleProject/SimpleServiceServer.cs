@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ExampleProject
 {
     public class SimpleServiceServer : SimpleServiceServerBase
     {
-        public override Task<RandomNumberResponse> GetRandomNumber(RandonNumberRequest request)
+        public override Task<RandomNumberResponse> GetRandomNumber(
+            RandonNumberRequest request, 
+            CancellationToken cancellationToken)
         {
             var rng = new Random();
             var result = new RandomNumberResponse();
