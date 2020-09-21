@@ -92,7 +92,18 @@ namespace sRPC
                     buffer = new byte[length];
                     try
                     {
-                        await Input.ReadAsync(buffer, 0, buffer.Length, cancellationToken.Token);
+                        var readed = 0;
+                        while (readed < length)
+                        {
+                            var r = await Input.ReadAsync(
+                                buffer, 
+                                readed, 
+                                buffer.Length - readed, 
+                                cancellationToken.Token);
+                            readed += r;
+                            if (r == 0)
+                                break;
+                        }
                     }
                     catch (IOException e)
                     {
