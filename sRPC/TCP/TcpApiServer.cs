@@ -1,5 +1,7 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -27,6 +29,12 @@ namespace sRPC.TCP
         /// the <typeparamref name="T"/> Api.
         /// </summary>
         public Action<T> SetupApi { get; }
+
+        /// <summary>
+        /// The collection of all connected apis.
+        /// </summary>
+        public IEnumerable<T> Apis
+            => apiServers.Keys.Select(x => x.Api);
 
         /// <summary>
         /// Create a <see cref="ApiServer{T}"/> wrapper for a <see cref="TcpListener"/>.
@@ -136,6 +144,18 @@ namespace sRPC.TCP
         /// the <typeparamref name="TResponse"/> Api.
         /// </summary>
         public Action<TResponse> SetupResponseApi { get; }
+
+        /// <summary>
+        /// The collection of all connected request apis.
+        /// </summary>
+        public IEnumerable<TRequest> RequestApis
+            => apiServers.Keys.Select(x => x.RequestApi);
+
+        /// <summary>
+        /// The collection of all connected response apis.
+        /// </summary>
+        public IEnumerable<TResponse> ResponseApis
+            => apiServers.Keys.Select(x => x.ResponseApi);
 
         /// <summary>
         /// Create a <see cref="ApiServer{TRequest, TResponse}"/> wrapper for a <see cref="TcpListener"/>.
