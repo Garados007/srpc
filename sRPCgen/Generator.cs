@@ -246,9 +246,7 @@ namespace sRPCgen
                 $"\t\t\t}};",
                 $"\t\t\t{(resp == "" ? "_" : "var response")} = PerformMessage2Private != null",
                 $"\t\t\t\t? await PerformMessage2Private.Invoke(networkMessage, cancellationToken).ConfigureAwait(false)",
-                Settings.Nullable == true
-                    ? $"\t\t\t\t: await (PerformMessagePrivate?.Invoke(networkMessage) ?? stt::Task.FromResult(new srpc::NetworkResponse())).ConfigureAwait(false);"
-                    : $"\t\t\t\t: await PerformMessagePrivate?.Invoke(networkMessage).ConfigureAwait(false);",
+                $"\t\t\t\t: await (PerformMessagePrivate?.Invoke(networkMessage) ?? stt::Task.FromResult(new srpc::NetworkResponse())).ConfigureAwait(false);",
                 resp == "" ? null
                     : $"\t\t\treturn response.Response?.Unpack<{responseType}{Nullable}>();",
                 $"\t\t}}",
