@@ -1,0 +1,8 @@
+﻿syntax = "proto3";
+
+package srpc.test;
+
+option csharp_namespace = "sRPC.Test.Proto";
+
+service EmptyService {
+}
