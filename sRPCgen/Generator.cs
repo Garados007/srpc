@@ -386,7 +386,7 @@ namespace sRPCgen
             if (reqc != null)
                 writer.WriteLines(
                     $"\t\t\t\t\t\tvar req = request.Request?.Unpack<{requestType}{Nullable}>();",
-                    $"\t\t\t\t\t\tif (req == null)",
+                    $"\t\t\t\t\t\tif (req is null)",
                     $"\t\t\t\t\t\t\treturn new srpc::NetworkResponse()",
                     $"\t\t\t\t\t\t\t{{",
                     $"\t\t\t\t\t\t\t\tToken = request.Token,",
