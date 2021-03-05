@@ -20,6 +20,8 @@ namespace sRPCgen
             Log = log ?? throw new ArgumentNullException(nameof(log));
         }
 
+        protected virtual string Nullable => Settings.Nullable == true ? "?" : "";
+
         public virtual void GenerateServiceFile(
             FileDescriptorProto file,
             ServiceDescriptorProto service,
@@ -36,6 +38,11 @@ namespace sRPCgen
                 $""
             );
             GenerateFileUsingsHeader(writer);
+            if (Settings.Nullable != null)
+                writer.WriteLines(
+                    $"#nullable {(Settings.Nullable.Value ? "enable" : "disable")}",
+                    $""
+                );
             writer.WriteLines(
                 $"namespace {file.Options?.CsharpNamespace ?? "Api"}",
                 $"{{"
@@ -76,21 +83,21 @@ namespace sRPCgen
                 $"\t/// </summary>",
                 $"\tpublic class {service.Name}Client : srpc::IApiClientDefinition2",
                 $"\t{{",
-                $"\t\tevent s::Func<srpc::NetworkRequest, stt::Task<srpc::NetworkResponse>> srpc::IApiClientDefinition.PerformMessage",
+                $"\t\tevent s::Func<srpc::NetworkRequest, stt::Task<srpc::NetworkResponse>>{Nullable} srpc::IApiClientDefinition.PerformMessage",
                 $"\t\t{{",
                 $"\t\t\tadd => PerformMessagePrivate += value;",
                 $"\t\t\tremove => PerformMessagePrivate -= value;",
                 $"\t\t}}",
                 $"",
-                $"\t\tevent s::Func<srpc::NetworkRequest, st::CancellationToken, stt::Task<srpc::NetworkResponse>> srpc::IApiClientDefinition2.PerformMessage2",
+                $"\t\tevent s::Func<srpc::NetworkRequest, st::CancellationToken, stt::Task<srpc::NetworkResponse>>{Nullable} srpc::IApiClientDefinition2.PerformMessage2",
                 $"\t\t{{",
                 $"\t\t\tadd => PerformMessage2Private += value;",
                 $"\t\t\tremove => PerformMessage2Private -= value;",
                 $"\t\t}}",
                 $"",
-                $"\t\tprivate event s::Func<srpc::NetworkRequest, stt::Task<srpc::NetworkResponse>> PerformMessagePrivate;",
+                $"\t\tprivate event s::Func<srpc::NetworkRequest, stt::Task<srpc::NetworkResponse>>{Nullable} PerformMessagePrivate;",
                 $"",
-                $"\t\tprivate event s::Func<srpc::NetworkRequest, st::CancellationToken, stt::Task<srpc::NetworkResponse>> PerformMessage2Private;"
+                $"\t\tprivate event s::Func<srpc::NetworkRequest, st::CancellationToken, stt::Task<srpc::NetworkResponse>>{Nullable} PerformMessage2Private;"
             );
             foreach (var method in service.Method)
                 GenerateClientServiceMethod(file, service, writer, names, method);
@@ -128,7 +135,7 @@ namespace sRPCgen
             }
             var resp = Settings.EmptySupport && method.OutputType == ".google.protobuf.Empty"
                 ? ""
-                : $"<{responseType}>";
+                : $"<{responseType}{Nullable}>";
             var req = Settings.EmptySupport && method.InputType == ".google.protobuf.Empty"
                 ? ""
                 : $"{requestType} message";
@@ -153,9 +160,11 @@ namespace sRPCgen
                 $"\t\t\t}};",
                 $"\t\t\t{(resp == "" ? "_" : "var response")} = PerformMessage2Private != null",
                 $"\t\t\t\t? await PerformMessage2Private.Invoke(networkMessage, cancellationToken)",
-                $"\t\t\t\t: await PerformMessagePrivate?.Invoke(networkMessage);",
+                Settings.Nullable == true
+                    ? $"\t\t\t\t: await (PerformMessagePrivate?.Invoke(networkMessage) ?? stt::Task.FromResult(new srpc::NetworkResponse()));"
+                    : $"\t\t\t\t: await PerformMessagePrivate?.Invoke(networkMessage);",
                 resp == "" ? null
-                    : $"\t\t\treturn response.Response?.Unpack<{responseType}>();",
+                    : $"\t\t\treturn response.Response?.Unpack<{responseType}{Nullable}>();",
                 $"\t\t}}",
                 $"",
                 $"\t\tpublic virtual async stt::Task{resp} {method.Name}({req2}s::TimeSpan timeout)",
@@ -226,10 +235,10 @@ namespace sRPCgen
                 $"\t/// </summary>",
                 $"\tpublic abstract class {service.Name}ServerBase : srpc::IApiServerDefinition2",
                 $"\t{{",
-                $"\t\tstt::Task<srpc::NetworkResponse> srpc::IApiServerDefinition.HandleMessage(srpc::NetworkRequest request)",
+                $"\t\tstt::Task<srpc::NetworkResponse{Nullable}> srpc::IApiServerDefinition.HandleMessage(srpc::NetworkRequest request)",
                 $"\t\t\t=> ((srpc::IApiServerDefinition2)this).HandleMessage2(request, st::CancellationToken.None);",
                 $"",
-                $"\t\tasync stt::Task<srpc::NetworkResponse> srpc::IApiServerDefinition2.HandleMessage2(srpc::NetworkRequest request, st::CancellationToken cancellationToken)",
+                $"\t\tasync stt::Task<srpc::NetworkResponse{Nullable}> srpc::IApiServerDefinition2.HandleMessage2(srpc::NetworkRequest request, st::CancellationToken cancellationToken)",
                 $"\t\t{{",
                 $"\t\t\t_ = request ?? throw new s::ArgumentNullException(nameof(request));",
                 $"\t\t\tswitch (request.ApiFunction)",
@@ -267,18 +276,31 @@ namespace sRPCgen
                 return;
             }
             var resp = Settings.EmptySupport && method.OutputType == ".google.protobuf.Empty";
-            var req = Settings.EmptySupport && method.InputType == ".google.protobuf.Empty"
-                ? ""
-                : $"request.Request?.Unpack<{requestType}>(), ";
+            var reqc = Settings.EmptySupport && method.InputType == ".google.protobuf.Empty"
+                ? "" 
+                : $"req, ";
             writer.WriteLines(
                 $"\t\t\t\tcase \"{method.Name}\":",
+                $"\t\t\t\t{{"
+            );
+            if (reqc != null)
+                writer.WriteLines(
+                    $"\t\t\t\t\t\tvar req = request.Request?.Unpack<{requestType}{Nullable}>();",
+                    $"\t\t\t\t\t\tif (req == null)",
+                    $"\t\t\t\t\t\t\treturn new srpc::NetworkResponse()",
+                    $"\t\t\t\t\t\t\t{{",
+                    $"\t\t\t\t\t\t\t\tToken = request.Token,",
+                    $"\t\t\t\t\t\t\t}};"
+                );
+            writer.WriteLines(
                 !resp ? null
-                    : $"\t\t\t\t\tawait {method.Name}({req}cancellationToken);",
-                $"\t\t\t\t\treturn new srpc::NetworkResponse()",
-                $"\t\t\t\t\t{{",
-                $"\t\t\t\t\t\tResponse = gpw::Any.Pack({(resp ? "new gpw::Empty()" : $"await {method.Name}({req}cancellationToken)")}),",
-                $"\t\t\t\t\t\tToken = request.Token,",
-                $"\t\t\t\t\t}};"
+                    : $"\t\t\t\t\t\tawait {method.Name}({reqc}cancellationToken);",
+                $"\t\t\t\t\t\treturn new srpc::NetworkResponse()",
+                $"\t\t\t\t\t\t{{",
+                $"\t\t\t\t\t\t\tResponse = gpw::Any.Pack({(resp ? "new gpw::Empty()" : $"await {method.Name}({reqc}cancellationToken)")}),",
+                $"\t\t\t\t\t\t\tToken = request.Token,",
+                $"\t\t\t\t\t\t}};",
+                $"\t\t\t\t\t}}"
             );
         }
 
@@ -311,7 +333,7 @@ namespace sRPCgen
             }
             var resp = Settings.EmptySupport && method.OutputType == ".google.protobuf.Empty"
                 ? ""
-                : $"<{responseType}>";
+                : $"<{responseType}{Nullable}>";
             var req = Settings.EmptySupport && method.InputType == ".google.protobuf.Empty"
                 ? ""
                 : $"{requestType} request";
@@ -454,6 +476,8 @@ namespace sRPCgen
                 var fieldName = ConvertName(field.Name);
                 if (fieldName.ToLower() == request.Name.ToLower())
                     fieldName += "_";
+                if (defaultValue == "null")
+                    type = $"{type}{Nullable}";
                 result.Add((fieldName, type, defaultValue, converter));
             }
 

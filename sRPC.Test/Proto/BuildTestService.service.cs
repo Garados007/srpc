@@ -14,6 +14,8 @@ using srpc = global::sRPC;
 using st = global::System.Threading;
 using stt = global::System.Threading.Tasks;
 
+#nullable enable
+
 namespace sRPC.Test.Proto
 {
     /// <summary>
@@ -21,21 +23,21 @@ namespace sRPC.Test.Proto
     /// </summary>
     public class BuildTestServiceClient : srpc::IApiClientDefinition2
     {
-        event s::Func<srpc::NetworkRequest, stt::Task<srpc::NetworkResponse>> srpc::IApiClientDefinition.PerformMessage
+        event s::Func<srpc::NetworkRequest, stt::Task<srpc::NetworkResponse>>? srpc::IApiClientDefinition.PerformMessage
         {
             add => PerformMessagePrivate += value;
             remove => PerformMessagePrivate -= value;
         }
 
-        event s::Func<srpc::NetworkRequest, st::CancellationToken, stt::Task<srpc::NetworkResponse>> srpc::IApiClientDefinition2.PerformMessage2
+        event s::Func<srpc::NetworkRequest, st::CancellationToken, stt::Task<srpc::NetworkResponse>>? srpc::IApiClientDefinition2.PerformMessage2
         {
             add => PerformMessage2Private += value;
             remove => PerformMessage2Private -= value;
         }
 
-        private event s::Func<srpc::NetworkRequest, stt::Task<srpc::NetworkResponse>> PerformMessagePrivate;
+        private event s::Func<srpc::NetworkRequest, stt::Task<srpc::NetworkResponse>>? PerformMessagePrivate;
 
-        private event s::Func<srpc::NetworkRequest, st::CancellationToken, stt::Task<srpc::NetworkResponse>> PerformMessage2Private;
+        private event s::Func<srpc::NetworkRequest, st::CancellationToken, stt::Task<srpc::NetworkResponse>>? PerformMessage2Private;
 
         public virtual stt::Task TestMultiFields(sRPC.Test.Proto.MultiFields message)
         {
@@ -53,7 +55,7 @@ namespace sRPC.Test.Proto
             };
             _ = PerformMessage2Private != null
                 ? await PerformMessage2Private.Invoke(networkMessage, cancellationToken)
-                : await PerformMessagePrivate?.Invoke(networkMessage);
+                : await (PerformMessagePrivate?.Invoke(networkMessage) ?? stt::Task.FromResult(new srpc::NetworkResponse()));
         }
 
         public virtual async stt::Task TestMultiFields(sRPC.Test.Proto.MultiFields message, s::TimeSpan timeout)
@@ -67,7 +69,7 @@ namespace sRPC.Test.Proto
 
 		public virtual stt::Task TestMultiFields(
 			bool @boolFlag = false,
-			byte[] @bytesValue = null,
+			byte[]? @bytesValue = null,
 			double @doubleValue = 0,
 			sRPC.Test.Proto.EnumObject @enumValue = (sRPC.Test.Proto.EnumObject)0,
 			uint @fixed32Value = 0,
@@ -75,7 +77,7 @@ namespace sRPC.Test.Proto
 			float @floatValue = 0,
 			int @int32Value = 0,
 			long @int64Value = 0,
-			Google.Protobuf.WellKnownTypes.Timestamp @messageValue = null,
+			Google.Protobuf.WellKnownTypes.Timestamp? @messageValue = null,
 			int @sfixed32Value = 0,
 			long @sfixed64Value = 0,
 			int @sint32Value = 0,
@@ -83,24 +85,24 @@ namespace sRPC.Test.Proto
 			string @stringValue = "",
 			uint @uint32Value = 0,
 			ulong @uint64Value = 0,
-			bool[] @repeatedBoolFlag = null,
-			byte[][] @repeatedBytesValue = null,
-			double[] @repeatedDoubleValue = null,
-			sRPC.Test.Proto.EnumObject[] @repeatedEnumValue = null,
-			uint[] @repeatedFixed32Value = null,
-			ulong[] @repeatedFixed64Value = null,
-			float[] @repeatedFloatValue = null,
-			int[] @repeatedInt32Value = null,
-			long[] @repeatedInt64Value = null,
-			Google.Protobuf.WellKnownTypes.Timestamp[] @repeatedMessageValue = null,
-			int[] @repeatedSfixed32Value = null,
-			long[] @repeatedSfixed64Value = null,
-			int[] @repeatedSint32Value = null,
-			long[] @repeatedSint64Value = null,
-			string[] @repeatedStringValue = null,
-			uint[] @repeatedUint32Value = null,
-			ulong[] @repeatedUint64Value = null,
-			scg::IDictionary<int, string> @map1 = null,
+			bool[]? @repeatedBoolFlag = null,
+			byte[][]? @repeatedBytesValue = null,
+			double[]? @repeatedDoubleValue = null,
+			sRPC.Test.Proto.EnumObject[]? @repeatedEnumValue = null,
+			uint[]? @repeatedFixed32Value = null,
+			ulong[]? @repeatedFixed64Value = null,
+			float[]? @repeatedFloatValue = null,
+			int[]? @repeatedInt32Value = null,
+			long[]? @repeatedInt64Value = null,
+			Google.Protobuf.WellKnownTypes.Timestamp[]? @repeatedMessageValue = null,
+			int[]? @repeatedSfixed32Value = null,
+			long[]? @repeatedSfixed64Value = null,
+			int[]? @repeatedSint32Value = null,
+			long[]? @repeatedSint64Value = null,
+			string[]? @repeatedStringValue = null,
+			uint[]? @repeatedUint32Value = null,
+			ulong[]? @repeatedUint64Value = null,
+			scg::IDictionary<int, string>? @map1 = null,
 			int @short = 0,
 			int @foreach = 0,
 			int @var = 0,
@@ -156,7 +158,7 @@ namespace sRPC.Test.Proto
 		public virtual stt::Task TestMultiFields(
 			st::CancellationToken cancellationToken,
 			bool @boolFlag = false,
-			byte[] @bytesValue = null,
+			byte[]? @bytesValue = null,
 			double @doubleValue = 0,
 			sRPC.Test.Proto.EnumObject @enumValue = (sRPC.Test.Proto.EnumObject)0,
 			uint @fixed32Value = 0,
@@ -164,7 +166,7 @@ namespace sRPC.Test.Proto
 			float @floatValue = 0,
 			int @int32Value = 0,
 			long @int64Value = 0,
-			Google.Protobuf.WellKnownTypes.Timestamp @messageValue = null,
+			Google.Protobuf.WellKnownTypes.Timestamp? @messageValue = null,
 			int @sfixed32Value = 0,
 			long @sfixed64Value = 0,
 			int @sint32Value = 0,
@@ -172,24 +174,24 @@ namespace sRPC.Test.Proto
 			string @stringValue = "",
 			uint @uint32Value = 0,
 			ulong @uint64Value = 0,
-			bool[] @repeatedBoolFlag = null,
-			byte[][] @repeatedBytesValue = null,
-			double[] @repeatedDoubleValue = null,
-			sRPC.Test.Proto.EnumObject[] @repeatedEnumValue = null,
-			uint[] @repeatedFixed32Value = null,
-			ulong[] @repeatedFixed64Value = null,
-			float[] @repeatedFloatValue = null,
-			int[] @repeatedInt32Value = null,
-			long[] @repeatedInt64Value = null,
-			Google.Protobuf.WellKnownTypes.Timestamp[] @repeatedMessageValue = null,
-			int[] @repeatedSfixed32Value = null,
-			long[] @repeatedSfixed64Value = null,
-			int[] @repeatedSint32Value = null,
-			long[] @repeatedSint64Value = null,
-			string[] @repeatedStringValue = null,
-			uint[] @repeatedUint32Value = null,
-			ulong[] @repeatedUint64Value = null,
-			scg::IDictionary<int, string> @map1 = null,
+			bool[]? @repeatedBoolFlag = null,
+			byte[][]? @repeatedBytesValue = null,
+			double[]? @repeatedDoubleValue = null,
+			sRPC.Test.Proto.EnumObject[]? @repeatedEnumValue = null,
+			uint[]? @repeatedFixed32Value = null,
+			ulong[]? @repeatedFixed64Value = null,
+			float[]? @repeatedFloatValue = null,
+			int[]? @repeatedInt32Value = null,
+			long[]? @repeatedInt64Value = null,
+			Google.Protobuf.WellKnownTypes.Timestamp[]? @repeatedMessageValue = null,
+			int[]? @repeatedSfixed32Value = null,
+			long[]? @repeatedSfixed64Value = null,
+			int[]? @repeatedSint32Value = null,
+			long[]? @repeatedSint64Value = null,
+			string[]? @repeatedStringValue = null,
+			uint[]? @repeatedUint32Value = null,
+			ulong[]? @repeatedUint64Value = null,
+			scg::IDictionary<int, string>? @map1 = null,
 			int @short = 0,
 			int @foreach = 0,
 			int @var = 0,
@@ -245,7 +247,7 @@ namespace sRPC.Test.Proto
 		public virtual stt::Task TestMultiFields(
 			s::TimeSpan timeout,
 			bool @boolFlag = false,
-			byte[] @bytesValue = null,
+			byte[]? @bytesValue = null,
 			double @doubleValue = 0,
 			sRPC.Test.Proto.EnumObject @enumValue = (sRPC.Test.Proto.EnumObject)0,
 			uint @fixed32Value = 0,
@@ -253,7 +255,7 @@ namespace sRPC.Test.Proto
 			float @floatValue = 0,
 			int @int32Value = 0,
 			long @int64Value = 0,
-			Google.Protobuf.WellKnownTypes.Timestamp @messageValue = null,
+			Google.Protobuf.WellKnownTypes.Timestamp? @messageValue = null,
 			int @sfixed32Value = 0,
 			long @sfixed64Value = 0,
 			int @sint32Value = 0,
@@ -261,24 +263,24 @@ namespace sRPC.Test.Proto
 			string @stringValue = "",
 			uint @uint32Value = 0,
 			ulong @uint64Value = 0,
-			bool[] @repeatedBoolFlag = null,
-			byte[][] @repeatedBytesValue = null,
-			double[] @repeatedDoubleValue = null,
-			sRPC.Test.Proto.EnumObject[] @repeatedEnumValue = null,
-			uint[] @repeatedFixed32Value = null,
-			ulong[] @repeatedFixed64Value = null,
-			float[] @repeatedFloatValue = null,
-			int[] @repeatedInt32Value = null,
-			long[] @repeatedInt64Value = null,
-			Google.Protobuf.WellKnownTypes.Timestamp[] @repeatedMessageValue = null,
-			int[] @repeatedSfixed32Value = null,
-			long[] @repeatedSfixed64Value = null,
-			int[] @repeatedSint32Value = null,
-			long[] @repeatedSint64Value = null,
-			string[] @repeatedStringValue = null,
-			uint[] @repeatedUint32Value = null,
-			ulong[] @repeatedUint64Value = null,
-			scg::IDictionary<int, string> @map1 = null,
+			bool[]? @repeatedBoolFlag = null,
+			byte[][]? @repeatedBytesValue = null,
+			double[]? @repeatedDoubleValue = null,
+			sRPC.Test.Proto.EnumObject[]? @repeatedEnumValue = null,
+			uint[]? @repeatedFixed32Value = null,
+			ulong[]? @repeatedFixed64Value = null,
+			float[]? @repeatedFloatValue = null,
+			int[]? @repeatedInt32Value = null,
+			long[]? @repeatedInt64Value = null,
+			Google.Protobuf.WellKnownTypes.Timestamp[]? @repeatedMessageValue = null,
+			int[]? @repeatedSfixed32Value = null,
+			long[]? @repeatedSfixed64Value = null,
+			int[]? @repeatedSint32Value = null,
+			long[]? @repeatedSint64Value = null,
+			string[]? @repeatedStringValue = null,
+			uint[]? @repeatedUint32Value = null,
+			ulong[]? @repeatedUint64Value = null,
+			scg::IDictionary<int, string>? @map1 = null,
 			int @short = 0,
 			int @foreach = 0,
 			int @var = 0,
@@ -347,7 +349,7 @@ namespace sRPC.Test.Proto
             };
             _ = PerformMessage2Private != null
                 ? await PerformMessage2Private.Invoke(networkMessage, cancellationToken)
-                : await PerformMessagePrivate?.Invoke(networkMessage);
+                : await (PerformMessagePrivate?.Invoke(networkMessage) ?? stt::Task.FromResult(new srpc::NetworkResponse()));
         }
 
         public virtual async stt::Task TestIdentical(sRPC.Test.Proto.Identical message, s::TimeSpan timeout)
@@ -360,7 +362,7 @@ namespace sRPC.Test.Proto
         }
 
 		public virtual stt::Task TestIdentical(
-			byte[] @identical_ = null)
+			byte[]? @identical_ = null)
         {
             var request = new sRPC.Test.Proto.Identical
             {
@@ -371,7 +373,7 @@ namespace sRPC.Test.Proto
 
 		public virtual stt::Task TestIdentical(
 			st::CancellationToken cancellationToken,
-			byte[] @identical_ = null)
+			byte[]? @identical_ = null)
         {
             var request = new sRPC.Test.Proto.Identical
             {
@@ -382,7 +384,7 @@ namespace sRPC.Test.Proto
 
 		public virtual stt::Task TestIdentical(
 			s::TimeSpan timeout,
-			byte[] @identical_ = null)
+			byte[]? @identical_ = null)
         {
             var request = new sRPC.Test.Proto.Identical
             {
@@ -397,28 +399,44 @@ namespace sRPC.Test.Proto
     /// </summary>
     public abstract class BuildTestServiceServerBase : srpc::IApiServerDefinition2
     {
-        stt::Task<srpc::NetworkResponse> srpc::IApiServerDefinition.HandleMessage(srpc::NetworkRequest request)
+        stt::Task<srpc::NetworkResponse?> srpc::IApiServerDefinition.HandleMessage(srpc::NetworkRequest request)
             => ((srpc::IApiServerDefinition2)this).HandleMessage2(request, st::CancellationToken.None);
 
-        async stt::Task<srpc::NetworkResponse> srpc::IApiServerDefinition2.HandleMessage2(srpc::NetworkRequest request, st::CancellationToken cancellationToken)
+        async stt::Task<srpc::NetworkResponse?> srpc::IApiServerDefinition2.HandleMessage2(srpc::NetworkRequest request, st::CancellationToken cancellationToken)
         {
             _ = request ?? throw new s::ArgumentNullException(nameof(request));
             switch (request.ApiFunction)
             {
                 case "TestMultiFields":
-                    await TestMultiFields(request.Request?.Unpack<sRPC.Test.Proto.MultiFields>(), cancellationToken);
-                    return new srpc::NetworkResponse()
-                    {
-                        Response = gpw::Any.Pack(new gpw::Empty()),
-                        Token = request.Token,
-                    };
+                {
+                        var req = request.Request?.Unpack<sRPC.Test.Proto.MultiFields?>();
+                        if (req == null)
+                            return new srpc::NetworkResponse()
+                            {
+                                Token = request.Token,
+                            };
+                        await TestMultiFields(req, cancellationToken);
+                        return new srpc::NetworkResponse()
+                        {
+                            Response = gpw::Any.Pack(new gpw::Empty()),
+                            Token = request.Token,
+                        };
+                    }
                 case "TestIdentical":
-                    await TestIdentical(request.Request?.Unpack<sRPC.Test.Proto.Identical>(), cancellationToken);
-                    return new srpc::NetworkResponse()
-                    {
-                        Response = gpw::Any.Pack(new gpw::Empty()),
-                        Token = request.Token,
-                    };
+                {
+                        var req = request.Request?.Unpack<sRPC.Test.Proto.Identical?>();
+                        if (req == null)
+                            return new srpc::NetworkResponse()
+                            {
+                                Token = request.Token,
+                            };
+                        await TestIdentical(req, cancellationToken);
+                        return new srpc::NetworkResponse()
+                        {
+                            Response = gpw::Any.Pack(new gpw::Empty()),
+                            Token = request.Token,
+                        };
+                    }
                 default: throw new s::NotSupportedException($"{request.ApiFunction} is not defined");
             }
         }

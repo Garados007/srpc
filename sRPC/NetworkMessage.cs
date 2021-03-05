@@ -45,7 +45,11 @@ namespace sRPC {
   /// <summary>
   /// the base request information that is used be the internal Api
   /// </summary>
-  public sealed partial class NetworkRequest : pb::IMessage<NetworkRequest> {
+  public sealed partial class NetworkRequest : pb::IMessage<NetworkRequest>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<NetworkRequest> _parser = new pb::MessageParser<NetworkRequest>(() => new NetworkRequest());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -197,6 +201,9 @@ namespace sRPC {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (ApiFunction.Length != 0) {
         output.WriteRawTag(10);
         output.WriteString(ApiFunction);
@@ -217,7 +224,34 @@ namespace sRPC {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (ApiFunction.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(ApiFunction);
+      }
+      if (request_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(Request);
+      }
+      if (Token != 0L) {
+        output.WriteRawTag(24);
+        output.WriteInt64(Token);
+      }
+      cancelRequests_.WriteTo(ref output, _repeated_cancelRequests_codec);
+      if (Reverse != false) {
+        output.WriteRawTag(40);
+        output.WriteBool(Reverse);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -267,6 +301,9 @@ namespace sRPC {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -299,14 +336,57 @@ namespace sRPC {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            ApiFunction = input.ReadString();
+            break;
+          }
+          case 18: {
+            if (request_ == null) {
+              Request = new global::Google.Protobuf.WellKnownTypes.Any();
+            }
+            input.ReadMessage(Request);
+            break;
+          }
+          case 24: {
+            Token = input.ReadInt64();
+            break;
+          }
+          case 34:
+          case 32: {
+            cancelRequests_.AddEntriesFrom(ref input, _repeated_cancelRequests_codec);
+            break;
+          }
+          case 40: {
+            Reverse = input.ReadBool();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
   }
 
   /// <summary>
   /// the base response information that is used be the internal Api
   /// </summary>
-  public sealed partial class NetworkResponse : pb::IMessage<NetworkResponse> {
+  public sealed partial class NetworkResponse : pb::IMessage<NetworkResponse>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<NetworkResponse> _parser = new pb::MessageParser<NetworkResponse>(() => new NetworkResponse());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -425,6 +505,9 @@ namespace sRPC {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (response_ != null) {
         output.WriteRawTag(18);
         output.WriteMessage(Response);
@@ -440,7 +523,29 @@ namespace sRPC {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (response_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(Response);
+      }
+      if (Token != 0L) {
+        output.WriteRawTag(24);
+        output.WriteInt64(Token);
+      }
+      if (Reverse != false) {
+        output.WriteRawTag(40);
+        output.WriteBool(Reverse);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -482,6 +587,9 @@ namespace sRPC {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -505,7 +613,37 @@ namespace sRPC {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 18: {
+            if (response_ == null) {
+              Response = new global::Google.Protobuf.WellKnownTypes.Any();
+            }
+            input.ReadMessage(Response);
+            break;
+          }
+          case 24: {
+            Token = input.ReadInt64();
+            break;
+          }
+          case 40: {
+            Reverse = input.ReadBool();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
   }
 

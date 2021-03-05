@@ -24,11 +24,14 @@
   </ItemGroup>
   
   <Target Name="BuildProto" BeforeTargets="PreBuildEvent">
+    <PropertyGroup>
+      <SolutionDir Condition=" '$(SolutionDir)' == '*Undefined*' ">$(ProjectDir)../</SolutionDir>
+    </PropertyGroup>
     <!--copy sRPCgen-->
     <Exec Command="dotnet build -v q --configuration Release --nologo $(SolutionDir)sRPCgen/sRPCgen.csproj" />
     <Exec Command="cp -f $(SolutionDir)sRPCgen/bin/Release/netcoreapp3.1/sRPCgen* $(TargetDir)/" />
     <!--build protos-->
-    <Exec Command="$(TargetDir)sRPCgen --search-dir=$(ProjectDir) --output-dir=$(ProjectDir) --output-format=2 --namespace-base=$(TargetName) --file-extension=.service.cs --build-protoc --proto-import=$(ProjectDir) --proto-extension=.g.cs --empty-support --report=report.json --remove-widow-files" />
+    <Exec Command="$(TargetDir)sRPCgen --nullable=enable --search-dir=$(ProjectDir) --output-dir=$(ProjectDir) --output-format=2 --namespace-base=$(TargetName) --file-extension=.service.cs --build-protoc --proto-import=$(ProjectDir) --proto-extension=.g.cs --empty-support --report=report.json --remove-widow-files" />
   </Target>
 
 </Project>

@@ -44,7 +44,7 @@ namespace sRPCgen
             }
             var resp = Settings.EmptySupport && method.OutputType == ".google.protobuf.Empty"
                 ? ""
-                : $"<{responseType}>";
+                : $"<{responseType}{Nullable}>";
             var req = Settings.EmptySupport && method.InputType == ".google.protobuf.Empty"
                 ? ""
                 : $"{requestType} request, ";

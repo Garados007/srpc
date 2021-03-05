@@ -14,6 +14,8 @@ using srpc = global::sRPC;
 using st = global::System.Threading;
 using stt = global::System.Threading.Tasks;
 
+#nullable enable
+
 namespace sRPC.Test.Proto
 {
     /// <summary>
@@ -21,29 +23,29 @@ namespace sRPC.Test.Proto
     /// </summary>
     public class SimpleServiceClient : srpc::IApiClientDefinition2
     {
-        event s::Func<srpc::NetworkRequest, stt::Task<srpc::NetworkResponse>> srpc::IApiClientDefinition.PerformMessage
+        event s::Func<srpc::NetworkRequest, stt::Task<srpc::NetworkResponse>>? srpc::IApiClientDefinition.PerformMessage
         {
             add => PerformMessagePrivate += value;
             remove => PerformMessagePrivate -= value;
         }
 
-        event s::Func<srpc::NetworkRequest, st::CancellationToken, stt::Task<srpc::NetworkResponse>> srpc::IApiClientDefinition2.PerformMessage2
+        event s::Func<srpc::NetworkRequest, st::CancellationToken, stt::Task<srpc::NetworkResponse>>? srpc::IApiClientDefinition2.PerformMessage2
         {
             add => PerformMessage2Private += value;
             remove => PerformMessage2Private -= value;
         }
 
-        private event s::Func<srpc::NetworkRequest, stt::Task<srpc::NetworkResponse>> PerformMessagePrivate;
+        private event s::Func<srpc::NetworkRequest, stt::Task<srpc::NetworkResponse>>? PerformMessagePrivate;
 
-        private event s::Func<srpc::NetworkRequest, st::CancellationToken, stt::Task<srpc::NetworkResponse>> PerformMessage2Private;
+        private event s::Func<srpc::NetworkRequest, st::CancellationToken, stt::Task<srpc::NetworkResponse>>? PerformMessage2Private;
 
-        public virtual stt::Task<sRPC.Test.Proto.SqrtResponse> Sqrt(sRPC.Test.Proto.SqrtRequest message)
+        public virtual stt::Task<sRPC.Test.Proto.SqrtResponse?> Sqrt(sRPC.Test.Proto.SqrtRequest message)
         {
             _ = message ?? throw new s::ArgumentNullException(nameof(message));
             return Sqrt(message, st::CancellationToken.None);
         }
 
-        public virtual async stt::Task<sRPC.Test.Proto.SqrtResponse> Sqrt(sRPC.Test.Proto.SqrtRequest message, st::CancellationToken cancellationToken)
+        public virtual async stt::Task<sRPC.Test.Proto.SqrtResponse?> Sqrt(sRPC.Test.Proto.SqrtRequest message, st::CancellationToken cancellationToken)
         {
             _ = message ?? throw new s::ArgumentNullException(nameof(message));
             var networkMessage = new srpc::NetworkRequest()
@@ -53,11 +55,11 @@ namespace sRPC.Test.Proto
             };
             var response = PerformMessage2Private != null
                 ? await PerformMessage2Private.Invoke(networkMessage, cancellationToken)
-                : await PerformMessagePrivate?.Invoke(networkMessage);
-            return response.Response?.Unpack<sRPC.Test.Proto.SqrtResponse>();
+                : await (PerformMessagePrivate?.Invoke(networkMessage) ?? stt::Task.FromResult(new srpc::NetworkResponse()));
+            return response.Response?.Unpack<sRPC.Test.Proto.SqrtResponse?>();
         }
 
-        public virtual async stt::Task<sRPC.Test.Proto.SqrtResponse> Sqrt(sRPC.Test.Proto.SqrtRequest message, s::TimeSpan timeout)
+        public virtual async stt::Task<sRPC.Test.Proto.SqrtResponse?> Sqrt(sRPC.Test.Proto.SqrtRequest message, s::TimeSpan timeout)
         {
             _ = message ?? throw new s::ArgumentNullException(nameof(message));
             if (timeout.Ticks < 0)
@@ -66,7 +68,7 @@ namespace sRPC.Test.Proto
             return await Sqrt(message, cancellationToken.Token);
         }
 
-		public virtual stt::Task<sRPC.Test.Proto.SqrtResponse> Sqrt(
+		public virtual stt::Task<sRPC.Test.Proto.SqrtResponse?> Sqrt(
 			double @value = 0)
         {
             var request = new sRPC.Test.Proto.SqrtRequest
@@ -76,7 +78,7 @@ namespace sRPC.Test.Proto
             return Sqrt(request);
         }
 
-		public virtual stt::Task<sRPC.Test.Proto.SqrtResponse> Sqrt(
+		public virtual stt::Task<sRPC.Test.Proto.SqrtResponse?> Sqrt(
 			st::CancellationToken cancellationToken,
 			double @value = 0)
         {
@@ -87,7 +89,7 @@ namespace sRPC.Test.Proto
             return Sqrt(request, cancellationToken);
         }
 
-		public virtual stt::Task<sRPC.Test.Proto.SqrtResponse> Sqrt(
+		public virtual stt::Task<sRPC.Test.Proto.SqrtResponse?> Sqrt(
 			s::TimeSpan timeout,
 			double @value = 0)
         {
@@ -112,7 +114,7 @@ namespace sRPC.Test.Proto
             };
             _ = PerformMessage2Private != null
                 ? await PerformMessage2Private.Invoke(networkMessage, cancellationToken)
-                : await PerformMessagePrivate?.Invoke(networkMessage);
+                : await (PerformMessagePrivate?.Invoke(networkMessage) ?? stt::Task.FromResult(new srpc::NetworkResponse()));
         }
 
         public virtual async stt::Task Indefinite(s::TimeSpan timeout)
@@ -129,32 +131,48 @@ namespace sRPC.Test.Proto
     /// </summary>
     public abstract class SimpleServiceServerBase : srpc::IApiServerDefinition2
     {
-        stt::Task<srpc::NetworkResponse> srpc::IApiServerDefinition.HandleMessage(srpc::NetworkRequest request)
+        stt::Task<srpc::NetworkResponse?> srpc::IApiServerDefinition.HandleMessage(srpc::NetworkRequest request)
             => ((srpc::IApiServerDefinition2)this).HandleMessage2(request, st::CancellationToken.None);
 
-        async stt::Task<srpc::NetworkResponse> srpc::IApiServerDefinition2.HandleMessage2(srpc::NetworkRequest request, st::CancellationToken cancellationToken)
+        async stt::Task<srpc::NetworkResponse?> srpc::IApiServerDefinition2.HandleMessage2(srpc::NetworkRequest request, st::CancellationToken cancellationToken)
         {
             _ = request ?? throw new s::ArgumentNullException(nameof(request));
             switch (request.ApiFunction)
             {
                 case "Sqrt":
-                    return new srpc::NetworkResponse()
-                    {
-                        Response = gpw::Any.Pack(await Sqrt(request.Request?.Unpack<sRPC.Test.Proto.SqrtRequest>(), cancellationToken)),
-                        Token = request.Token,
-                    };
+                {
+                        var req = request.Request?.Unpack<sRPC.Test.Proto.SqrtRequest?>();
+                        if (req == null)
+                            return new srpc::NetworkResponse()
+                            {
+                                Token = request.Token,
+                            };
+                        return new srpc::NetworkResponse()
+                        {
+                            Response = gpw::Any.Pack(await Sqrt(req, cancellationToken)),
+                            Token = request.Token,
+                        };
+                    }
                 case "Indefinite":
-                    await Indefinite(cancellationToken);
-                    return new srpc::NetworkResponse()
-                    {
-                        Response = gpw::Any.Pack(new gpw::Empty()),
-                        Token = request.Token,
-                    };
+                {
+                        var req = request.Request?.Unpack<Google.Protobuf.WellKnownTypes.Empty?>();
+                        if (req == null)
+                            return new srpc::NetworkResponse()
+                            {
+                                Token = request.Token,
+                            };
+                        await Indefinite(cancellationToken);
+                        return new srpc::NetworkResponse()
+                        {
+                            Response = gpw::Any.Pack(new gpw::Empty()),
+                            Token = request.Token,
+                        };
+                    }
                 default: throw new s::NotSupportedException($"{request.ApiFunction} is not defined");
             }
         }
 
-        public abstract stt::Task<sRPC.Test.Proto.SqrtResponse> Sqrt(sRPC.Test.Proto.SqrtRequest request, st::CancellationToken cancellationToken);
+        public abstract stt::Task<sRPC.Test.Proto.SqrtResponse?> Sqrt(sRPC.Test.Proto.SqrtRequest request, st::CancellationToken cancellationToken);
 
         public abstract stt::Task Indefinite(st::CancellationToken cancellationToken);
     }

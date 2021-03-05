@@ -24,6 +24,7 @@ namespace sRPCgen
         public string Report { get; set; }
         public bool RemoveWidowFiles { get; set; }
         public string OutputFormat { get; set; }
+        public bool? Nullable { get; set; }
 
         static readonly string[] SupportedOutputFormats = new[]
         {
@@ -203,6 +204,21 @@ namespace sRPCgen
                                 return false;
                             }
                             break;
+                        case "--nullable=":
+                            if (Nullable != null)
+                            {
+                                Console.WriteLine("--nullable is already defined");
+                                return false;
+                            }
+                            switch (arg.Substring(ind + 1))
+                            {
+                                case "enable": Nullable = true; break;
+                                case "disable": Nullable = false; break;
+                                default:
+                                    Console.WriteLine($"unknown nullable setting {arg[(ind + 1)..]}");
+                                    return false;
+                            }
+                            break;
                         case "-h":
                         case "--help":
                             return false;
@@ -333,6 +349,9 @@ the options given:
   --output-format=FORMAT    Defines the format of the generated files. See
                             in the online wiki for more information about
                             the behaviour of the output formats.
+  --nullable=NULLABLE       If set it enables the nullable configuration for
+                            the output file. Only the values ""enable"" and
+                            ""disable"" are allowed.
   -v, --verbose             Print more information about the build process.
   -h, --help                Print this help.
 ");
