@@ -54,8 +54,8 @@ namespace sRPC.Test.Proto
                 Request = gpw::Any.Pack(message),
             };
             var response = PerformMessage2Private != null
-                ? await PerformMessage2Private.Invoke(networkMessage, cancellationToken)
-                : await (PerformMessagePrivate?.Invoke(networkMessage) ?? stt::Task.FromResult(new srpc::NetworkResponse()));
+                ? await PerformMessage2Private.Invoke(networkMessage, cancellationToken).ConfigureAwait(false)
+                : await (PerformMessagePrivate?.Invoke(networkMessage) ?? stt::Task.FromResult(new srpc::NetworkResponse())).ConfigureAwait(false);
             return response.Response?.Unpack<sRPC.Test.Proto.SqrtResponse?>();
         }
 
@@ -65,7 +65,7 @@ namespace sRPC.Test.Proto
             if (timeout.Ticks < 0)
                 throw new s::ArgumentOutOfRangeException(nameof(timeout));
             using var cancellationToken = new st::CancellationTokenSource(timeout);
-            return await Sqrt(message, cancellationToken.Token);
+            return await Sqrt(message, cancellationToken.Token).ConfigureAwait(false);
         }
 
 		public virtual stt::Task<sRPC.Test.Proto.SqrtResponse?> Sqrt(
@@ -113,8 +113,8 @@ namespace sRPC.Test.Proto
                 Request = gpw::Any.Pack(new gpw::Empty()),
             };
             _ = PerformMessage2Private != null
-                ? await PerformMessage2Private.Invoke(networkMessage, cancellationToken)
-                : await (PerformMessagePrivate?.Invoke(networkMessage) ?? stt::Task.FromResult(new srpc::NetworkResponse()));
+                ? await PerformMessage2Private.Invoke(networkMessage, cancellationToken).ConfigureAwait(false)
+                : await (PerformMessagePrivate?.Invoke(networkMessage) ?? stt::Task.FromResult(new srpc::NetworkResponse())).ConfigureAwait(false);
         }
 
         public virtual async stt::Task Indefinite(s::TimeSpan timeout)
@@ -122,7 +122,7 @@ namespace sRPC.Test.Proto
             if (timeout.Ticks < 0)
                 throw new s::ArgumentOutOfRangeException(nameof(timeout));
             using var cancellationToken = new st::CancellationTokenSource(timeout);
-            await Indefinite(cancellationToken.Token);
+            await Indefinite(cancellationToken.Token).ConfigureAwait(false);
         }
     }
 
@@ -149,7 +149,7 @@ namespace sRPC.Test.Proto
                             };
                         return new srpc::NetworkResponse()
                         {
-                            Response = gpw::Any.Pack(await Sqrt(req, cancellationToken)),
+                            Response = gpw::Any.Pack(await Sqrt(req, cancellationToken).ConfigureAwait(false)),
                             Token = request.Token,
                         };
                     }
@@ -161,7 +161,7 @@ namespace sRPC.Test.Proto
                             {
                                 Token = request.Token,
                             };
-                        await Indefinite(cancellationToken);
+                        await Indefinite(cancellationToken).ConfigureAwait(false);
                         return new srpc::NetworkResponse()
                         {
                             Response = gpw::Any.Pack(new gpw::Empty()),

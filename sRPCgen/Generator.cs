@@ -159,10 +159,10 @@ namespace sRPCgen
                 $"\t\t\t\tRequest = gpw::Any.Pack({(req == "" ? "new gpw::Empty()" : "message")}),",
                 $"\t\t\t}};",
                 $"\t\t\t{(resp == "" ? "_" : "var response")} = PerformMessage2Private != null",
-                $"\t\t\t\t? await PerformMessage2Private.Invoke(networkMessage, cancellationToken)",
+                $"\t\t\t\t? await PerformMessage2Private.Invoke(networkMessage, cancellationToken).ConfigureAwait(false)",
                 Settings.Nullable == true
-                    ? $"\t\t\t\t: await (PerformMessagePrivate?.Invoke(networkMessage) ?? stt::Task.FromResult(new srpc::NetworkResponse()));"
-                    : $"\t\t\t\t: await PerformMessagePrivate?.Invoke(networkMessage);",
+                    ? $"\t\t\t\t: await (PerformMessagePrivate?.Invoke(networkMessage) ?? stt::Task.FromResult(new srpc::NetworkResponse())).ConfigureAwait(false);"
+                    : $"\t\t\t\t: await PerformMessagePrivate?.Invoke(networkMessage).ConfigureAwait(false);",
                 resp == "" ? null
                     : $"\t\t\treturn response.Response?.Unpack<{responseType}{Nullable}>();",
                 $"\t\t}}",
@@ -174,7 +174,7 @@ namespace sRPCgen
                 $"\t\t\tif (timeout.Ticks < 0)",
                 $"\t\t\t\tthrow new s::ArgumentOutOfRangeException(nameof(timeout));",
                 $"\t\t\tusing var cancellationToken = new st::CancellationTokenSource(timeout);",
-                $"\t\t\t{(resp == "" ? "" : "return ")}await {method.Name}({(req == "" ? "" : "message, ")}cancellationToken.Token);",
+                $"\t\t\t{(resp == "" ? "" : "return ")}await {method.Name}({(req == "" ? "" : "message, ")}cancellationToken.Token).ConfigureAwait(false);",
                 $"\t\t}}"
             );
             if (req != "" && !Settings.IgnoreUnwrap.Contains(method.InputType))
@@ -294,10 +294,10 @@ namespace sRPCgen
                 );
             writer.WriteLines(
                 !resp ? null
-                    : $"\t\t\t\t\t\tawait {method.Name}({reqc}cancellationToken);",
+                    : $"\t\t\t\t\t\tawait {method.Name}({reqc}cancellationToken).ConfigureAwait(false);",
                 $"\t\t\t\t\t\treturn new srpc::NetworkResponse()",
                 $"\t\t\t\t\t\t{{",
-                $"\t\t\t\t\t\t\tResponse = gpw::Any.Pack({(resp ? "new gpw::Empty()" : $"await {method.Name}({reqc}cancellationToken)")}),",
+                $"\t\t\t\t\t\t\tResponse = gpw::Any.Pack({(resp ? "new gpw::Empty()" : $"await {method.Name}({reqc}cancellationToken).ConfigureAwait(false)")}),",
                 $"\t\t\t\t\t\t\tToken = request.Token,",
                 $"\t\t\t\t\t\t}};",
                 $"\t\t\t\t\t}}"

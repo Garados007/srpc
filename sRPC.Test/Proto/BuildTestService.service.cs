@@ -54,8 +54,8 @@ namespace sRPC.Test.Proto
                 Request = gpw::Any.Pack(message),
             };
             _ = PerformMessage2Private != null
-                ? await PerformMessage2Private.Invoke(networkMessage, cancellationToken)
-                : await (PerformMessagePrivate?.Invoke(networkMessage) ?? stt::Task.FromResult(new srpc::NetworkResponse()));
+                ? await PerformMessage2Private.Invoke(networkMessage, cancellationToken).ConfigureAwait(false)
+                : await (PerformMessagePrivate?.Invoke(networkMessage) ?? stt::Task.FromResult(new srpc::NetworkResponse())).ConfigureAwait(false);
         }
 
         public virtual async stt::Task TestMultiFields(sRPC.Test.Proto.MultiFields message, s::TimeSpan timeout)
@@ -64,7 +64,7 @@ namespace sRPC.Test.Proto
             if (timeout.Ticks < 0)
                 throw new s::ArgumentOutOfRangeException(nameof(timeout));
             using var cancellationToken = new st::CancellationTokenSource(timeout);
-            await TestMultiFields(message, cancellationToken.Token);
+            await TestMultiFields(message, cancellationToken.Token).ConfigureAwait(false);
         }
 
 		public virtual stt::Task TestMultiFields(
@@ -348,8 +348,8 @@ namespace sRPC.Test.Proto
                 Request = gpw::Any.Pack(message),
             };
             _ = PerformMessage2Private != null
-                ? await PerformMessage2Private.Invoke(networkMessage, cancellationToken)
-                : await (PerformMessagePrivate?.Invoke(networkMessage) ?? stt::Task.FromResult(new srpc::NetworkResponse()));
+                ? await PerformMessage2Private.Invoke(networkMessage, cancellationToken).ConfigureAwait(false)
+                : await (PerformMessagePrivate?.Invoke(networkMessage) ?? stt::Task.FromResult(new srpc::NetworkResponse())).ConfigureAwait(false);
         }
 
         public virtual async stt::Task TestIdentical(sRPC.Test.Proto.Identical message, s::TimeSpan timeout)
@@ -358,7 +358,7 @@ namespace sRPC.Test.Proto
             if (timeout.Ticks < 0)
                 throw new s::ArgumentOutOfRangeException(nameof(timeout));
             using var cancellationToken = new st::CancellationTokenSource(timeout);
-            await TestIdentical(message, cancellationToken.Token);
+            await TestIdentical(message, cancellationToken.Token).ConfigureAwait(false);
         }
 
 		public virtual stt::Task TestIdentical(
@@ -415,7 +415,7 @@ namespace sRPC.Test.Proto
                             {
                                 Token = request.Token,
                             };
-                        await TestMultiFields(req, cancellationToken);
+                        await TestMultiFields(req, cancellationToken).ConfigureAwait(false);
                         return new srpc::NetworkResponse()
                         {
                             Response = gpw::Any.Pack(new gpw::Empty()),
@@ -430,7 +430,7 @@ namespace sRPC.Test.Proto
                             {
                                 Token = request.Token,
                             };
-                        await TestIdentical(req, cancellationToken);
+                        await TestIdentical(req, cancellationToken).ConfigureAwait(false);
                         return new srpc::NetworkResponse()
                         {
                             Response = gpw::Any.Pack(new gpw::Empty()),
