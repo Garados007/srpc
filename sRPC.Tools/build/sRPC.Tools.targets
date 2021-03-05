@@ -72,6 +72,7 @@
       <Srpc_Report Condition=" '$(Srpc_Report)' == '' ">$(SRPC_REPORT)</Srpc_Report>
       <Srpc_RemoveWidowFiles Condition=" '$(Srpc_RemoveWidowFiles)' == '' ">$(SRPC_REMOVE_WIDOW_FILES)</Srpc_RemoveWidowFiles>
       <Srpc_OutputFormat Condition=" '$(Srpc_OutputFormat)' == '' ">$(SRPC_OUTPUT_FORMAT)</Srpc_OutputFormat>
+      <Srpc_Nullable Condition=" '$(Srpc_Nullable)' == '' and ('$(Nullable)' == 'enable' or '$(Nullable)' == 'disable')">$(Nullable)</Srpc_Nullable>
 
       <!-- Next try OS and CPU resolved by ProtoPlatform. -->
       <Protobuf_ToolsOs Condition=" '$(Protobuf_ToolsOs)' == '' ">$(_Protobuf_ToolsOs)</Protobuf_ToolsOs>
@@ -103,6 +104,9 @@
       Text="sRPC.Tools cannot determine Protoc path.&#10;Use environment variable PROTOBUF_PROTOC to specify full path to the host-provided compiler (v3.5+ is required)." />
     <Error Condition=" '$(DisableProtobufDesignTimeBuild)' != 'true' and '$(Protobuf_SrpcFullPath)' == '' "
       Text="sRPC.Tools cannot determine sRPGgen path.&#10;Use environment variable PROTOBUF_SRPC to specify full path to the host-provided compiler." />
+
+    <Error Condition=" '$(Srpc_Nullable)' != '' and '$(Srpc_Nullable)' != 'enable' and '$(Srpc_Nullable)' != 'disable' "
+      Text="invalid setting for Srpc_Nullable.&#10;Only 'enable' or 'disable' are supported." />
   </Target>
 
   <Target Name="srpc_Generate"
@@ -128,6 +132,7 @@
       Report="$(Srpc_Report)"
       RemoveWidowFiles="$(Srpc_RemoveWidowFiles)"
       OutputFormat="$(Srpc_OutputFormat)"
+      Nullable="$(Srpc_Nullable)"
       />
   </Target>
 

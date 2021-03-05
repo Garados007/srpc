@@ -57,6 +57,8 @@ namespace sRPC.Tools
 
         public string OutputFormat { get; set; }
 
+        public string Nullable { get; set; }
+
         private string[] SrpcIgnoreUnwrapList
             => (SrpcIgnoreUnwrap ?? "")
                 .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
@@ -205,6 +207,8 @@ namespace sRPC.Tools
             AddArg(sb, "proto-import", ProjectPath);
             AddArg(sb, "proto-import", StandardImportsPath);
             AddArg(sb, "output-format", OutputFormat);
+            if (Nullable == "enable" || Nullable == "disable")
+                AddArg(sb, "nullable", Nullable);
             if (IsSrpcEmptySupport)
                 AddArg(sb, "empty-support");
             if (IsSrpcAutoSearchProj)
