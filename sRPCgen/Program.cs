@@ -86,6 +86,7 @@ namespace sRPCgen
                         .Key("error_format", settings.ErrorFormat, 
                             condition: settings.ErrorFormat != "default")
                         .Flag("include_imports")
+                        .Flag("include_source_info")
                         .Key("dependency_out", $"{file}.dep", 
                             condition: report != null)
                         .File(file)
@@ -146,20 +147,35 @@ namespace sRPCgen
                 return;
             }
 
+            var docs = new Docs.DocFactory(descriptor);
             if (settings.Verbose)
                 Console.WriteLine("Load type list...");
             List<NameInfo> names = new List<NameInfo>();
-            foreach (var filedesc in descriptor.File)
-                LoadTypes(filedesc, names);
+            for (int i = 0; i < descriptor.File.Count; ++i)
+                LoadTypes(
+                    descriptor.File[i], 
+                    new Docs.FileDocFactory(docs, i),
+                    names
+                );
 
-            foreach (var filedesc in descriptor.File)
-                foreach (var service in filedesc.Service)
+            for (int i = 0; i < descriptor.File.Count; ++i)
+            {
+                var filedesc = descriptor.File[i];
+                var filedoc = new Docs.FileDocFactory(docs, i);
+                for (int j = 0; j < filedesc.Service.Count; ++j)
                 {
-                    WorkSingleEntry(filedesc, service, names, file);
+                    WorkSingleEntry(
+                        new Docs.ServiceDocFactory(filedoc, j), 
+                        filedesc, 
+                        filedesc.Service[j], 
+                        names, 
+                        file
+                    );
                 }
+            }
         }
 
-        static void WorkSingleEntry(FileDescriptorProto filedesc, ServiceDescriptorProto service, List<NameInfo> names, string sourceFile)
+        static void WorkSingleEntry(Docs.ServiceDocFactory docs, FileDescriptorProto filedesc, ServiceDescriptorProto service, List<NameInfo> names, string sourceFile)
         {
             var targetName = filedesc.Options?.CsharpNamespace ?? "";
             if (targetName.StartsWith(settings.NamespaceBase))
@@ -188,9 +204,9 @@ namespace sRPCgen
             writer.BaseStream.SetLength(0);
             Generator generator = settings.OutputFormat switch
             {
-                "1" => new Generator(settings, log),
-                "2" => new Generator2(settings, log),
-                _ => new Generator(settings, log),
+                "1" => new Generator(docs, settings, log),
+                "2" => new Generator2(docs, settings, log),
+                _ => new Generator(docs, settings, log),
             };
             generator.GenerateServiceFile(filedesc, service, writer, names);
             writer.Flush();
@@ -210,7 +226,7 @@ namespace sRPCgen
             }
         }
 
-        static void LoadTypes(FileDescriptorProto descriptor, List<NameInfo> names)
+        static void LoadTypes(FileDescriptorProto descriptor, Docs.FileDocFactory doc, List<NameInfo> names)
         {
             _ = descriptor ?? throw new ArgumentNullException(nameof(descriptor));
             _ = names ?? throw new ArgumentNullException(nameof(names));
@@ -220,33 +236,57 @@ namespace sRPCgen
                 protoPackage += '.';
             if (csharpNamespace != "")
                 csharpNamespace += ".";
-            foreach (var type in descriptor.MessageType)
-                LoadTypes(type, names, protoPackage, csharpNamespace);
-            foreach (var @enum in descriptor.EnumType)
-                LoadEnums(@enum, names, protoPackage, csharpNamespace);
+            for (int i = 0; i < descriptor.MessageType.Count; ++i)
+                LoadTypes(
+                    descriptor.MessageType[i], 
+                    new Docs.BaseMessageDocFactory(doc, i),
+                    names, 
+                    protoPackage, 
+                    csharpNamespace
+                );
+            for (int i = 0; i < descriptor.EnumType.Count; ++i)
+                LoadEnums(
+                    descriptor.EnumType[i],
+                    new Docs.EnumDocFactory(doc, i),
+                    names, 
+                    protoPackage, 
+                    csharpNamespace
+                );
         }
 
-        static void LoadTypes(DescriptorProto descriptor, List<NameInfo> names,
+        static void LoadTypes(DescriptorProto descriptor, Docs.IMessageDocFactory doc, List<NameInfo> names,
             string protoPackage, string csharpNamespace)
         {
             names.Add(new NameInfo(
                 descriptor: descriptor,
+                doc: doc,
                 name: descriptor.Name,
                 protoBufName: $".{protoPackage}{descriptor.Name}",
                 csharpName: $"{csharpNamespace}{descriptor.Name}"));
-            foreach (var type in descriptor.NestedType)
-                LoadTypes(type, names, $"{protoPackage}{descriptor.Name}.",
-                    $"{csharpNamespace}{descriptor.Name}.");
-            foreach (var @enum in descriptor.EnumType)
-                LoadEnums(@enum, names, $"{protoPackage}{descriptor.Name}.",
-                    $"{csharpNamespace}{descriptor.Name}.");
+            for (int i = 0; i < descriptor.NestedType.Count; ++i)
+                LoadTypes(
+                    descriptor.NestedType[i], 
+                    new Docs.WrapMessageDocFactory(doc, i),
+                    names, 
+                    $"{protoPackage}{descriptor.Name}.",
+                    $"{csharpNamespace}{descriptor.Name}."
+                );
+            for (int i = 0; i < descriptor.EnumType.Count; ++i)
+                LoadEnums(
+                    descriptor.EnumType[i], 
+                    new Docs.EnumDocFactory(doc, i),
+                    names, 
+                    $"{protoPackage}{descriptor.Name}.",
+                    $"{csharpNamespace}{descriptor.Name}."
+                );
         }
 
-        static void LoadEnums(EnumDescriptorProto descriptor, List<NameInfo> names,
+        static void LoadEnums(EnumDescriptorProto descriptor, Docs.EnumDocFactory doc, List<NameInfo> names,
             string protoPackage, string csharpNamespace)
         {
             names.Add(new NameInfo(
                 descriptor: null,
+                doc: doc,
                 name: descriptor.Name,
                 protoBufName: $".{protoPackage}{descriptor.Name}",
                 csharpName: $"{csharpNamespace}{descriptor.Name}"));

@@ -19,7 +19,9 @@ using stt = global::System.Threading.Tasks;
 namespace sRPC.Test.Proto
 {
     /// <summary>
-    /// The base class for the client implementation of the SimpleService api
+    /// The client of the SimpleService api
+	/// <br/>
+	/// a simple service definition
     /// </summary>
     public class SimpleServiceClient : srpc::IApiClientDefinition2
     {
@@ -39,12 +41,33 @@ namespace sRPC.Test.Proto
 
         private event s::Func<srpc::NetworkRequest, st::CancellationToken, stt::Task<srpc::NetworkResponse>>? PerformMessage2Private;
 
+        /// <summary>
+        /// Client call for Sqrt
+		/// <br/>
+		/// calculates the square root of the number
+		/// </summary>
+        /// <param name="message">
+        /// request message
+        /// </param>
+		/// <returns>The result of the Api call</returns>
         public virtual stt::Task<sRPC.Test.Proto.SqrtResponse?> Sqrt(sRPC.Test.Proto.SqrtRequest message)
         {
             _ = message ?? throw new s::ArgumentNullException(nameof(message));
             return Sqrt(message, st::CancellationToken.None);
         }
 
+        /// <summary>
+        /// Client call for Sqrt
+		/// <br/>
+		/// calculates the square root of the number
+		/// </summary>
+        /// <param name="message">
+        /// request message
+        /// </param>
+        /// <param name="cancellationToken">
+        /// The token to cancel this request
+        /// </param>
+		/// <returns>The result of the Api call</returns>
         public virtual async stt::Task<sRPC.Test.Proto.SqrtResponse?> Sqrt(sRPC.Test.Proto.SqrtRequest message, st::CancellationToken cancellationToken)
         {
             _ = message ?? throw new s::ArgumentNullException(nameof(message));
@@ -59,6 +82,18 @@ namespace sRPC.Test.Proto
             return response.Response?.Unpack<sRPC.Test.Proto.SqrtResponse?>();
         }
 
+        /// <summary>
+        /// Client call for Sqrt
+		/// <br/>
+		/// calculates the square root of the number
+		/// </summary>
+        /// <param name="message">
+        /// request message
+        /// </param>
+        /// <param name="timeout">
+        /// The timeout after which the request should be cancelled
+        /// </param>
+		/// <returns>The result of the Api call</returns>
         public virtual async stt::Task<sRPC.Test.Proto.SqrtResponse?> Sqrt(sRPC.Test.Proto.SqrtRequest message, s::TimeSpan timeout)
         {
             _ = message ?? throw new s::ArgumentNullException(nameof(message));
@@ -68,6 +103,15 @@ namespace sRPC.Test.Proto
             return await Sqrt(message, cancellationToken.Token).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Client call for Sqrt
+		/// <br/>
+		/// calculates the square root of the number
+		/// </summary>
+		/// <param name="value">
+		/// the input value
+		/// </param>
+		/// <returns>The result of the Api call</returns>
 		public virtual stt::Task<sRPC.Test.Proto.SqrtResponse?> Sqrt(
 			double @value = 0)
         {
@@ -78,6 +122,18 @@ namespace sRPC.Test.Proto
             return Sqrt(request);
         }
 
+        /// <summary>
+        /// Client call for Sqrt
+		/// <br/>
+		/// calculates the square root of the number
+		/// </summary>
+		/// <param name="value">
+		/// the input value
+		/// </param>
+        /// <param name="cancellationToken">
+        /// The token to cancel this request
+        /// </param>
+		/// <returns>The result of the Api call</returns>
 		public virtual stt::Task<sRPC.Test.Proto.SqrtResponse?> Sqrt(
 			st::CancellationToken cancellationToken,
 			double @value = 0)
@@ -89,6 +145,18 @@ namespace sRPC.Test.Proto
             return Sqrt(request, cancellationToken);
         }
 
+        /// <summary>
+        /// Client call for Sqrt
+		/// <br/>
+		/// calculates the square root of the number
+		/// </summary>
+		/// <param name="value">
+		/// the input value
+		/// </param>
+        /// <param name="timeout">
+        /// The timeout after which the request should be cancelled
+        /// </param>
+		/// <returns>The result of the Api call</returns>
 		public virtual stt::Task<sRPC.Test.Proto.SqrtResponse?> Sqrt(
 			s::TimeSpan timeout,
 			double @value = 0)
@@ -100,11 +168,26 @@ namespace sRPC.Test.Proto
             return Sqrt(request, timeout);
         }
 
+        /// <summary>
+        /// Client call for Indefinite
+		/// <br/>
+		/// this call will never finish and will indefinitely run
+		/// </summary>
+		/// <returns>The result of the Api call</returns>
         public virtual stt::Task Indefinite()
         {
             return Indefinite(st::CancellationToken.None);
         }
 
+        /// <summary>
+        /// Client call for Indefinite
+		/// <br/>
+		/// this call will never finish and will indefinitely run
+		/// </summary>
+        /// <param name="cancellationToken">
+        /// The token to cancel this request
+        /// </param>
+		/// <returns>The result of the Api call</returns>
         public virtual async stt::Task Indefinite(st::CancellationToken cancellationToken)
         {
             var networkMessage = new srpc::NetworkRequest()
@@ -117,6 +200,15 @@ namespace sRPC.Test.Proto
                 : await (PerformMessagePrivate?.Invoke(networkMessage) ?? stt::Task.FromResult(new srpc::NetworkResponse())).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Client call for Indefinite
+		/// <br/>
+		/// this call will never finish and will indefinitely run
+		/// </summary>
+        /// <param name="timeout">
+        /// The timeout after which the request should be cancelled
+        /// </param>
+		/// <returns>The result of the Api call</returns>
         public virtual async stt::Task Indefinite(s::TimeSpan timeout)
         {
             if (timeout.Ticks < 0)
@@ -174,8 +266,32 @@ namespace sRPC.Test.Proto
             }
         }
 
+        /// <summary>
+        /// Server call for Sqrt
+		/// <br/>
+		/// calculates the square root of the number
+		/// </summary>
+        /// <param name="request">
+        /// The api request object
+        /// </param>
+        /// <param name="cancellationToken">
+        /// The token that signals the cancellation of the request
+        /// </param>
+		/// <returns>The result of the Api call</returns>
         public abstract stt::Task<sRPC.Test.Proto.SqrtResponse?> Sqrt(sRPC.Test.Proto.SqrtRequest request, st::CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Server call for Indefinite
+		/// <br/>
+		/// this call will never finish and will indefinitely run
+		/// </summary>
+        /// <param name="request">
+        /// The api request object
+        /// </param>
+        /// <param name="cancellationToken">
+        /// The token that signals the cancellation of the request
+        /// </param>
+		/// <returns>The result of the Api call</returns>
         public abstract stt::Task Indefinite(st::CancellationToken cancellationToken);
     }
 }

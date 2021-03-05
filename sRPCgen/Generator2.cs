@@ -9,8 +9,8 @@ namespace sRPCgen
 {
     class Generator2 : Generator
     {
-        public Generator2(Settings settings, Log log)
-            : base(settings, log)
+        public Generator2(Docs.ServiceDocFactory docs, Settings settings, Log log)
+            : base(docs, settings, log)
         {
 
         }
@@ -20,7 +20,8 @@ namespace sRPCgen
             ServiceDescriptorProto service, 
             StreamWriter writer, 
             List<NameInfo> names, 
-            MethodDescriptorProto method)
+            MethodDescriptorProto method,
+            int methodIndex)
         {
             var requestType = names
                 .Where(x => x.ProtoBufName == method.InputType)
@@ -48,8 +49,12 @@ namespace sRPCgen
             var req = Settings.EmptySupport && method.InputType == ".google.protobuf.Empty"
                 ? ""
                 : $"{requestType} request, ";
+            writer.WriteLine();
+            WriteMethodDoc(writer, false, false, names, method, methodIndex,
+                ("request", "The api request object"),
+                ("cancellationToken", "The token that signals the cancellation of the request")
+            );
             writer.WriteLines(
-                $"",
                 $"\t\tpublic abstract stt::Task{resp} {method.Name}({req}st::CancellationToken cancellationToken);"
             );
         }

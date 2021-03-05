@@ -15,9 +15,12 @@ namespace sRPCgen
 
         public DescriptorProto Descriptor { get; }
 
-        public NameInfo(DescriptorProto descriptor, string name, string protoBufName, string csharpName)
+        public Docs.IDocFactory Doc { get; }
+
+        public NameInfo(DescriptorProto descriptor, Docs.IDocFactory doc, string name, string protoBufName, string csharpName)
         {
             Descriptor = descriptor;
+            Doc = doc ?? throw new ArgumentNullException(nameof(doc));
             Name = name ?? throw new ArgumentNullException(nameof(name));
             ProtoBufName = protoBufName ?? throw new ArgumentNullException(nameof(protoBufName));
             CSharpName = csharpName ?? throw new ArgumentNullException(nameof(csharpName));

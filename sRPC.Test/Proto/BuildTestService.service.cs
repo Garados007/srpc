@@ -19,7 +19,11 @@ using stt = global::System.Threading.Tasks;
 namespace sRPC.Test.Proto
 {
     /// <summary>
-    /// The base class for the client implementation of the BuildTestService api
+    /// The client of the BuildTestService api
+	/// <br/>
+	/// This service is not used for test cases. This service is only
+	///  for testing various build features. This test succeeds if the
+	///  generated code can be build by the csharp compiler.
     /// </summary>
     public class BuildTestServiceClient : srpc::IApiClientDefinition2
     {
@@ -39,12 +43,29 @@ namespace sRPC.Test.Proto
 
         private event s::Func<srpc::NetworkRequest, st::CancellationToken, stt::Task<srpc::NetworkResponse>>? PerformMessage2Private;
 
+        /// <summary>
+        /// Client call for TestMultiFields
+		/// </summary>
+        /// <param name="message">
+        /// request message
+        /// </param>
+		/// <returns>The result of the Api call</returns>
         public virtual stt::Task TestMultiFields(sRPC.Test.Proto.MultiFields message)
         {
             _ = message ?? throw new s::ArgumentNullException(nameof(message));
             return TestMultiFields(message, st::CancellationToken.None);
         }
 
+        /// <summary>
+        /// Client call for TestMultiFields
+		/// </summary>
+        /// <param name="message">
+        /// request message
+        /// </param>
+        /// <param name="cancellationToken">
+        /// The token to cancel this request
+        /// </param>
+		/// <returns>The result of the Api call</returns>
         public virtual async stt::Task TestMultiFields(sRPC.Test.Proto.MultiFields message, st::CancellationToken cancellationToken)
         {
             _ = message ?? throw new s::ArgumentNullException(nameof(message));
@@ -58,6 +79,16 @@ namespace sRPC.Test.Proto
                 : await (PerformMessagePrivate?.Invoke(networkMessage) ?? stt::Task.FromResult(new srpc::NetworkResponse())).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Client call for TestMultiFields
+		/// </summary>
+        /// <param name="message">
+        /// request message
+        /// </param>
+        /// <param name="timeout">
+        /// The timeout after which the request should be cancelled
+        /// </param>
+		/// <returns>The result of the Api call</returns>
         public virtual async stt::Task TestMultiFields(sRPC.Test.Proto.MultiFields message, s::TimeSpan timeout)
         {
             _ = message ?? throw new s::ArgumentNullException(nameof(message));
@@ -67,6 +98,94 @@ namespace sRPC.Test.Proto
             await TestMultiFields(message, cancellationToken.Token).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Client call for TestMultiFields
+		/// </summary>
+		/// <param name="boolFlag">
+		/// basic definitions
+		/// </param>
+		/// <param name="bytesValue">
+		/// </param>
+		/// <param name="doubleValue">
+		/// </param>
+		/// <param name="enumValue">
+		/// </param>
+		/// <param name="fixed32Value">
+		/// </param>
+		/// <param name="fixed64Value">
+		/// </param>
+		/// <param name="floatValue">
+		/// </param>
+		/// <param name="int32Value">
+		/// </param>
+		/// <param name="int64Value">
+		/// </param>
+		/// <param name="messageValue">
+		/// </param>
+		/// <param name="sfixed32Value">
+		/// </param>
+		/// <param name="sfixed64Value">
+		/// </param>
+		/// <param name="sint32Value">
+		/// </param>
+		/// <param name="sint64Value">
+		/// </param>
+		/// <param name="stringValue">
+		/// </param>
+		/// <param name="uint32Value">
+		/// </param>
+		/// <param name="uint64Value">
+		/// </param>
+		/// <param name="repeatedBoolFlag">
+		/// repeated definitions
+		/// </param>
+		/// <param name="repeatedBytesValue">
+		/// </param>
+		/// <param name="repeatedDoubleValue">
+		/// </param>
+		/// <param name="repeatedEnumValue">
+		/// </param>
+		/// <param name="repeatedFixed32Value">
+		/// </param>
+		/// <param name="repeatedFixed64Value">
+		/// </param>
+		/// <param name="repeatedFloatValue">
+		/// </param>
+		/// <param name="repeatedInt32Value">
+		/// </param>
+		/// <param name="repeatedInt64Value">
+		/// </param>
+		/// <param name="repeatedMessageValue">
+		/// </param>
+		/// <param name="repeatedSfixed32Value">
+		/// </param>
+		/// <param name="repeatedSfixed64Value">
+		/// </param>
+		/// <param name="repeatedSint32Value">
+		/// </param>
+		/// <param name="repeatedSint64Value">
+		/// </param>
+		/// <param name="repeatedStringValue">
+		/// </param>
+		/// <param name="repeatedUint32Value">
+		/// </param>
+		/// <param name="repeatedUint64Value">
+		/// </param>
+		/// <param name="map1">
+		/// some map definition
+		/// </param>
+		/// <param name="short">
+		/// some reserved keywords
+		/// </param>
+		/// <param name="foreach">
+		/// </param>
+		/// <param name="var">
+		/// </param>
+		/// <param name="null">
+		/// </param>
+		/// <param name="is">
+		/// </param>
+		/// <returns>The result of the Api call</returns>
 		public virtual stt::Task TestMultiFields(
 			bool @boolFlag = false,
 			byte[]? @bytesValue = null,
@@ -155,6 +274,97 @@ namespace sRPC.Test.Proto
             return TestMultiFields(request);
         }
 
+        /// <summary>
+        /// Client call for TestMultiFields
+		/// </summary>
+		/// <param name="boolFlag">
+		/// basic definitions
+		/// </param>
+		/// <param name="bytesValue">
+		/// </param>
+		/// <param name="doubleValue">
+		/// </param>
+		/// <param name="enumValue">
+		/// </param>
+		/// <param name="fixed32Value">
+		/// </param>
+		/// <param name="fixed64Value">
+		/// </param>
+		/// <param name="floatValue">
+		/// </param>
+		/// <param name="int32Value">
+		/// </param>
+		/// <param name="int64Value">
+		/// </param>
+		/// <param name="messageValue">
+		/// </param>
+		/// <param name="sfixed32Value">
+		/// </param>
+		/// <param name="sfixed64Value">
+		/// </param>
+		/// <param name="sint32Value">
+		/// </param>
+		/// <param name="sint64Value">
+		/// </param>
+		/// <param name="stringValue">
+		/// </param>
+		/// <param name="uint32Value">
+		/// </param>
+		/// <param name="uint64Value">
+		/// </param>
+		/// <param name="repeatedBoolFlag">
+		/// repeated definitions
+		/// </param>
+		/// <param name="repeatedBytesValue">
+		/// </param>
+		/// <param name="repeatedDoubleValue">
+		/// </param>
+		/// <param name="repeatedEnumValue">
+		/// </param>
+		/// <param name="repeatedFixed32Value">
+		/// </param>
+		/// <param name="repeatedFixed64Value">
+		/// </param>
+		/// <param name="repeatedFloatValue">
+		/// </param>
+		/// <param name="repeatedInt32Value">
+		/// </param>
+		/// <param name="repeatedInt64Value">
+		/// </param>
+		/// <param name="repeatedMessageValue">
+		/// </param>
+		/// <param name="repeatedSfixed32Value">
+		/// </param>
+		/// <param name="repeatedSfixed64Value">
+		/// </param>
+		/// <param name="repeatedSint32Value">
+		/// </param>
+		/// <param name="repeatedSint64Value">
+		/// </param>
+		/// <param name="repeatedStringValue">
+		/// </param>
+		/// <param name="repeatedUint32Value">
+		/// </param>
+		/// <param name="repeatedUint64Value">
+		/// </param>
+		/// <param name="map1">
+		/// some map definition
+		/// </param>
+		/// <param name="short">
+		/// some reserved keywords
+		/// </param>
+		/// <param name="foreach">
+		/// </param>
+		/// <param name="var">
+		/// </param>
+		/// <param name="null">
+		/// </param>
+		/// <param name="is">
+		/// </param>
+        /// <param name="cancellationToken">
+        /// The token to cancel this request
+        /// </param>
+		/// <returns>The result of the Api call</returns>
 		public virtual stt::Task TestMultiFields(
 			st::CancellationToken cancellationToken,
 			bool @boolFlag = false,
@@ -244,6 +454,97 @@ namespace sRPC.Test.Proto
             return TestMultiFields(request, cancellationToken);
         }
 
+        /// <summary>
+        /// Client call for TestMultiFields
+		/// </summary>
+		/// <param name="boolFlag">
+		/// basic definitions
+		/// </param>
+		/// <param name="bytesValue">
+		/// </param>
+		/// <param name="doubleValue">
+		/// </param>
+		/// <param name="enumValue">
+		/// </param>
+		/// <param name="fixed32Value">
+		/// </param>
+		/// <param name="fixed64Value">
+		/// </param>
+		/// <param name="floatValue">
+		/// </param>
+		/// <param name="int32Value">
+		/// </param>
+		/// <param name="int64Value">
+		/// </param>
+		/// <param name="messageValue">
+		/// </param>
+		/// <param name="sfixed32Value">
+		/// </param>
+		/// <param name="sfixed64Value">
+		/// </param>
+		/// <param name="sint32Value">
+		/// </param>
+		/// <param name="sint64Value">
+		/// </param>
+		/// <param name="stringValue">
+		/// </param>
+		/// <param name="uint32Value">
+		/// </param>
+		/// <param name="uint64Value">
+		/// </param>
+		/// <param name="repeatedBoolFlag">
+		/// repeated definitions
+		/// </param>
+		/// <param name="repeatedBytesValue">
+		/// </param>
+		/// <param name="repeatedDoubleValue">
+		/// </param>
+		/// <param name="repeatedEnumValue">
+		/// </param>
+		/// <param name="repeatedFixed32Value">
+		/// </param>
+		/// <param name="repeatedFixed64Value">
+		/// </param>
+		/// <param name="repeatedFloatValue">
+		/// </param>
+		/// <param name="repeatedInt32Value">
+		/// </param>
+		/// <param name="repeatedInt64Value">
+		/// </param>
+		/// <param name="repeatedMessageValue">
+		/// </param>
+		/// <param name="repeatedSfixed32Value">
+		/// </param>
+		/// <param name="repeatedSfixed64Value">
+		/// </param>
+		/// <param name="repeatedSint32Value">
+		/// </param>
+		/// <param name="repeatedSint64Value">
+		/// </param>
+		/// <param name="repeatedStringValue">
+		/// </param>
+		/// <param name="repeatedUint32Value">
+		/// </param>
+		/// <param name="repeatedUint64Value">
+		/// </param>
+		/// <param name="map1">
+		/// some map definition
+		/// </param>
+		/// <param name="short">
+		/// some reserved keywords
+		/// </param>
+		/// <param name="foreach">
+		/// </param>
+		/// <param name="var">
+		/// </param>
+		/// <param name="null">
+		/// </param>
+		/// <param name="is">
+		/// </param>
+        /// <param name="timeout">
+        /// The timeout after which the request should be cancelled
+        /// </param>
+		/// <returns>The result of the Api call</returns>
 		public virtual stt::Task TestMultiFields(
 			s::TimeSpan timeout,
 			bool @boolFlag = false,
@@ -333,12 +634,29 @@ namespace sRPC.Test.Proto
             return TestMultiFields(request, timeout);
         }
 
+        /// <summary>
+        /// Client call for TestIdentical
+		/// </summary>
+        /// <param name="message">
+        /// request message
+        /// </param>
+		/// <returns>The result of the Api call</returns>
         public virtual stt::Task TestIdentical(sRPC.Test.Proto.Identical message)
         {
             _ = message ?? throw new s::ArgumentNullException(nameof(message));
             return TestIdentical(message, st::CancellationToken.None);
         }
 
+        /// <summary>
+        /// Client call for TestIdentical
+		/// </summary>
+        /// <param name="message">
+        /// request message
+        /// </param>
+        /// <param name="cancellationToken">
+        /// The token to cancel this request
+        /// </param>
+		/// <returns>The result of the Api call</returns>
         public virtual async stt::Task TestIdentical(sRPC.Test.Proto.Identical message, st::CancellationToken cancellationToken)
         {
             _ = message ?? throw new s::ArgumentNullException(nameof(message));
@@ -352,6 +670,16 @@ namespace sRPC.Test.Proto
                 : await (PerformMessagePrivate?.Invoke(networkMessage) ?? stt::Task.FromResult(new srpc::NetworkResponse())).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Client call for TestIdentical
+		/// </summary>
+        /// <param name="message">
+        /// request message
+        /// </param>
+        /// <param name="timeout">
+        /// The timeout after which the request should be cancelled
+        /// </param>
+		/// <returns>The result of the Api call</returns>
         public virtual async stt::Task TestIdentical(sRPC.Test.Proto.Identical message, s::TimeSpan timeout)
         {
             _ = message ?? throw new s::ArgumentNullException(nameof(message));
@@ -361,6 +689,12 @@ namespace sRPC.Test.Proto
             await TestIdentical(message, cancellationToken.Token).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Client call for TestIdentical
+		/// </summary>
+		/// <param name="identical_">
+		/// </param>
+		/// <returns>The result of the Api call</returns>
 		public virtual stt::Task TestIdentical(
 			byte[]? @identical_ = null)
         {
@@ -371,6 +705,15 @@ namespace sRPC.Test.Proto
             return TestIdentical(request);
         }
 
+        /// <summary>
+        /// Client call for TestIdentical
+		/// </summary>
+		/// <param name="identical_">
+		/// </param>
+        /// <param name="cancellationToken">
+        /// The token to cancel this request
+        /// </param>
+		/// <returns>The result of the Api call</returns>
 		public virtual stt::Task TestIdentical(
 			st::CancellationToken cancellationToken,
 			byte[]? @identical_ = null)
@@ -382,6 +725,15 @@ namespace sRPC.Test.Proto
             return TestIdentical(request, cancellationToken);
         }
 
+        /// <summary>
+        /// Client call for TestIdentical
+		/// </summary>
+		/// <param name="identical_">
+		/// </param>
+        /// <param name="timeout">
+        /// The timeout after which the request should be cancelled
+        /// </param>
+		/// <returns>The result of the Api call</returns>
 		public virtual stt::Task TestIdentical(
 			s::TimeSpan timeout,
 			byte[]? @identical_ = null)
@@ -443,8 +795,28 @@ namespace sRPC.Test.Proto
             }
         }
 
+        /// <summary>
+        /// Server call for TestMultiFields
+		/// </summary>
+        /// <param name="request">
+        /// The api request object
+        /// </param>
+        /// <param name="cancellationToken">
+        /// The token that signals the cancellation of the request
+        /// </param>
+		/// <returns>The result of the Api call</returns>
         public abstract stt::Task TestMultiFields(sRPC.Test.Proto.MultiFields request, st::CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Server call for TestIdentical
+		/// </summary>
+        /// <param name="request">
+        /// The api request object
+        /// </param>
+        /// <param name="cancellationToken">
+        /// The token that signals the cancellation of the request
+        /// </param>
+		/// <returns>The result of the Api call</returns>
         public abstract stt::Task TestIdentical(sRPC.Test.Proto.Identical request, st::CancellationToken cancellationToken);
     }
 }

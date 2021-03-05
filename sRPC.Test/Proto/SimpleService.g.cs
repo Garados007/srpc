@@ -42,6 +42,9 @@ namespace sRPC.Test.Proto {
 
   }
   #region Messages
+  /// <summary>
+  /// the request object for the Sqrt call
+  /// </summary>
   public sealed partial class SqrtRequest : pb::IMessage<SqrtRequest> {
     private static readonly pb::MessageParser<SqrtRequest> _parser = new pb::MessageParser<SqrtRequest>(() => new SqrtRequest());
     private pb::UnknownFieldSet _unknownFields;
@@ -174,6 +177,9 @@ namespace sRPC.Test.Proto {
 
   }
 
+  /// <summary>
+  /// the response object for the Sqrt call
+  /// </summary>
   public sealed partial class SqrtResponse : pb::IMessage<SqrtResponse> {
     private static readonly pb::MessageParser<SqrtResponse> _parser = new pb::MessageParser<SqrtResponse>(() => new SqrtResponse());
     private pb::UnknownFieldSet _unknownFields;
