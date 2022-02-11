@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Protobuf" Version="3.13.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.15.0" />
     <PackageReference Include="Google.Protobuf.Tools" Version="3.13.0" />
     <PackageReference Include="sRPC" Version="$(Use_Srpc_Version)" />
     <PackageReference Include="sRPC.Tools" Version="$(Use_Srpc_Tools_Version)">
